@@ -10,7 +10,7 @@ description:        Integrating with Ledger Live
 lang:               en
 
 # Site subpath, e.g. /blog
-baseurl:            ""
+baseurl:            "/bh-faq"
 
 # Permalink URLs structure, for permalink style options see: https://jekyllrb.com/docs/permalinks/
 permalink:          /:title/
