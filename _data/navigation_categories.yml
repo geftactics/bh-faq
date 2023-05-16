@@ -2,15 +2,15 @@
 
 - heading: Browse All Topics
   categories:
-    - title: Clinical Documentation
-      desc: Get the latest Articles about Bci Technologies
-      icon: settings
+    - title: Tickets
+      desc: 
+      icon: ticket
 
-    - title: BCIPY Documentation
-      desc: Get our BCIPY Documentation
-      icon: laptop
+    - title: Camping
+      desc: 
+      icon: tent
 
-    - title: Glossary
+    - title: Getting to the festival
       desc: 
       icon: database
     
