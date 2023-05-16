@@ -4,15 +4,15 @@
   categories:
     - title: Tickets
       desc: 
-      icon: ticket
+      icon: credit-card
 
     - title: Camping
       desc: 
-      icon: tent
+      icon: image
 
     - title: Getting to the festival
       desc: 
-      icon: database
+      icon: location
     
   
     
