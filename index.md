@@ -15,9 +15,9 @@ category:
 featured:
     title: Featured Articles
     tag: featured
-cta:
-    title: Didn't find an answer to your question?
-    subtitle: Get in touch with us
-    button_text: Contact Us   
-    button_url: /contact/      
+# cta:
+#     title: Didn't find an answer to your question?
+#     subtitle: Get in touch with us
+#     button_text: Contact Us   
+#     button_url: /contact/      
 ---
