@@ -6,26 +6,18 @@
     <body>
 
     {% if page.hero %}
-        {% include hero.html %}
+        {% include header-hero.html %}
     {% else %}
-        {% include navbar.html %}
+        {% include header.html %}
     {% endif %}
 
+    <main aria-label="Content">
     {{ content }}
+    </main>
 
-    {% include offcanvas-docs.html %}
+    {% include footer.html %}
 
     {% include offcanvas.html %}
-
-    {% if page.layout != 'doc' %}
-        {% include footer.html %}
-    {% endif %}
-
-    {% if page.layout == 'doc' %}
-        {% include hook-pre-closing-body-doc.html %}
-    {% endif %}
-
-    {% include hook-pre-closing-body.html %}
 
     </body>
 

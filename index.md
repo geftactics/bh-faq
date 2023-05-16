@@ -1,27 +1,23 @@
 ---
-layout: page
-width: expand
+layout: help
+title: BciPy Documentation
+subtitle: Find the latest Articles and Documentation about BciPy
 hero:
-    title: Ledger Developer Pages
-    subtitle: 
-        Documentation for Third-party Foundations and blockchain teams who want to develop their currency and services in the Desktop and Mobile versions of Ledger Live
-    image: portal-intro.png
+    background: "#0072ff"
+    image: BrainComputerInterfaceSystems.jpg
+    overlay: "linear-gradient(90deg, rgba(2,0,36,0.5) 0%, rgba(0,114,255,0.5) 100%, rgba(0,212,255,0.5) 100%)"
+    align: center
+    text: light
     search: true
+category:
+    columns: 2
+
+featured:
+    title: Featured Articles
+    tag: featured
+cta:
+    title: Didn't find an answer to your question?
+    subtitle: Get in touch with us
+    button_text: Contact Us   
+    button_url: /contact/      
 ---
-
-{% include boxes_gen.html columns="4" title="Take your pick ..." subtitle="Chose an option that you need help with or search above" %}
-
-{% include boxes_toolboxes.html columns="2" title="and your toolbox" subtitle="Chose a toolbox" %}
-
-{% include featured.html tag="featured" title="Popular Articles" subtitle="Selected featured articles to get you started fast Ledger Live" %}
-
-{% include videos.html columns="6" title="Video Tutorials" subtitle="Watch screencasts to get you started fast with Ledger Live" %}
-
-{% include faqs.html multiple="true" title="Frequently asked questions" category="presale" subtitle="Find quick answers to frequent  questions asked by third party developers" %}
-
-{% include team.html authors="fabrice, remi_j, remi_b, pierre, hakim, henri, gerry, " title="We are here to help" subtitle="Our team is just a ping away, ready to answer your questions" %}
-
-{% include team.html authors="pscott, Tamtamhero, greenknot, nafissa, guillaume, leo, francesco" %}
-
-{% include cta.html title="Didn't find an answer?" button_text="Contact Us" button_url="/contact/" subtitle="Get in touch with us for details on setup" %}
-

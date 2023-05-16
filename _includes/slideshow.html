@@ -2,8 +2,8 @@
 
     <ul class="uk-slideshow-items">
         {% for image in site.static_files %}
-            {% if image.path contains include.folder %}
-                <li><img src="{{ image.path | absolute_url }}" data-uk-cover></li>
+            {% if image.path contains include.gallery %}
+                <li><img src="{{ image.path }}" data-uk-cover></li>
             {% endif %}
         {% endfor %}
     </ul>

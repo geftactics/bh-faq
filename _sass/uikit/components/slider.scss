@@ -91,23 +91,21 @@ $slider-container-margin-right:                      -25px !default;
 
 /*
  * 1. Let items take content dimensions (0 0 auto)
- *    `max-width` needed to keep image responsiveness and prevent content overflow
- * 3. Create position context
- * 4. Disable horizontal panning gestures in IE11 and Edge
- * 5. Suppress outline on focus
+ * 2. Create position context
+ * 3. Disable horizontal panning gestures in IE11 and Edge
+ * 4. Suppress outline on focus
  */
 
 .uk-slider-items > * {
     /* 1 */
     flex: none;
-    max-width: 100%;
-    /* 3 */
+    /* 2 */
     position: relative;
-    /* 4 */
+    /* 3 */
     touch-action: pan-y;
 }
 
-/* 5 */
+/* 4 */
 .uk-slider-items > :focus { outline: none; }
 
 

@@ -1,7 +1,7 @@
 {
-  "name": "Docs",
+  "name": "memoir",
   "version": "1.0.0",
-  "description": "Docs Jekyll theme.",
+  "description": "Blogging Jekyll theme.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -27,12 +27,12 @@
   "dependencies": {
     "simple-jekyll-search": "^1.7.2",
     "system-font-css": "^2.0.1",
-    "uikit": "^3.0.3"
+    "uikit": "^3.0.0-rc.25"
   },
   "devDependencies": {
-    "jshint": "^2.10.2",
+    "jshint": "^2.9.7",
     "ncp": "latest",
-    "uglify-js": "^3.4.10",
+    "uglify-js": "^3.4.9",
     "watch": "^1.0.2"
   }
 }
