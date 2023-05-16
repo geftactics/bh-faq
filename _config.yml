@@ -9,13 +9,13 @@ title:              BCIPY Documentation
 description:        BCIPY Articles and Documentation 
 
 # Site subpath, e.g. /blog
-baseurl:            ""
+baseurl:            "bh-faq/"
 
 # Permalink URLs structure, for permalink style options see: https://jekyllrb.com/docs/permalinks/
 permalink:          /:title/
 
 # Site base hostname & protocol, e.g. http://example.com
-url:                "https://bcipy.github.io/"
+url:                ""
 
 # Site logo, dark and light depending on page hero text setting dark/light
 logo_image:
