@@ -17,18 +17,7 @@ layout: default
                 <div class="share uk-hidden@m uk-text-center uk-margin-large-top">{% include share.html %}</div>
             </div>
 
-            <p class="uk-article-meta">
-              <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">
-                {% assign date_format = site.date_format | default: "%b %-d, %Y" %}
-                {{ page.date | date: date_format }}
-              </time>
-              {% if page.author %}
-                {% assign author = page.author %}
-              {% else %}
-                {% assign author = site.author.name %}
-              {% endif %}
-              by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">{{ author }}</span></span>
-            </p>
+            <hr>
 
             {% include related.html %}
 
