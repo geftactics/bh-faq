@@ -1,0 +1,1951 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Memory alignment | Ledger Developer pages</title>
+<meta name="generator" content="Jekyll v3.9.1" />
+<meta property="og:title" content="Memory alignment" />
+<meta name="author" content="pscott" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Sections in this article Introduction Alignment concept Alignment constraints for basic types and structures Alignment constraints for pointers External links Introduction The Secure Elements on top of which the BOLOS Operating System and the associated applications run imply a 32-bit alignment. This paragraph aims at explaining the C associated development constraints. Alignment concept The memory alignment is a concept which applies to memory and pointers: A memory address is ‘b-bits aligned’ when it is a multiple of b/8, b/8 being a power of 2, A memory address is said to be aligned when the data referenced by said address is b bits long, and said address is b-bits aligned, A pointer is ‘aligned’ when it points on aligned memory, A pointer is ‘unaligned’ when it points on unaligned memory. Alignment constraints for basic types and structures Implementing C source code with types and structures is not functionally impacted by the 32-bit alignment, except for potentially wasting a few bytes without even noticing. It might be important to be aware of this paragraph contents when it comes to writing memory-efficient structures, once the application is compiled and loaded onto a device. Within any application source code, the alignment of basic types will be considered as follows, at compilation time: char / unsigned char / int8_t / uint8_t : 8-bit aligned, short / unsigned short / int16_t / uint16_t: 16-bit aligned, int / unsigned int / int32_t / uint32_t: 32-bit aligned, any pointer: 32-bit aligned. Please note that 8-bit aligned means that there is actually no alignment constraint. The compiler will add padding in any structure which is not aligned by design, in order to respect: The alignment of each field associated to their respective length, The alignment of the whole structure, which shall have a total length, padding included, multiple of the largest field’s length. For instance the following structure is 8 bytes long before compilation: // Before compilation struct Example1 { char field_1; short field_2; int field_3; char field_4; }; However during compilation, the structure is modified to ensure the alignment, and will thus be 12 bytes long: // After compilation struct Example1 { char field_1; // Padding added for field_2 to start on a 16-bit aligned address char padding_1; short field_2; // With padding_1 being added, field_3 will start on a 32-bit aligned // address and no padding is required here. int field_3; char field_4; // The structure is aligned to the number of bits corresponding to the // largest field&#39;s alignment, in this case, due to field_3, 32-bits. // For the structure to be 32-bit aligned, it needs 3 more bytes of padding. char padding_2[3]; }; In this example, it is possible to reorganize the structure’s fields to avoid alignment-induced padding, but sometimes padding will not be avoidable. One can order the structure fields according to their length in decreasing order: // Before compilation struct Example1_reordered { int field_3; short field_2; char field_1; char field_4; }; // After compilation struct Example1_reordered { int field_3; // No need for padding since field_2 is already on a 16-bit aligned address. short field_2; // No need for padding for char types. char field_1; char field_4; // No need for padding since the structure is 8 bytes long and thus, its length // is already a multiple of its largest field&#39;s length. }; One can also order the structure fields to make sure the minimum amount of padding bytes will be added by the compilation phase: // Before compilation struct Example1_reordered_other_way { int field_3; char field_1; char field_4; short field_2; }; // After compilation struct Example1_reordered_other_way { int field_3; // No need for padding for char types. char field_1; char field_4; // No need for padding since field_2 is already on a 16-bit aligned address. short field_2; // No need for padding since the structure is 8 bytes long and thus, its length // is already a multiple of its largest field&#39;s length. }; Alignment constraints for pointers Using pointers within C source code might be functionally impacted by the 32-bit alignment in a specific case: when the pointer points on a memory area which type differs from the pointer, and is dereferenced. Dereferencing unaligned pointers within an application stalls the device. Usually, pointers are used to store the address of an element which type corresponds to the pointer one, and for simple example: uint16_t *pointer; uint16_t array[10]; // Pointer positioning is perfectly fine. pointer = &amp;array[3]; // Dereferencing this pointer is also perfectly fine, since the // pointed memory is aligned in accordance with the pointer type. *pointer = 0x0001; However, if we use a pointer with a specific type to store the address of a memory area declared with another type (usually with an alignment-related size less than the pointer one), it can lead to hardware faults and stall the device: uint16_t *pointer; uint8_t array[10]; // Case where it will work even if not advised. // Pointer positioning is fine. pointer = (uint16_t*)&amp;array[2]; // Dereferencing this pointer is also fine: the pointed memory is aligned // in accordance with the pointer type (because the offset 2 in the array variable // is a multiple of 16 bits). if (*pointer == 0x0001) { do_something(); } // Case where it will stall the device. // Pointer positioning is fine, but it is unaligned. pointer = (uint16_t*)&amp;array[3]; // Dereferencing this pointer will stall the device: the pointed memory is not aligned // in accordance with the pointer type (because the offset 3 in the array variable // is not a multiple of 16 bits). if (*pointer == 0x0001) { /* This dereferencing stalls the device. */ do_something(); } The same reasoning applies to pointing on structures: // Same example as within the previous paragraph, being ordered // makes it 8 bytes long. struct Example1_reordered { int field_3; short field_2; char field_1; char field_4; }; Example1_reordered *pointer; uint8_t array[32]; // Case where it will work even if not advised. // Pointer positioning is fine. pointer = (Example1_reordered*)&amp;array[8]; // Dereferencing this pointer is also fine: the pointed memory is aligned // in accordance with the pointer type (because the offset 8 in the array variable // is a multiple of the structure&#39;s size after compilation). if (pointer-&gt;field_2 == 0x0001) { do_something(); } // Case where it will stall the device. // Pointer positioning is fine, but it is unaligned. pointer = (Example1_reordered*)&amp;array[3]; // Dereferencing this pointer will stall the device: the pointed memory is not aligned // in accordance with the pointer type (because the offset 3 in the array variable // is not a multiple of the structure&#39;s size after compilation). if (pointer-&gt;field_2 == 0x0001) { /* This dereferencing stalls the device. */ do_something(); } Unaligned pointers can thus occur in cases where a pointer: declared as positioning on some data type (or structure) is used to point on a memory area actually containing another type of data, and is dereferenced. In order to produce C source code robust to alignment constraints, one need to avoid using pointers in such a way. External links https://en.wikipedia.org/wiki/Data_structure_alignment http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0497a/BABFAIGG.html http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.faqs/ka15414.html" />
+<meta property="og:description" content="Sections in this article Introduction Alignment concept Alignment constraints for basic types and structures Alignment constraints for pointers External links Introduction The Secure Elements on top of which the BOLOS Operating System and the associated applications run imply a 32-bit alignment. This paragraph aims at explaining the C associated development constraints. Alignment concept The memory alignment is a concept which applies to memory and pointers: A memory address is ‘b-bits aligned’ when it is a multiple of b/8, b/8 being a power of 2, A memory address is said to be aligned when the data referenced by said address is b bits long, and said address is b-bits aligned, A pointer is ‘aligned’ when it points on aligned memory, A pointer is ‘unaligned’ when it points on unaligned memory. Alignment constraints for basic types and structures Implementing C source code with types and structures is not functionally impacted by the 32-bit alignment, except for potentially wasting a few bytes without even noticing. It might be important to be aware of this paragraph contents when it comes to writing memory-efficient structures, once the application is compiled and loaded onto a device. Within any application source code, the alignment of basic types will be considered as follows, at compilation time: char / unsigned char / int8_t / uint8_t : 8-bit aligned, short / unsigned short / int16_t / uint16_t: 16-bit aligned, int / unsigned int / int32_t / uint32_t: 32-bit aligned, any pointer: 32-bit aligned. Please note that 8-bit aligned means that there is actually no alignment constraint. The compiler will add padding in any structure which is not aligned by design, in order to respect: The alignment of each field associated to their respective length, The alignment of the whole structure, which shall have a total length, padding included, multiple of the largest field’s length. For instance the following structure is 8 bytes long before compilation: // Before compilation struct Example1 { char field_1; short field_2; int field_3; char field_4; }; However during compilation, the structure is modified to ensure the alignment, and will thus be 12 bytes long: // After compilation struct Example1 { char field_1; // Padding added for field_2 to start on a 16-bit aligned address char padding_1; short field_2; // With padding_1 being added, field_3 will start on a 32-bit aligned // address and no padding is required here. int field_3; char field_4; // The structure is aligned to the number of bits corresponding to the // largest field&#39;s alignment, in this case, due to field_3, 32-bits. // For the structure to be 32-bit aligned, it needs 3 more bytes of padding. char padding_2[3]; }; In this example, it is possible to reorganize the structure’s fields to avoid alignment-induced padding, but sometimes padding will not be avoidable. One can order the structure fields according to their length in decreasing order: // Before compilation struct Example1_reordered { int field_3; short field_2; char field_1; char field_4; }; // After compilation struct Example1_reordered { int field_3; // No need for padding since field_2 is already on a 16-bit aligned address. short field_2; // No need for padding for char types. char field_1; char field_4; // No need for padding since the structure is 8 bytes long and thus, its length // is already a multiple of its largest field&#39;s length. }; One can also order the structure fields to make sure the minimum amount of padding bytes will be added by the compilation phase: // Before compilation struct Example1_reordered_other_way { int field_3; char field_1; char field_4; short field_2; }; // After compilation struct Example1_reordered_other_way { int field_3; // No need for padding for char types. char field_1; char field_4; // No need for padding since field_2 is already on a 16-bit aligned address. short field_2; // No need for padding since the structure is 8 bytes long and thus, its length // is already a multiple of its largest field&#39;s length. }; Alignment constraints for pointers Using pointers within C source code might be functionally impacted by the 32-bit alignment in a specific case: when the pointer points on a memory area which type differs from the pointer, and is dereferenced. Dereferencing unaligned pointers within an application stalls the device. Usually, pointers are used to store the address of an element which type corresponds to the pointer one, and for simple example: uint16_t *pointer; uint16_t array[10]; // Pointer positioning is perfectly fine. pointer = &amp;array[3]; // Dereferencing this pointer is also perfectly fine, since the // pointed memory is aligned in accordance with the pointer type. *pointer = 0x0001; However, if we use a pointer with a specific type to store the address of a memory area declared with another type (usually with an alignment-related size less than the pointer one), it can lead to hardware faults and stall the device: uint16_t *pointer; uint8_t array[10]; // Case where it will work even if not advised. // Pointer positioning is fine. pointer = (uint16_t*)&amp;array[2]; // Dereferencing this pointer is also fine: the pointed memory is aligned // in accordance with the pointer type (because the offset 2 in the array variable // is a multiple of 16 bits). if (*pointer == 0x0001) { do_something(); } // Case where it will stall the device. // Pointer positioning is fine, but it is unaligned. pointer = (uint16_t*)&amp;array[3]; // Dereferencing this pointer will stall the device: the pointed memory is not aligned // in accordance with the pointer type (because the offset 3 in the array variable // is not a multiple of 16 bits). if (*pointer == 0x0001) { /* This dereferencing stalls the device. */ do_something(); } The same reasoning applies to pointing on structures: // Same example as within the previous paragraph, being ordered // makes it 8 bytes long. struct Example1_reordered { int field_3; short field_2; char field_1; char field_4; }; Example1_reordered *pointer; uint8_t array[32]; // Case where it will work even if not advised. // Pointer positioning is fine. pointer = (Example1_reordered*)&amp;array[8]; // Dereferencing this pointer is also fine: the pointed memory is aligned // in accordance with the pointer type (because the offset 8 in the array variable // is a multiple of the structure&#39;s size after compilation). if (pointer-&gt;field_2 == 0x0001) { do_something(); } // Case where it will stall the device. // Pointer positioning is fine, but it is unaligned. pointer = (Example1_reordered*)&amp;array[3]; // Dereferencing this pointer will stall the device: the pointed memory is not aligned // in accordance with the pointer type (because the offset 3 in the array variable // is not a multiple of the structure&#39;s size after compilation). if (pointer-&gt;field_2 == 0x0001) { /* This dereferencing stalls the device. */ do_something(); } Unaligned pointers can thus occur in cases where a pointer: declared as positioning on some data type (or structure) is used to point on a memory area actually containing another type of data, and is dereferenced. In order to produce C source code robust to alignment constraints, one need to avoid using pointers in such a way. External links https://en.wikipedia.org/wiki/Data_structure_alignment http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0497a/BABFAIGG.html http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.faqs/ka15414.html" />
+<link rel="canonical" href="http://localhost:4000/docs/NA/u_alignment/" />
+<meta property="og:url" content="http://localhost:4000/docs/NA/u_alignment/" />
+<meta property="og:site_name" content="Ledger Developer pages" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-04-22T15:38:24+02:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Memory alignment" />
+<script type="application/ld+json">
+{"datePublished":"2021-04-22T15:38:24+02:00","description":"Sections in this article Introduction Alignment concept Alignment constraints for basic types and structures Alignment constraints for pointers External links Introduction The Secure Elements on top of which the BOLOS Operating System and the associated applications run imply a 32-bit alignment. This paragraph aims at explaining the C associated development constraints. Alignment concept The memory alignment is a concept which applies to memory and pointers: A memory address is ‘b-bits aligned’ when it is a multiple of b/8, b/8 being a power of 2, A memory address is said to be aligned when the data referenced by said address is b bits long, and said address is b-bits aligned, A pointer is ‘aligned’ when it points on aligned memory, A pointer is ‘unaligned’ when it points on unaligned memory. Alignment constraints for basic types and structures Implementing C source code with types and structures is not functionally impacted by the 32-bit alignment, except for potentially wasting a few bytes without even noticing. It might be important to be aware of this paragraph contents when it comes to writing memory-efficient structures, once the application is compiled and loaded onto a device. Within any application source code, the alignment of basic types will be considered as follows, at compilation time: char / unsigned char / int8_t / uint8_t : 8-bit aligned, short / unsigned short / int16_t / uint16_t: 16-bit aligned, int / unsigned int / int32_t / uint32_t: 32-bit aligned, any pointer: 32-bit aligned. Please note that 8-bit aligned means that there is actually no alignment constraint. The compiler will add padding in any structure which is not aligned by design, in order to respect: The alignment of each field associated to their respective length, The alignment of the whole structure, which shall have a total length, padding included, multiple of the largest field’s length. For instance the following structure is 8 bytes long before compilation: // Before compilation struct Example1 { char field_1; short field_2; int field_3; char field_4; }; However during compilation, the structure is modified to ensure the alignment, and will thus be 12 bytes long: // After compilation struct Example1 { char field_1; // Padding added for field_2 to start on a 16-bit aligned address char padding_1; short field_2; // With padding_1 being added, field_3 will start on a 32-bit aligned // address and no padding is required here. int field_3; char field_4; // The structure is aligned to the number of bits corresponding to the // largest field&#39;s alignment, in this case, due to field_3, 32-bits. // For the structure to be 32-bit aligned, it needs 3 more bytes of padding. char padding_2[3]; }; In this example, it is possible to reorganize the structure’s fields to avoid alignment-induced padding, but sometimes padding will not be avoidable. One can order the structure fields according to their length in decreasing order: // Before compilation struct Example1_reordered { int field_3; short field_2; char field_1; char field_4; }; // After compilation struct Example1_reordered { int field_3; // No need for padding since field_2 is already on a 16-bit aligned address. short field_2; // No need for padding for char types. char field_1; char field_4; // No need for padding since the structure is 8 bytes long and thus, its length // is already a multiple of its largest field&#39;s length. }; One can also order the structure fields to make sure the minimum amount of padding bytes will be added by the compilation phase: // Before compilation struct Example1_reordered_other_way { int field_3; char field_1; char field_4; short field_2; }; // After compilation struct Example1_reordered_other_way { int field_3; // No need for padding for char types. char field_1; char field_4; // No need for padding since field_2 is already on a 16-bit aligned address. short field_2; // No need for padding since the structure is 8 bytes long and thus, its length // is already a multiple of its largest field&#39;s length. }; Alignment constraints for pointers Using pointers within C source code might be functionally impacted by the 32-bit alignment in a specific case: when the pointer points on a memory area which type differs from the pointer, and is dereferenced. Dereferencing unaligned pointers within an application stalls the device. Usually, pointers are used to store the address of an element which type corresponds to the pointer one, and for simple example: uint16_t *pointer; uint16_t array[10]; // Pointer positioning is perfectly fine. pointer = &amp;array[3]; // Dereferencing this pointer is also perfectly fine, since the // pointed memory is aligned in accordance with the pointer type. *pointer = 0x0001; However, if we use a pointer with a specific type to store the address of a memory area declared with another type (usually with an alignment-related size less than the pointer one), it can lead to hardware faults and stall the device: uint16_t *pointer; uint8_t array[10]; // Case where it will work even if not advised. // Pointer positioning is fine. pointer = (uint16_t*)&amp;array[2]; // Dereferencing this pointer is also fine: the pointed memory is aligned // in accordance with the pointer type (because the offset 2 in the array variable // is a multiple of 16 bits). if (*pointer == 0x0001) { do_something(); } // Case where it will stall the device. // Pointer positioning is fine, but it is unaligned. pointer = (uint16_t*)&amp;array[3]; // Dereferencing this pointer will stall the device: the pointed memory is not aligned // in accordance with the pointer type (because the offset 3 in the array variable // is not a multiple of 16 bits). if (*pointer == 0x0001) { /* This dereferencing stalls the device. */ do_something(); } The same reasoning applies to pointing on structures: // Same example as within the previous paragraph, being ordered // makes it 8 bytes long. struct Example1_reordered { int field_3; short field_2; char field_1; char field_4; }; Example1_reordered *pointer; uint8_t array[32]; // Case where it will work even if not advised. // Pointer positioning is fine. pointer = (Example1_reordered*)&amp;array[8]; // Dereferencing this pointer is also fine: the pointed memory is aligned // in accordance with the pointer type (because the offset 8 in the array variable // is a multiple of the structure&#39;s size after compilation). if (pointer-&gt;field_2 == 0x0001) { do_something(); } // Case where it will stall the device. // Pointer positioning is fine, but it is unaligned. pointer = (Example1_reordered*)&amp;array[3]; // Dereferencing this pointer will stall the device: the pointed memory is not aligned // in accordance with the pointer type (because the offset 3 in the array variable // is not a multiple of the structure&#39;s size after compilation). if (pointer-&gt;field_2 == 0x0001) { /* This dereferencing stalls the device. */ do_something(); } Unaligned pointers can thus occur in cases where a pointer: declared as positioning on some data type (or structure) is used to point on a memory area actually containing another type of data, and is dereferenced. In order to produce C source code robust to alignment constraints, one need to avoid using pointers in such a way. External links https://en.wikipedia.org/wiki/Data_structure_alignment http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0497a/BABFAIGG.html http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.faqs/ka15414.html","dateModified":"2021-04-22T15:38:24+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/docs/NA/u_alignment/"},"url":"http://localhost:4000/docs/NA/u_alignment/","author":{"@type":"Person","name":"pscott"},"@type":"BlogPosting","headline":"Memory alignment","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+  <meta property="og:image" content="http://localhost:4000/uploads/"/>
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="shortcut icon" type="image/png" href="/uploads/favicon.png" >
+  <link rel="alternate" type="application/rss+xml" title="Ledger Developer pages" href="/feed.xml">
+  <script src="/assets/js/main.js"></script>
+  
+    <script>
+function searchResults(form) {
+
+    var currentItem = null;
+    var search = document.getElementById(form);
+    var results = document.getElementById(form + "-results");
+    var toggle = document.getElementById(form + "-toggle");
+
+    function removeActive() {
+        for (i = 0; i < results.children.length; i++) {
+            results.children[i].classList.remove("uk-background-muted");
+        }
+    }
+
+    // Detect all clicks on the document
+    document.addEventListener("click", function(event) {
+
+        var isClickSearch = false;
+        var isClickResults = false;
+        var isClickSearchToggle = false;
+
+        if (search !== null) {
+            isClickSearch = search.contains(event.target);
+        }
+
+        if (results !== null) {
+            isClickResults = results.contains(event.target);
+        }
+
+        if (toggle !== null) {
+            isClickSearchToggle = toggle.contains(event.target);
+        }
+
+        if (isClickSearch || isClickSearchToggle) {
+            results.style.display = "block";
+        }        
+
+        if (!isClickResults && !isClickSearch && !isClickSearchToggle) {
+            results.style.display = "none";
+        }        
+        
+    });    
+
+    results.addEventListener("mouseover", function(event) {
+
+        removeActive();
+        event.target.parentElement.classList.add("uk-background-muted");
+        currentItem = null;
+
+    });
+
+    results.addEventListener("mouseout", function(event) {
+        event.target.parentElement.classList.remove("uk-background-muted");
+    });
+
+
+    search.addEventListener("keyup", function(event) {
+
+        var resultItems = results.children;
+        var resultCount = results.children.length;
+                                
+        if (event.keyCode === 40) {
+
+            if (currentItem < (resultCount - 1)) {
+                if (currentItem === null) {
+                    currentItem = 0;
+                } else {
+                    removeActive();
+                    currentItem++;
+                }
+                removeActive();
+                resultItems[currentItem].classList.add("uk-background-muted");
+            }
+            
+        } else if (event.keyCode === 38) {
+
+            if (currentItem > 0) {
+                if (currentItem === null) {
+                    currentItem = 0;
+                } else {
+                    removeActive();
+                    currentItem--;
+                }
+                removeActive();
+                resultItems[currentItem].classList.add("uk-background-muted");
+            }
+
+        } else if (event.keyCode === 13) {
+
+            resultItems[currentItem].children[0].click();
+
+        }
+
+    });
+
+}
+</script>
+  
+  
+  
+<script src="http://127.0.0.1:35729/livereload.js"></script></head>
+
+    <body>
+
+    
+        <div data-uk-sticky="animation: uk-animation-slide-top; sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; cls-inactive: uk-navbar-transparent; top: 200">
+    <nav class="uk-navbar-container">
+        <div class="uk-container">
+            <div data-uk-navbar>
+                <div class="uk-navbar-left">
+                    <a class="uk-navbar-item uk-logo uk-visible@m" href="/">Ledger Developer pages</a>
+                    
+                        <a class="uk-navbar-toggle uk-hidden@m" href="#offcanvas-docs" data-uk-toggle><span data-uk-navbar-toggle-icon></span> <span class="uk-margin-small-left">Docs</span></a>
+                    
+
+                    <ul class="uk-navbar-nav uk-visible@m">
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Creating content</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Tools & Frameworks</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Release notes</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Tutorials</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="#">_Old</a>
+                                        
+                                            <div class="uk-navbar-dropdown">
+                                                <ul class="uk-nav uk-navbar-dropdown-nav">
+                                                    
+                                                    
+                                                        
+                                                        
+                                                        <li><a href="/docs/TMPL/installation/">Template docs</a></li>
+                                                    
+                                                    
+                                                    
+                                                        
+                                                        
+                                                        <li><a href="/blog/">Blog</a></li>
+                                                    
+                                                    
+                                                    
+                                                        <li class="uk-nav-header">Changelogs</li>
+                                                    
+                                                    
+                                                </ul>
+                                            </div>
+                                        
+                                        </li>
+                                                                                                        
+                                
+                            
+                        
+                    </ul>
+                </div>
+                <div class="uk-navbar-center uk-hidden@m">
+                    <a class="uk-navbar-item uk-logo" href="/">Ledger Developer pages</a>
+                </div>
+                <div class="uk-navbar-right">
+                    
+                        
+                            <div>
+                                <a id="search-navbar-toggle" class="uk-navbar-toggle" uk-search-icon href="#"></a>
+                                <div class="uk-drop uk-background-default uk-border-rounded" uk-drop="mode: click; pos: left-center; offset: 0">
+                                    <form class="uk-search uk-search-navbar uk-width-1-1" onsubmit="return false;">
+                                        <input id="search-navbar" class="uk-search-input" type="search" placeholder="Search for answers" autofocus autocomplete="off">
+                                    </form>
+                                    <ul id="search-navbar-results" class="uk-position-absolute uk-width-1-1 uk-list"></ul>
+                                </div>
+                            </div>
+                            <script>
+                            SimpleJekyllSearch({
+                                searchInput: document.getElementById('search-navbar'),
+                                resultsContainer: document.getElementById('search-navbar-results'),
+                                noResultsText: '<li class="no-results">No results found</li>',
+                                searchResultTemplate: '<li><a href="{url}">{title}</a></li>',
+                                json: "/search.json"
+                            });
+                            searchResults("search-navbar");
+                            </script>
+                        
+                    
+
+                    <ul class="uk-navbar-nav uk-visible@m">
+                        
+                    </ul>
+
+                    
+                        <a class="uk-navbar-toggle uk-hidden@m" href="#offcanvas" data-uk-toggle><span data-uk-navbar-toggle-icon></span> <span class="uk-margin-small-left">Menu</span></a>
+                    
+
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
+    
+
+    <div class="uk-section">
+    <div class="uk-container">
+        <div class="uk-grid-large" data-uk-grid>
+
+            <div class="sidebar-fixed-width uk-visible@m">
+                <div class="sidebar-docs uk-position-fixed uk-margin-top">
+                    
+                    <h5>Background Information</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/bg_introduction/">Introduction</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/bg_personal_security_devices/">Personal Security Devices</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/bg_master_seed/">The Master Seed</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/bg_hd_keys/">HD Key Generation</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/bg_hd_use_cases/">Applications for HD Trees</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/bg_application_isolation/">Application Isolation</a></li>
+                    
+                    </ul>
+                    
+                    <h5>BOLOS Platform</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/b_introduction/">Introduction</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/b_overview/">Overview</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/b_features/">BOLOS Features</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/b_hardware_architecture/">Hardware Architecture</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/b_application_environment/">Application Environment</a></li>
+                    
+                    </ul>
+                    
+                    <h5>Userspace Development</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_introduction/">Introduction</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_setup/">Setting it up</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_writing_apps/">Writing Apps</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_display_management/">Display Management</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_advanced_display_management/">Advanced display management</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_low_level_display_management/">Low-level display management</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_syscalls/">Interaction Between BOLOS and Apps</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_application_structure/">Application Structure and I/O</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_memory/">Persistent Storage and PIC</a></li>
+                    
+                      
+                      
+                      <li class="uk-active"><a href="/docs/NA/u_alignment/">Memory alignment</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_troubleshooting/">Common Pitfalls and Troubleshooting</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_debugging/">Application Debug</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_speculos/">Emulating devices with Speculos</a></li>
+                    
+                    </ul>
+                    
+                    <h5>Additional Resources</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/a_publishing_an_app/">Publishing an Application</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/a_external_docs/">External Documentation</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/a_security_guidelines/">Developing Secure Ledger Apps</a></li>
+                    
+                    </ul>
+                    
+                </div>
+            </div>
+
+            <div class="uk-width-1-1 uk-width-expand@m">
+
+                <article class="uk-article">
+
+                    <h1 class="uk-article-title">Memory alignment</h1>
+
+                    <p class="uk-text-lead uk-text-muted">Get padded if you're not aligned</p>
+
+                    <div class="uk-article-meta uk-margin-top uk-margin-medium-bottom uk-flex uk-flex-middle">
+                        
+
+
+  
+  <img class="uk-border-circle avatar" src="http://localhost:4000/uploads/avatar-pscott.jpg" alt="pscott">
+
+
+<div>
+  
+    Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">pscott</span></span><br>
+  
+  <time datetime="" itemprop="datePublished">
+    
+    
+  </time>
+</div>
+                    </div>
+
+                    <div class="article-content link-primary">
+                        <h4 class="no_toc" id="sections-in-this-article">Sections in this article</h4>
+<ul id="markdown-toc">
+  <li><a href="#introduction" id="markdown-toc-introduction">Introduction</a>    <ul>
+      <li><a href="#alignment-concept" id="markdown-toc-alignment-concept">Alignment concept</a></li>
+      <li><a href="#alignment-constraints-for-basic-types-and-structures" id="markdown-toc-alignment-constraints-for-basic-types-and-structures">Alignment constraints for basic types and structures</a></li>
+      <li><a href="#alignment-constraints-for-pointers" id="markdown-toc-alignment-constraints-for-pointers">Alignment constraints for pointers</a></li>
+      <li><a href="#external-links" id="markdown-toc-external-links">External links</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>The Secure Elements on top of which the BOLOS Operating System and the
+associated applications run imply a 32-bit alignment. This paragraph
+aims at explaining the C associated development constraints.</p>
+
+<h3 id="alignment-concept">Alignment concept</h3>
+
+<p>The memory alignment is a concept which applies to memory and pointers:</p>
+
+<blockquote>
+  <ul>
+    <li>A memory address is ‘b-bits aligned’ when it is a multiple of b/8,
+b/8 being a power of 2,</li>
+    <li>A memory address is said to be aligned when the data referenced by
+said address is b bits long, and said address is b-bits aligned,</li>
+    <li>A pointer is ‘aligned’ when it points on aligned memory,</li>
+    <li>A pointer is ‘unaligned’ when it points on unaligned memory.</li>
+  </ul>
+</blockquote>
+
+<h3 id="alignment-constraints-for-basic-types-and-structures">Alignment constraints for basic types and structures</h3>
+
+<p>Implementing C source code with types and structures is not functionally
+impacted by the 32-bit alignment, except for potentially wasting a few
+bytes without even noticing.</p>
+
+<p>It might be important to be aware of this paragraph contents when it
+comes to writing memory-efficient structures, once the application is
+compiled and loaded onto a device.</p>
+
+<p>Within any application source code, the alignment of basic types will be
+considered as follows, at compilation time:</p>
+
+<blockquote>
+  <ul>
+    <li><code class="language-plaintext highlighter-rouge">char</code> / <code class="language-plaintext highlighter-rouge">unsigned char</code> / <code class="language-plaintext highlighter-rouge">int8_t</code> / <code class="language-plaintext highlighter-rouge">uint8_t</code> : 8-bit aligned,</li>
+    <li><code class="language-plaintext highlighter-rouge">short</code> / <code class="language-plaintext highlighter-rouge">unsigned short</code> / <code class="language-plaintext highlighter-rouge">int16_t</code> / <code class="language-plaintext highlighter-rouge">uint16_t</code>: 16-bit
+aligned,</li>
+    <li><code class="language-plaintext highlighter-rouge">int</code> / <code class="language-plaintext highlighter-rouge">unsigned int</code> / <code class="language-plaintext highlighter-rouge">int32_t</code> / <code class="language-plaintext highlighter-rouge">uint32_t</code>: 32-bit aligned,</li>
+    <li>any pointer: 32-bit aligned.</li>
+  </ul>
+</blockquote>
+
+<p>Please note that 8-bit aligned means that there is actually no alignment
+constraint.</p>
+
+<p>The compiler will add padding in any structure which is not aligned by
+design, in order to respect:</p>
+
+<blockquote>
+  <ul>
+    <li>The alignment of each field associated to their respective length,</li>
+    <li>The alignment of the whole structure, which shall have a total
+length, padding included, multiple of the largest field’s length.</li>
+  </ul>
+</blockquote>
+
+<p>For instance the following structure is 8 bytes long before compilation:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Before compilation</span>
+<span class="k">struct</span> <span class="n">Example1</span>
+<span class="p">{</span>
+    <span class="kt">char</span>    <span class="n">field_1</span><span class="p">;</span>
+    <span class="kt">short</span>   <span class="n">field_2</span><span class="p">;</span>
+    <span class="kt">int</span>     <span class="n">field_3</span><span class="p">;</span>
+    <span class="kt">char</span>    <span class="n">field_4</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>However during compilation, the structure is modified to ensure the
+alignment, and will thus be 12 bytes long:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// After compilation</span>
+<span class="k">struct</span> <span class="n">Example1</span>
+<span class="p">{</span>
+    <span class="kt">char</span>    <span class="n">field_1</span><span class="p">;</span>
+    <span class="c1">// Padding added for field_2 to start on a 16-bit aligned address</span>
+    <span class="kt">char</span>    <span class="n">padding_1</span><span class="p">;</span>
+    <span class="kt">short</span>   <span class="n">field_2</span><span class="p">;</span>
+    <span class="c1">// With padding_1 being added, field_3 will start on a 32-bit aligned</span>
+    <span class="c1">// address and no padding is required here.</span>
+    <span class="kt">int</span>     <span class="n">field_3</span><span class="p">;</span>
+    <span class="kt">char</span>    <span class="n">field_4</span><span class="p">;</span>
+    <span class="c1">// The structure is aligned to the number of bits corresponding to the</span>
+    <span class="c1">// largest field's alignment, in this case, due to field_3, 32-bits.</span>
+    <span class="c1">// For the structure to be 32-bit aligned, it needs 3 more bytes of padding.</span>
+    <span class="kt">char</span>    <span class="n">padding_2</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>In this example, it is possible to reorganize the structure’s fields to
+avoid alignment-induced padding, but sometimes padding will not be
+avoidable.</p>
+
+<p>One can order the structure fields according to their length in
+decreasing order:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Before compilation</span>
+<span class="k">struct</span> <span class="n">Example1_reordered</span>
+<span class="p">{</span>
+    <span class="kt">int</span>     <span class="n">field_3</span><span class="p">;</span>
+    <span class="kt">short</span>   <span class="n">field_2</span><span class="p">;</span>
+    <span class="kt">char</span>    <span class="n">field_1</span><span class="p">;</span>
+    <span class="kt">char</span>    <span class="n">field_4</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// After compilation</span>
+<span class="k">struct</span> <span class="n">Example1_reordered</span>
+<span class="p">{</span>
+    <span class="kt">int</span>     <span class="n">field_3</span><span class="p">;</span>
+    <span class="c1">// No need for padding since field_2 is already on a 16-bit aligned address.</span>
+    <span class="kt">short</span>   <span class="n">field_2</span><span class="p">;</span>
+    <span class="c1">// No need for padding for char types.</span>
+    <span class="kt">char</span>    <span class="n">field_1</span><span class="p">;</span>
+    <span class="kt">char</span>    <span class="n">field_4</span><span class="p">;</span>
+    <span class="c1">// No need for padding since the structure is 8 bytes long and thus, its length</span>
+    <span class="c1">// is already a multiple of its largest field's length.</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>One can also order the structure fields to make sure the minimum amount
+of padding bytes will be added by the compilation phase:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Before compilation</span>
+<span class="k">struct</span> <span class="n">Example1_reordered_other_way</span>
+<span class="p">{</span>
+    <span class="kt">int</span>     <span class="n">field_3</span><span class="p">;</span>
+    <span class="kt">char</span>    <span class="n">field_1</span><span class="p">;</span>
+    <span class="kt">char</span>    <span class="n">field_4</span><span class="p">;</span>
+    <span class="kt">short</span>   <span class="n">field_2</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// After compilation</span>
+<span class="k">struct</span> <span class="n">Example1_reordered_other_way</span>
+<span class="p">{</span>
+    <span class="kt">int</span>     <span class="n">field_3</span><span class="p">;</span>
+    <span class="c1">// No need for padding for char types.</span>
+    <span class="kt">char</span>    <span class="n">field_1</span><span class="p">;</span>
+    <span class="kt">char</span>    <span class="n">field_4</span><span class="p">;</span>
+    <span class="c1">// No need for padding since field_2 is already on a 16-bit aligned address.</span>
+    <span class="kt">short</span>   <span class="n">field_2</span><span class="p">;</span>
+    <span class="c1">// No need for padding since the structure is 8 bytes long and thus, its length</span>
+    <span class="c1">// is already a multiple of its largest field's length.</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<h3 id="alignment-constraints-for-pointers">Alignment constraints for pointers</h3>
+
+<p>Using pointers within C source code might be functionally impacted by
+the 32-bit alignment in a specific case: when the pointer points on a
+memory area which type differs from the pointer, and is dereferenced.</p>
+
+<p>Dereferencing unaligned pointers within an application stalls the
+device.</p>
+
+<p>Usually, pointers are used to store the address of an element which type
+corresponds to the pointer one, and for simple example:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">uint16_t</span> <span class="o">*</span><span class="n">pointer</span><span class="p">;</span>
+<span class="kt">uint16_t</span> <span class="n">array</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+
+<span class="c1">// Pointer positioning is perfectly fine.</span>
+<span class="n">pointer</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">array</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+
+<span class="c1">// Dereferencing this pointer is also perfectly fine, since the</span>
+<span class="c1">// pointed memory is aligned in accordance with the pointer type.</span>
+<span class="o">*</span><span class="n">pointer</span> <span class="o">=</span> <span class="mh">0x0001</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>However, if we use a pointer with a specific type to store the address
+of a memory area declared with another type (usually with an
+alignment-related size less than the pointer one), it can lead to
+hardware faults and stall the device:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">uint16_t</span> <span class="o">*</span><span class="n">pointer</span><span class="p">;</span>
+<span class="kt">uint8_t</span> <span class="n">array</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+
+<span class="c1">// Case where it will work even if not advised.</span>
+
+<span class="c1">// Pointer positioning is fine.</span>
+<span class="n">pointer</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint16_t</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">array</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+
+<span class="c1">// Dereferencing this pointer is also fine: the pointed memory is aligned</span>
+<span class="c1">// in accordance with the pointer type (because the offset 2 in the array variable</span>
+<span class="c1">// is a multiple of 16 bits).</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">pointer</span> <span class="o">==</span> <span class="mh">0x0001</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">do_something</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="c1">// Case where it will stall the device.</span>
+
+<span class="c1">// Pointer positioning is fine, but it is unaligned.</span>
+<span class="n">pointer</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint16_t</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">array</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+
+<span class="c1">// Dereferencing this pointer will stall the device: the pointed memory is not aligned</span>
+<span class="c1">// in accordance with the pointer type (because the offset 3 in the array variable</span>
+<span class="c1">// is not a multiple of 16 bits).</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">*</span><span class="n">pointer</span> <span class="o">==</span> <span class="mh">0x0001</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* This dereferencing stalls the device. */</span>
+    <span class="n">do_something</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The same reasoning applies to pointing on structures:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// Same example as within the previous paragraph, being ordered</span>
+<span class="c1">// makes it 8 bytes long.</span>
+<span class="k">struct</span> <span class="n">Example1_reordered</span>
+<span class="p">{</span>
+    <span class="kt">int</span>     <span class="n">field_3</span><span class="p">;</span>
+    <span class="kt">short</span>   <span class="n">field_2</span><span class="p">;</span>
+    <span class="kt">char</span>    <span class="n">field_1</span><span class="p">;</span>
+    <span class="kt">char</span>    <span class="n">field_4</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="n">Example1_reordered</span> <span class="o">*</span><span class="n">pointer</span><span class="p">;</span>
+<span class="kt">uint8_t</span> <span class="n">array</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+
+<span class="c1">// Case where it will work even if not advised.</span>
+
+<span class="c1">// Pointer positioning is fine.</span>
+<span class="n">pointer</span> <span class="o">=</span> <span class="p">(</span><span class="n">Example1_reordered</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">array</span><span class="p">[</span><span class="mi">8</span><span class="p">];</span>
+
+<span class="c1">// Dereferencing this pointer is also fine: the pointed memory is aligned</span>
+<span class="c1">// in accordance with the pointer type (because the offset 8 in the array variable</span>
+<span class="c1">// is a multiple of the structure's size after compilation).</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">pointer</span><span class="o">-&gt;</span><span class="n">field_2</span> <span class="o">==</span> <span class="mh">0x0001</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">do_something</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="c1">// Case where it will stall the device.</span>
+
+<span class="c1">// Pointer positioning is fine, but it is unaligned.</span>
+<span class="n">pointer</span> <span class="o">=</span> <span class="p">(</span><span class="n">Example1_reordered</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">array</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+
+<span class="c1">// Dereferencing this pointer will stall the device: the pointed memory is not aligned</span>
+<span class="c1">// in accordance with the pointer type (because the offset 3 in the array variable</span>
+<span class="c1">// is not a multiple of the structure's size after compilation).</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">pointer</span><span class="o">-&gt;</span><span class="n">field_2</span> <span class="o">==</span> <span class="mh">0x0001</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* This dereferencing stalls the device. */</span>
+    <span class="n">do_something</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Unaligned pointers can thus occur in cases where a pointer:</p>
+
+<blockquote>
+  <ul>
+    <li>declared as positioning on some data type (or structure)</li>
+    <li>is used to point on a memory area actually containing another type
+of data,</li>
+    <li>and is dereferenced.</li>
+  </ul>
+</blockquote>
+
+<p>In order to produce C source code robust to alignment constraints, one
+need to avoid using pointers in such a way.</p>
+
+<h3 id="external-links">External links</h3>
+
+<blockquote>
+  <ul>
+    <li><a href="https://en.wikipedia.org/wiki/Data_structure_alignment">https://en.wikipedia.org/wiki/Data_structure_alignment</a></li>
+    <li><a href="http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0497a/BABFAIGG.html">http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0497a/BABFAIGG.html</a></li>
+    <li><a href="http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.faqs/ka15414.html">http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.faqs/ka15414.html</a></li>
+  </ul>
+</blockquote>
+
+
+                        
+                            <!-- FC
+                            <div class="share uk-text-center uk-margin-medium-top">
+    
+        <a class="uk-link-muted" href="https://twitter.com/intent/tweet?text=Memory alignment&url=http://localhost:4000/docs/NA/u_alignment/&via=&related=" rel="nofollow" target="_blank" title="Share on Twitter" onclick="window.open(this.href, 'twitter', 'width=550,height=235');return false;"><span data-uk-icon="icon: twitter; ratio: 1.2"></span></a>
+    
+    
+        <a class="uk-link-muted uk-margin-small-left" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2Fdocs%2FNA%2Fu_alignment%2F" rel="nofollow" target="_blank" title="Share on Facebook" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;"><span data-uk-icon="icon: facebook; ratio: 1.2"></span></a>
+    
+</div>
+                            -->
+                        
+                    </div>
+
+                    
+
+                    <hr class="uk-margin-medium">
+
+                    
+
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+
+
+                    <div class="uk-margin-large-top">
+    <h3>Related Docs</h3>
+
+    
+    
+    
+
+    <ul class="uk-list link-secondary">
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+    </ul>
+</div>
+
+
+                    
+                </article>
+
+                <script>
+                    // Table of contents scroll to
+                    UIkit.scroll('#markdown-toc a', {
+                        duration: 400,
+                        offset: 120
+                    });
+                </script>
+
+            </div>
+
+    </div>
+</div>
+
+
+    <div id="offcanvas-docs" data-uk-offcanvas="overlay: true">
+    <div class="uk-offcanvas-bar">
+
+        <button class="uk-offcanvas-close" type="button" data-uk-close></button>
+
+        
+        <h5 class="uk-margin-top">Getting Started</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/installation/">Theme installation</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/setup/">Basic theme setup</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/navigation/">Navigation bar</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/footer/">Footer options</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/posts/">Creating your first post in Jekyll</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/docs/">Creating docs posts</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/comments/">Enabling comments (via Disqus)</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/analytics/">Google Analytics</a></li>
+        
+        </ul>
+        
+        <h5 class="uk-margin-top">Theme Features</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/hero/">Hero page header</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/boxes/">Category boxes section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/featured/">Fearured docs section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/videos/">Video lightbox boxes section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/faq/">Frequently asked questions section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/team/">Team members section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/cta/">Call to action section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/changelog/">Creating a changelog</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/contact/">Contact form (via FormSpree)</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/media/">Adding media to post and doc content</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/toc/">Adding table of contents to docs</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/alerts/">Adding alerts to content</a></li>
+        
+        </ul>
+        
+        <h5 class="uk-margin-top">Customization</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/translation/">Translation</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/customize/">Customization</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/development/">Development</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/sources/">Sources and credits</a></li>
+        
+        </ul>
+        
+        <h5 class="uk-margin-top">Help</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/support/">Contacting support</a></li>
+        
+        </ul>
+        
+
+    </div>
+</div>
+
+
+    <div id="offcanvas" data-uk-offcanvas="flip: true; overlay: true">
+    <div class="uk-offcanvas-bar">
+
+        <a class="uk-logo uk-margin-small-bottom" href="/">Ledger Developer pages</a>
+     
+        <button class="uk-offcanvas-close" type="button" data-uk-close></button>
+      
+        <ul class="uk-nav uk-nav-primary uk-margin-top">
+            
+                
+
+                
+
+                
+                    <li><a href="/" >Home</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><a href="/docs/TMPL/installation" >Docs</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><a href="/blog/" >Blog</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><a href="/changelog-timeline/" >Changelog</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><div class="uk-navbar-item"><a class="uk-button uk-button-success" href="/contact/" >Contact</a></div></li>
+                
+            
+        </ul>
+
+        <div class="uk-margin-top uk-text-center">
+            <div data-uk-grid class="uk-child-width-auto uk-grid-small uk-flex-center uk-grid">
+                
+<div class="uk-first-column">
+    <a href="https://twitter.com/" data-uk-icon="icon: twitter" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+<div>
+    <a href="https://www.facebook.com/" data-uk-icon="icon: facebook" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+<div>
+    <a href="https://www.instagram.com/" data-uk-icon="icon: instagram" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+<div>
+    <a href="https://vimeo.com/" data-uk-icon="icon: vimeo" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+    
+        <footer class="uk-section uk-text-center uk-text-muted">
+    <div class="uk-container uk-container-small">
+
+        <div>
+            <ul class="uk-subnav uk-flex-center">
+                
+                    
+                    
+                    
+                        <li><a href="/" >Home</a></li>
+                    
+                
+                    
+                    
+                    
+                        <li><a href="/blog/" >Blog</a></li>
+                    
+                
+                    
+                    
+                    
+                        <li><a href="/contact/" >Contact</a></li>
+                    
+                
+            </ul>
+        </div>
+        <div class="uk-margin-medium">
+            <div data-uk-grid class="uk-child-width-auto uk-grid-small uk-flex-center uk-grid">
+                
+                
+<div class="uk-first-column">
+    <a href="https://twitter.com/" data-uk-icon="icon: twitter" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+<div>
+    <a href="https://www.facebook.com/" data-uk-icon="icon: facebook" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+<div>
+    <a href="https://www.instagram.com/" data-uk-icon="icon: instagram" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+<div>
+    <a href="https://vimeo.com/" data-uk-icon="icon: vimeo" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+
+                
+            </div>
+        </div>
+        <div class="uk-margin-medium uk-text-small copyright link-secondary">Made by <a href="https://ledger.com/">Ledger</a> France</div>
+
+    </div>
+</footer>
+
+    
+
+    
+
+    
+
+    </body>
+
+</html>

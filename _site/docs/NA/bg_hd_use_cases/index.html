@@ -1,0 +1,1816 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Applications for HD Trees | Ledger Developer pages</title>
+<meta name="generator" content="Jekyll v3.9.1" />
+<meta property="og:title" content="Applications for HD Trees" />
+<meta name="author" content="pscott" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Sections in this article Introduction Coin Types How does my wallet know which addresses I’ve used? Summary Going Beyond Cryptocurrencies Introduction In the previous section, hd_keys, we described how an infinite number of cryptographic secrets can be generated from a single master seed. In this section, we’ll talk about how Ledger applies this concept to develop applications for our personal security devices &lt;personal_security_devices&gt; that are lightweight and easily recoverable. Coin Types So how are HD trees useful? Simple: developers of different cryptocurrencies got together and reserved a space on the tree. Developers for these cryptocurrencies each specified which “location” on the tree they wanted users to store their private keys (called the coin’s “path”). This path is public information, because nobody can determine the actual value of your keys without knowing your master node (your mnemonic seed). The paths that correspond to various cryptocurrencies, and the paths used to derive cryptocurrency addresses and private keys, are defined by BIP 44 (which in turn defers coin type registration to SLIP 44). For each cryptocurrency, there is a node on the tree where all of the keys for that coin begin (from this point on, we’ll call this the “coin type root node”, for lack of a better term). Since this is a hierarchical deterministic tree, we can apply the same rules to that coin type root node as we applied to the master node. Just as an infinite tree of keys descended from the master node, there is also an infinite tree of keys descending from the coin type root node. This means that if you have a 24-word mnemonic seed, even if you don’t use Bitcoin, you have a virtually infinite[1] number of Bitcoin addresses. You have a virtually infinite number of Ethereum addresses, too. Warning In the Ledger Ethereum Wallet desktop app, addresses are not derived according to BIP 44. Instead of using the derivation path `m / 44&#39; / 60&#39; / account&#39; / change / address_index` (as defined by BIP 44 for Ethereum), the Ledger Ethereum Wallet desktop app uses the derivation path `m / 44&#39; / 60&#39; / 0&#39; / address_index`. How does my wallet know which addresses I’ve used? In most BIP 44-compliant HD wallet programs (including the Ledger Bitcoin Wallet desktop app) your addresses are split into “accounts”. You can split your coins across multiple accounts in the same way you might with multiple bank accounts. You can have an account for savings, an account for donations, an account for common expenses, et cetera. Within each of these accounts, there are two virtually infinite “chains” of addresses: an external chain and an internal chain (commonly called the “change address” chain). Each of the addresses in these chains are given numbers (called the “address index”) starting at 0. When your wallet software starts up for the first time, it searches the blockchain for transactions involving address number 0 for each address chain. If it finds any transactions, then the address is displayed by the wallet software and the wallet searches for transactions involving address number 1. This process continues until the wallet finds an address that you haven’t used yet. It displays this address to you, then stops searching for more addresses in the chain, making the assumption that no more of them have been used yet.[2] In this way, all of the important information about your transaction history is stored in the blockchain, so none of it has to be stored in the hardware wallet itself. If your wallet is destroyed / reset, all you need to do is input your 24-word mnemonic seed into a new HD wallet and the wallet will search the public blockchain for all of the information it needs. Summary A diagram of a hierarchical deterministic wallet; everything in the box labelled &quot;hierarchical deterministic tree&quot; is recoverable if your wallet is lost, destroyed, or reset because it is all derived from the master seed An HD wallet has a few very important properties, so let’s reiterate: The “tree” that makes up an HD wallet is generated using nothing more than your 24-word mnemonic seed. This is all you need to generate all of your cryptocurrency addresses, and sign transactions. No private keys need to be saved, anywhere. Even if you continue to receive Bitcoins to more and more of your addresses, you don’t need to save any of those private keys anywhere. This is because they were there all along, in the HD tree. The HD wallet standards used by Ledger (BIPs 32, 39, and 44) are industry standards. Your 24-word mnemonic seed will work with any other HD wallet that supports these standards, not just with Ledger wallets. Going Beyond Cryptocurrencies Hierarchical deterministic wallets are useful for a lot more than just securing assets on blockchains. You could also expand this concept and use your master seed to derive passwords, PGP keys, SSH keys, et cetera. For example, Ledger is currently developing a Password Manager app. It is currently available for the Ledger Nano S in an early alpha form by clicking “show developer items” in the Ledger Manager. The password manager app works by converting a node on the HD tree into a text password that looks like random gibberish. When you create a new password, you must enter a label for the password (for example: “Google”, “Dropbox”, “Twitter”, etc.). The location of a password’s node on the HD tree is encoded in the corresponding password’s label. When you ask the Password Manager app for your password, it uses the password’s label to locate a specific node on the HD tree, and then it converts that node into a text password. You cannot specify your own passwords to use, the passwords are generated for you. Footnotes [1] In this case, virtually infinite = 263 = 9 223 372 036 854 775 808. [2] In this example, we described a wallet that operates with a gap limit of 1. Different wallet software use different values, but BIP 44 currently recommends a gap limit of 20." />
+<meta property="og:description" content="Sections in this article Introduction Coin Types How does my wallet know which addresses I’ve used? Summary Going Beyond Cryptocurrencies Introduction In the previous section, hd_keys, we described how an infinite number of cryptographic secrets can be generated from a single master seed. In this section, we’ll talk about how Ledger applies this concept to develop applications for our personal security devices &lt;personal_security_devices&gt; that are lightweight and easily recoverable. Coin Types So how are HD trees useful? Simple: developers of different cryptocurrencies got together and reserved a space on the tree. Developers for these cryptocurrencies each specified which “location” on the tree they wanted users to store their private keys (called the coin’s “path”). This path is public information, because nobody can determine the actual value of your keys without knowing your master node (your mnemonic seed). The paths that correspond to various cryptocurrencies, and the paths used to derive cryptocurrency addresses and private keys, are defined by BIP 44 (which in turn defers coin type registration to SLIP 44). For each cryptocurrency, there is a node on the tree where all of the keys for that coin begin (from this point on, we’ll call this the “coin type root node”, for lack of a better term). Since this is a hierarchical deterministic tree, we can apply the same rules to that coin type root node as we applied to the master node. Just as an infinite tree of keys descended from the master node, there is also an infinite tree of keys descending from the coin type root node. This means that if you have a 24-word mnemonic seed, even if you don’t use Bitcoin, you have a virtually infinite[1] number of Bitcoin addresses. You have a virtually infinite number of Ethereum addresses, too. Warning In the Ledger Ethereum Wallet desktop app, addresses are not derived according to BIP 44. Instead of using the derivation path `m / 44&#39; / 60&#39; / account&#39; / change / address_index` (as defined by BIP 44 for Ethereum), the Ledger Ethereum Wallet desktop app uses the derivation path `m / 44&#39; / 60&#39; / 0&#39; / address_index`. How does my wallet know which addresses I’ve used? In most BIP 44-compliant HD wallet programs (including the Ledger Bitcoin Wallet desktop app) your addresses are split into “accounts”. You can split your coins across multiple accounts in the same way you might with multiple bank accounts. You can have an account for savings, an account for donations, an account for common expenses, et cetera. Within each of these accounts, there are two virtually infinite “chains” of addresses: an external chain and an internal chain (commonly called the “change address” chain). Each of the addresses in these chains are given numbers (called the “address index”) starting at 0. When your wallet software starts up for the first time, it searches the blockchain for transactions involving address number 0 for each address chain. If it finds any transactions, then the address is displayed by the wallet software and the wallet searches for transactions involving address number 1. This process continues until the wallet finds an address that you haven’t used yet. It displays this address to you, then stops searching for more addresses in the chain, making the assumption that no more of them have been used yet.[2] In this way, all of the important information about your transaction history is stored in the blockchain, so none of it has to be stored in the hardware wallet itself. If your wallet is destroyed / reset, all you need to do is input your 24-word mnemonic seed into a new HD wallet and the wallet will search the public blockchain for all of the information it needs. Summary A diagram of a hierarchical deterministic wallet; everything in the box labelled &quot;hierarchical deterministic tree&quot; is recoverable if your wallet is lost, destroyed, or reset because it is all derived from the master seed An HD wallet has a few very important properties, so let’s reiterate: The “tree” that makes up an HD wallet is generated using nothing more than your 24-word mnemonic seed. This is all you need to generate all of your cryptocurrency addresses, and sign transactions. No private keys need to be saved, anywhere. Even if you continue to receive Bitcoins to more and more of your addresses, you don’t need to save any of those private keys anywhere. This is because they were there all along, in the HD tree. The HD wallet standards used by Ledger (BIPs 32, 39, and 44) are industry standards. Your 24-word mnemonic seed will work with any other HD wallet that supports these standards, not just with Ledger wallets. Going Beyond Cryptocurrencies Hierarchical deterministic wallets are useful for a lot more than just securing assets on blockchains. You could also expand this concept and use your master seed to derive passwords, PGP keys, SSH keys, et cetera. For example, Ledger is currently developing a Password Manager app. It is currently available for the Ledger Nano S in an early alpha form by clicking “show developer items” in the Ledger Manager. The password manager app works by converting a node on the HD tree into a text password that looks like random gibberish. When you create a new password, you must enter a label for the password (for example: “Google”, “Dropbox”, “Twitter”, etc.). The location of a password’s node on the HD tree is encoded in the corresponding password’s label. When you ask the Password Manager app for your password, it uses the password’s label to locate a specific node on the HD tree, and then it converts that node into a text password. You cannot specify your own passwords to use, the passwords are generated for you. Footnotes [1] In this case, virtually infinite = 263 = 9 223 372 036 854 775 808. [2] In this example, we described a wallet that operates with a gap limit of 1. Different wallet software use different values, but BIP 44 currently recommends a gap limit of 20." />
+<link rel="canonical" href="http://localhost:4000/docs/NA/bg_hd_use_cases/" />
+<meta property="og:url" content="http://localhost:4000/docs/NA/bg_hd_use_cases/" />
+<meta property="og:site_name" content="Ledger Developer pages" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-04-22T15:38:24+02:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Applications for HD Trees" />
+<script type="application/ld+json">
+{"datePublished":"2021-04-22T15:38:24+02:00","description":"Sections in this article Introduction Coin Types How does my wallet know which addresses I’ve used? Summary Going Beyond Cryptocurrencies Introduction In the previous section, hd_keys, we described how an infinite number of cryptographic secrets can be generated from a single master seed. In this section, we’ll talk about how Ledger applies this concept to develop applications for our personal security devices &lt;personal_security_devices&gt; that are lightweight and easily recoverable. Coin Types So how are HD trees useful? Simple: developers of different cryptocurrencies got together and reserved a space on the tree. Developers for these cryptocurrencies each specified which “location” on the tree they wanted users to store their private keys (called the coin’s “path”). This path is public information, because nobody can determine the actual value of your keys without knowing your master node (your mnemonic seed). The paths that correspond to various cryptocurrencies, and the paths used to derive cryptocurrency addresses and private keys, are defined by BIP 44 (which in turn defers coin type registration to SLIP 44). For each cryptocurrency, there is a node on the tree where all of the keys for that coin begin (from this point on, we’ll call this the “coin type root node”, for lack of a better term). Since this is a hierarchical deterministic tree, we can apply the same rules to that coin type root node as we applied to the master node. Just as an infinite tree of keys descended from the master node, there is also an infinite tree of keys descending from the coin type root node. This means that if you have a 24-word mnemonic seed, even if you don’t use Bitcoin, you have a virtually infinite[1] number of Bitcoin addresses. You have a virtually infinite number of Ethereum addresses, too. Warning In the Ledger Ethereum Wallet desktop app, addresses are not derived according to BIP 44. Instead of using the derivation path `m / 44&#39; / 60&#39; / account&#39; / change / address_index` (as defined by BIP 44 for Ethereum), the Ledger Ethereum Wallet desktop app uses the derivation path `m / 44&#39; / 60&#39; / 0&#39; / address_index`. How does my wallet know which addresses I’ve used? In most BIP 44-compliant HD wallet programs (including the Ledger Bitcoin Wallet desktop app) your addresses are split into “accounts”. You can split your coins across multiple accounts in the same way you might with multiple bank accounts. You can have an account for savings, an account for donations, an account for common expenses, et cetera. Within each of these accounts, there are two virtually infinite “chains” of addresses: an external chain and an internal chain (commonly called the “change address” chain). Each of the addresses in these chains are given numbers (called the “address index”) starting at 0. When your wallet software starts up for the first time, it searches the blockchain for transactions involving address number 0 for each address chain. If it finds any transactions, then the address is displayed by the wallet software and the wallet searches for transactions involving address number 1. This process continues until the wallet finds an address that you haven’t used yet. It displays this address to you, then stops searching for more addresses in the chain, making the assumption that no more of them have been used yet.[2] In this way, all of the important information about your transaction history is stored in the blockchain, so none of it has to be stored in the hardware wallet itself. If your wallet is destroyed / reset, all you need to do is input your 24-word mnemonic seed into a new HD wallet and the wallet will search the public blockchain for all of the information it needs. Summary A diagram of a hierarchical deterministic wallet; everything in the box labelled &quot;hierarchical deterministic tree&quot; is recoverable if your wallet is lost, destroyed, or reset because it is all derived from the master seed An HD wallet has a few very important properties, so let’s reiterate: The “tree” that makes up an HD wallet is generated using nothing more than your 24-word mnemonic seed. This is all you need to generate all of your cryptocurrency addresses, and sign transactions. No private keys need to be saved, anywhere. Even if you continue to receive Bitcoins to more and more of your addresses, you don’t need to save any of those private keys anywhere. This is because they were there all along, in the HD tree. The HD wallet standards used by Ledger (BIPs 32, 39, and 44) are industry standards. Your 24-word mnemonic seed will work with any other HD wallet that supports these standards, not just with Ledger wallets. Going Beyond Cryptocurrencies Hierarchical deterministic wallets are useful for a lot more than just securing assets on blockchains. You could also expand this concept and use your master seed to derive passwords, PGP keys, SSH keys, et cetera. For example, Ledger is currently developing a Password Manager app. It is currently available for the Ledger Nano S in an early alpha form by clicking “show developer items” in the Ledger Manager. The password manager app works by converting a node on the HD tree into a text password that looks like random gibberish. When you create a new password, you must enter a label for the password (for example: “Google”, “Dropbox”, “Twitter”, etc.). The location of a password’s node on the HD tree is encoded in the corresponding password’s label. When you ask the Password Manager app for your password, it uses the password’s label to locate a specific node on the HD tree, and then it converts that node into a text password. You cannot specify your own passwords to use, the passwords are generated for you. Footnotes [1] In this case, virtually infinite = 263 = 9 223 372 036 854 775 808. [2] In this example, we described a wallet that operates with a gap limit of 1. Different wallet software use different values, but BIP 44 currently recommends a gap limit of 20.","dateModified":"2021-04-22T15:38:24+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/docs/NA/bg_hd_use_cases/"},"url":"http://localhost:4000/docs/NA/bg_hd_use_cases/","author":{"@type":"Person","name":"pscott"},"@type":"BlogPosting","headline":"Applications for HD Trees","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+  <meta property="og:image" content="http://localhost:4000/uploads/"/>
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="shortcut icon" type="image/png" href="/uploads/favicon.png" >
+  <link rel="alternate" type="application/rss+xml" title="Ledger Developer pages" href="/feed.xml">
+  <script src="/assets/js/main.js"></script>
+  
+    <script>
+function searchResults(form) {
+
+    var currentItem = null;
+    var search = document.getElementById(form);
+    var results = document.getElementById(form + "-results");
+    var toggle = document.getElementById(form + "-toggle");
+
+    function removeActive() {
+        for (i = 0; i < results.children.length; i++) {
+            results.children[i].classList.remove("uk-background-muted");
+        }
+    }
+
+    // Detect all clicks on the document
+    document.addEventListener("click", function(event) {
+
+        var isClickSearch = false;
+        var isClickResults = false;
+        var isClickSearchToggle = false;
+
+        if (search !== null) {
+            isClickSearch = search.contains(event.target);
+        }
+
+        if (results !== null) {
+            isClickResults = results.contains(event.target);
+        }
+
+        if (toggle !== null) {
+            isClickSearchToggle = toggle.contains(event.target);
+        }
+
+        if (isClickSearch || isClickSearchToggle) {
+            results.style.display = "block";
+        }        
+
+        if (!isClickResults && !isClickSearch && !isClickSearchToggle) {
+            results.style.display = "none";
+        }        
+        
+    });    
+
+    results.addEventListener("mouseover", function(event) {
+
+        removeActive();
+        event.target.parentElement.classList.add("uk-background-muted");
+        currentItem = null;
+
+    });
+
+    results.addEventListener("mouseout", function(event) {
+        event.target.parentElement.classList.remove("uk-background-muted");
+    });
+
+
+    search.addEventListener("keyup", function(event) {
+
+        var resultItems = results.children;
+        var resultCount = results.children.length;
+                                
+        if (event.keyCode === 40) {
+
+            if (currentItem < (resultCount - 1)) {
+                if (currentItem === null) {
+                    currentItem = 0;
+                } else {
+                    removeActive();
+                    currentItem++;
+                }
+                removeActive();
+                resultItems[currentItem].classList.add("uk-background-muted");
+            }
+            
+        } else if (event.keyCode === 38) {
+
+            if (currentItem > 0) {
+                if (currentItem === null) {
+                    currentItem = 0;
+                } else {
+                    removeActive();
+                    currentItem--;
+                }
+                removeActive();
+                resultItems[currentItem].classList.add("uk-background-muted");
+            }
+
+        } else if (event.keyCode === 13) {
+
+            resultItems[currentItem].children[0].click();
+
+        }
+
+    });
+
+}
+</script>
+  
+  
+  
+<script src="http://127.0.0.1:35729/livereload.js"></script></head>
+
+    <body>
+
+    
+        <div data-uk-sticky="animation: uk-animation-slide-top; sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; cls-inactive: uk-navbar-transparent; top: 200">
+    <nav class="uk-navbar-container">
+        <div class="uk-container">
+            <div data-uk-navbar>
+                <div class="uk-navbar-left">
+                    <a class="uk-navbar-item uk-logo uk-visible@m" href="/">Ledger Developer pages</a>
+                    
+                        <a class="uk-navbar-toggle uk-hidden@m" href="#offcanvas-docs" data-uk-toggle><span data-uk-navbar-toggle-icon></span> <span class="uk-margin-small-left">Docs</span></a>
+                    
+
+                    <ul class="uk-navbar-nav uk-visible@m">
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Creating content</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Tools & Frameworks</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Release notes</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Tutorials</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="#">_Old</a>
+                                        
+                                            <div class="uk-navbar-dropdown">
+                                                <ul class="uk-nav uk-navbar-dropdown-nav">
+                                                    
+                                                    
+                                                        
+                                                        
+                                                        <li><a href="/docs/TMPL/installation/">Template docs</a></li>
+                                                    
+                                                    
+                                                    
+                                                        
+                                                        
+                                                        <li><a href="/blog/">Blog</a></li>
+                                                    
+                                                    
+                                                    
+                                                        <li class="uk-nav-header">Changelogs</li>
+                                                    
+                                                    
+                                                </ul>
+                                            </div>
+                                        
+                                        </li>
+                                                                                                        
+                                
+                            
+                        
+                    </ul>
+                </div>
+                <div class="uk-navbar-center uk-hidden@m">
+                    <a class="uk-navbar-item uk-logo" href="/">Ledger Developer pages</a>
+                </div>
+                <div class="uk-navbar-right">
+                    
+                        
+                            <div>
+                                <a id="search-navbar-toggle" class="uk-navbar-toggle" uk-search-icon href="#"></a>
+                                <div class="uk-drop uk-background-default uk-border-rounded" uk-drop="mode: click; pos: left-center; offset: 0">
+                                    <form class="uk-search uk-search-navbar uk-width-1-1" onsubmit="return false;">
+                                        <input id="search-navbar" class="uk-search-input" type="search" placeholder="Search for answers" autofocus autocomplete="off">
+                                    </form>
+                                    <ul id="search-navbar-results" class="uk-position-absolute uk-width-1-1 uk-list"></ul>
+                                </div>
+                            </div>
+                            <script>
+                            SimpleJekyllSearch({
+                                searchInput: document.getElementById('search-navbar'),
+                                resultsContainer: document.getElementById('search-navbar-results'),
+                                noResultsText: '<li class="no-results">No results found</li>',
+                                searchResultTemplate: '<li><a href="{url}">{title}</a></li>',
+                                json: "/search.json"
+                            });
+                            searchResults("search-navbar");
+                            </script>
+                        
+                    
+
+                    <ul class="uk-navbar-nav uk-visible@m">
+                        
+                    </ul>
+
+                    
+                        <a class="uk-navbar-toggle uk-hidden@m" href="#offcanvas" data-uk-toggle><span data-uk-navbar-toggle-icon></span> <span class="uk-margin-small-left">Menu</span></a>
+                    
+
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
+    
+
+    <div class="uk-section">
+    <div class="uk-container">
+        <div class="uk-grid-large" data-uk-grid>
+
+            <div class="sidebar-fixed-width uk-visible@m">
+                <div class="sidebar-docs uk-position-fixed uk-margin-top">
+                    
+                    <h5>Background Information</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/bg_introduction/">Introduction</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/bg_personal_security_devices/">Personal Security Devices</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/bg_master_seed/">The Master Seed</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/bg_hd_keys/">HD Key Generation</a></li>
+                    
+                      
+                      
+                      <li class="uk-active"><a href="/docs/NA/bg_hd_use_cases/">Applications for HD Trees</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/bg_application_isolation/">Application Isolation</a></li>
+                    
+                    </ul>
+                    
+                    <h5>BOLOS Platform</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/b_introduction/">Introduction</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/b_overview/">Overview</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/b_features/">BOLOS Features</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/b_hardware_architecture/">Hardware Architecture</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/b_application_environment/">Application Environment</a></li>
+                    
+                    </ul>
+                    
+                    <h5>Userspace Development</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_introduction/">Introduction</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_setup/">Setting it up</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_writing_apps/">Writing Apps</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_display_management/">Display Management</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_advanced_display_management/">Advanced display management</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_low_level_display_management/">Low-level display management</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_syscalls/">Interaction Between BOLOS and Apps</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_application_structure/">Application Structure and I/O</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_memory/">Persistent Storage and PIC</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_alignment/">Memory alignment</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_troubleshooting/">Common Pitfalls and Troubleshooting</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_debugging/">Application Debug</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_speculos/">Emulating devices with Speculos</a></li>
+                    
+                    </ul>
+                    
+                    <h5>Additional Resources</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/a_publishing_an_app/">Publishing an Application</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/a_external_docs/">External Documentation</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/a_security_guidelines/">Developing Secure Ledger Apps</a></li>
+                    
+                    </ul>
+                    
+                </div>
+            </div>
+
+            <div class="uk-width-1-1 uk-width-expand@m">
+
+                <article class="uk-article">
+
+                    <h1 class="uk-article-title">Applications for HD Trees</h1>
+
+                    <p class="uk-text-lead uk-text-muted">HD Trees and the 24 words</p>
+
+                    <div class="uk-article-meta uk-margin-top uk-margin-medium-bottom uk-flex uk-flex-middle">
+                        
+
+
+  
+  <img class="uk-border-circle avatar" src="http://localhost:4000/uploads/avatar-pscott.jpg" alt="pscott">
+
+
+<div>
+  
+    Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">pscott</span></span><br>
+  
+  <time datetime="" itemprop="datePublished">
+    
+    
+  </time>
+</div>
+                    </div>
+
+                    <div class="article-content link-primary">
+                        <h4 class="no_toc" id="sections-in-this-article">Sections in this article</h4>
+<ul id="markdown-toc">
+  <li><a href="#introduction" id="markdown-toc-introduction">Introduction</a>    <ul>
+      <li><a href="#coin-types" id="markdown-toc-coin-types">Coin Types</a></li>
+      <li><a href="#how-does-my-wallet-know-which-addresses-ive-used" id="markdown-toc-how-does-my-wallet-know-which-addresses-ive-used">How does my wallet know which addresses I’ve used?</a></li>
+      <li><a href="#summary" id="markdown-toc-summary">Summary</a></li>
+      <li><a href="#going-beyond-cryptocurrencies" id="markdown-toc-going-beyond-cryptocurrencies">Going Beyond Cryptocurrencies</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>In the previous section, <code class="language-plaintext highlighter-rouge">hd_keys</code>, we described how an infinite number
+of cryptographic secrets can be generated from a single master seed. In
+this section, we’ll talk about how Ledger applies this concept to
+develop applications for our <code class="language-plaintext highlighter-rouge">personal security devices &lt;personal_security_devices&gt;</code> that are lightweight and easily
+recoverable.</p>
+
+<h3 id="coin-types">Coin Types</h3>
+
+<p>So how are HD trees useful? Simple: developers of different
+cryptocurrencies got together and <a href="https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#registered-coin-types">reserved a space on the
+tree</a>.
+Developers for these cryptocurrencies each specified which “location” on
+the tree they wanted users to store their private keys (called the
+coin’s “path”). This path is public information, because nobody can
+determine the actual value of your keys without knowing your master node
+(your mnemonic seed). The paths that correspond to various
+cryptocurrencies, and the paths used to derive cryptocurrency addresses
+and private keys, are defined by <a href="https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki">BIP
+44</a>
+(which in turn defers coin type registration to <a href="https://github.com/satoshilabs/slips/blob/master/slip-0044.md">SLIP
+44</a>).</p>
+
+<p>For each cryptocurrency, there is a node on the tree where all of the
+keys for that coin begin (from this point on, we’ll call this the “coin
+type root node”, for lack of a better term). Since this is a
+hierarchical deterministic tree, we can apply the same rules to that
+coin type root node as we applied to the master node. Just as an
+infinite tree of keys descended from the master node, there is also an
+infinite tree of keys descending from the coin type root node. This
+means that if you have a 24-word mnemonic seed, even if you don’t use
+Bitcoin, you have a virtually infinite[1] number of Bitcoin addresses.
+You have a virtually infinite number of Ethereum addresses, too.</p>
+
+<div class="warning">
+
+<div class="title">
+
+Warning
+
+</div>
+
+In the Ledger Ethereum Wallet desktop app, addresses are not derived
+according to BIP 44. Instead of using the derivation path
+`m / 44' / 60' / account' / change / address_index` (as defined by BIP
+44 for Ethereum), the Ledger Ethereum Wallet desktop app uses the
+derivation path `m / 44' / 60' / 0' / address_index`.
+
+</div>
+
+<h3 id="how-does-my-wallet-know-which-addresses-ive-used">How does my wallet know which addresses I’ve used?</h3>
+
+<p>In most BIP 44-compliant HD wallet programs (including the Ledger
+Bitcoin Wallet desktop app) your addresses are split into “accounts”.
+You can split your coins across multiple accounts in the same way you
+might with multiple bank accounts. You can have an account for savings,
+an account for donations, an account for common expenses, et cetera.
+Within each of these accounts, there are two virtually infinite “chains”
+of addresses: an external chain and an internal chain (commonly called
+the “change address” chain). Each of the addresses in these chains are
+given numbers (called the “address index”) starting at 0.</p>
+
+<p>When your wallet software starts up for the first time, it searches the
+blockchain for transactions involving address number 0 for each address
+chain. If it finds any transactions, then the address is displayed by
+the wallet software and the wallet searches for transactions involving
+address number 1. This process continues until the wallet finds an
+address that you haven’t used yet. It displays this address to you, then
+stops searching for more addresses in the chain, making the assumption
+that no more of them have been used yet.[2]</p>
+
+<p>In this way, all of the important information about your transaction
+history is stored in the blockchain, so none of it has to be stored in
+the hardware wallet itself. If your wallet is destroyed / reset, all you
+need to do is input your 24-word mnemonic seed into a new HD wallet and
+the wallet will search the public blockchain for all of the information
+it needs.</p>
+
+<h3 id="summary">Summary</h3>
+
+<figure>
+<img src="../Images/where_are_my_assets.png" class="align-center" alt="A diagram of a hierarchical deterministic wallet; everything in the box labelled &quot;hierarchical deterministic tree&quot; is recoverable if your wallet is lost, destroyed, or reset because it is all derived from the master seed" /><figcaption aria-hidden="true">A diagram of a hierarchical deterministic wallet; everything in the box labelled "hierarchical deterministic tree" is recoverable if your wallet is lost, destroyed, or reset because it is all derived from the master seed</figcaption>
+</figure>
+
+<p>An HD wallet has a few very important properties, so let’s reiterate:</p>
+
+<ul>
+  <li>The “tree” that makes up an HD wallet is generated using nothing
+more than your 24-word mnemonic seed. This is all you need to
+generate all of your cryptocurrency addresses, and sign
+transactions.</li>
+  <li>No private keys need to be saved, anywhere. Even if you continue to
+receive Bitcoins to more and more of your addresses, you don’t need
+to save any of those private keys anywhere. This is because they
+were there all along, in the HD tree.</li>
+  <li>The HD wallet standards used by Ledger (BIPs 32, 39, and 44) are
+industry standards. Your 24-word mnemonic seed will work with any
+other HD wallet that supports these standards, not just with Ledger
+wallets.</li>
+</ul>
+
+<h3 id="going-beyond-cryptocurrencies">Going Beyond Cryptocurrencies</h3>
+
+<p>Hierarchical deterministic wallets are useful for a lot more than just
+securing assets on blockchains. You could also expand this concept and
+use your master seed to derive passwords, PGP keys, SSH keys, et cetera.</p>
+
+<p>For example, Ledger is currently developing a <a href="https://github.com/LedgerHQ/blue-app-password-manager">Password Manager
+app</a>. It is
+currently available for the Ledger Nano S in an early alpha form by
+clicking “show developer items” in the <a href="https://www.ledgerwallet.com/apps/manager">Ledger
+Manager</a>.</p>
+
+<p>The password manager app works by converting a node on the HD tree into
+a text password that looks like random gibberish. When you create a new
+password, you must enter a label for the password (for example:
+“Google”, “Dropbox”, “Twitter”, etc.). <strong>The location of a password’s
+node on the HD tree is encoded in the corresponding password’s label.</strong>
+When you ask the Password Manager app for your password, it uses the
+password’s label to locate a specific node on the HD tree, and then it
+converts that node into a text password. You cannot specify your own
+passwords to use, the passwords are generated for you.</p>
+
+<p><strong>Footnotes</strong></p>
+
+<p>[1] In this case, virtually infinite = 2<sup>63</sup> = 9 223 372 036
+854 775 808.</p>
+
+<p>[2] In this example, we described a wallet that operates with a <a href="https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki#address-gap-limit">gap
+limit</a>
+of 1. Different wallet software use different values, but BIP 44
+currently recommends a gap limit of 20.</p>
+
+
+                        
+                            <!-- FC
+                            <div class="share uk-text-center uk-margin-medium-top">
+    
+        <a class="uk-link-muted" href="https://twitter.com/intent/tweet?text=Applications for HD Trees&url=http://localhost:4000/docs/NA/bg_hd_use_cases/&via=&related=" rel="nofollow" target="_blank" title="Share on Twitter" onclick="window.open(this.href, 'twitter', 'width=550,height=235');return false;"><span data-uk-icon="icon: twitter; ratio: 1.2"></span></a>
+    
+    
+        <a class="uk-link-muted uk-margin-small-left" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2Fdocs%2FNA%2Fbg_hd_use_cases%2F" rel="nofollow" target="_blank" title="Share on Facebook" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;"><span data-uk-icon="icon: facebook; ratio: 1.2"></span></a>
+    
+</div>
+                            -->
+                        
+                    </div>
+
+                    
+
+                    <hr class="uk-margin-medium">
+
+                    
+
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+
+
+                    <div class="uk-margin-large-top">
+    <h3>Related Docs</h3>
+
+    
+    
+    
+
+    <ul class="uk-list link-secondary">
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+    </ul>
+</div>
+
+
+                    
+                </article>
+
+                <script>
+                    // Table of contents scroll to
+                    UIkit.scroll('#markdown-toc a', {
+                        duration: 400,
+                        offset: 120
+                    });
+                </script>
+
+            </div>
+
+    </div>
+</div>
+
+
+    <div id="offcanvas-docs" data-uk-offcanvas="overlay: true">
+    <div class="uk-offcanvas-bar">
+
+        <button class="uk-offcanvas-close" type="button" data-uk-close></button>
+
+        
+        <h5 class="uk-margin-top">Getting Started</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/installation/">Theme installation</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/setup/">Basic theme setup</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/navigation/">Navigation bar</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/footer/">Footer options</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/posts/">Creating your first post in Jekyll</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/docs/">Creating docs posts</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/comments/">Enabling comments (via Disqus)</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/analytics/">Google Analytics</a></li>
+        
+        </ul>
+        
+        <h5 class="uk-margin-top">Theme Features</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/hero/">Hero page header</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/boxes/">Category boxes section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/featured/">Fearured docs section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/videos/">Video lightbox boxes section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/faq/">Frequently asked questions section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/team/">Team members section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/cta/">Call to action section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/changelog/">Creating a changelog</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/contact/">Contact form (via FormSpree)</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/media/">Adding media to post and doc content</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/toc/">Adding table of contents to docs</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/alerts/">Adding alerts to content</a></li>
+        
+        </ul>
+        
+        <h5 class="uk-margin-top">Customization</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/translation/">Translation</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/customize/">Customization</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/development/">Development</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/sources/">Sources and credits</a></li>
+        
+        </ul>
+        
+        <h5 class="uk-margin-top">Help</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/support/">Contacting support</a></li>
+        
+        </ul>
+        
+
+    </div>
+</div>
+
+
+    <div id="offcanvas" data-uk-offcanvas="flip: true; overlay: true">
+    <div class="uk-offcanvas-bar">
+
+        <a class="uk-logo uk-margin-small-bottom" href="/">Ledger Developer pages</a>
+     
+        <button class="uk-offcanvas-close" type="button" data-uk-close></button>
+      
+        <ul class="uk-nav uk-nav-primary uk-margin-top">
+            
+                
+
+                
+
+                
+                    <li><a href="/" >Home</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><a href="/docs/TMPL/installation" >Docs</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><a href="/blog/" >Blog</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><a href="/changelog-timeline/" >Changelog</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><div class="uk-navbar-item"><a class="uk-button uk-button-success" href="/contact/" >Contact</a></div></li>
+                
+            
+        </ul>
+
+        <div class="uk-margin-top uk-text-center">
+            <div data-uk-grid class="uk-child-width-auto uk-grid-small uk-flex-center uk-grid">
+                
+<div class="uk-first-column">
+    <a href="https://twitter.com/" data-uk-icon="icon: twitter" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+<div>
+    <a href="https://www.facebook.com/" data-uk-icon="icon: facebook" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+<div>
+    <a href="https://www.instagram.com/" data-uk-icon="icon: instagram" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+<div>
+    <a href="https://vimeo.com/" data-uk-icon="icon: vimeo" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+    
+        <footer class="uk-section uk-text-center uk-text-muted">
+    <div class="uk-container uk-container-small">
+
+        <div>
+            <ul class="uk-subnav uk-flex-center">
+                
+                    
+                    
+                    
+                        <li><a href="/" >Home</a></li>
+                    
+                
+                    
+                    
+                    
+                        <li><a href="/blog/" >Blog</a></li>
+                    
+                
+                    
+                    
+                    
+                        <li><a href="/contact/" >Contact</a></li>
+                    
+                
+            </ul>
+        </div>
+        <div class="uk-margin-medium">
+            <div data-uk-grid class="uk-child-width-auto uk-grid-small uk-flex-center uk-grid">
+                
+                
+<div class="uk-first-column">
+    <a href="https://twitter.com/" data-uk-icon="icon: twitter" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+<div>
+    <a href="https://www.facebook.com/" data-uk-icon="icon: facebook" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+<div>
+    <a href="https://www.instagram.com/" data-uk-icon="icon: instagram" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+<div>
+    <a href="https://vimeo.com/" data-uk-icon="icon: vimeo" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+
+                
+            </div>
+        </div>
+        <div class="uk-margin-medium uk-text-small copyright link-secondary">Made by <a href="https://ledger.com/">Ledger</a> France</div>
+
+    </div>
+</footer>
+
+    
+
+    
+
+    
+
+    </body>
+
+</html>

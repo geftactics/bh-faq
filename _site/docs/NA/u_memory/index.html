@@ -1,0 +1,1822 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Persistent Storage and PIC | Ledger Developer pages</title>
+<meta name="generator" content="Jekyll v3.9.1" />
+<meta property="og:title" content="Persistent Storage and PIC" />
+<meta name="author" content="pscott" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Sections in this article Introduction Types of Memory Flash Memory Endurance PIC and Model Implications Introduction BOLOS applications have access to two different types of memory in the Secure Element: a small amount of RAM for the call stack and certain global variables, and a considerably larger amount of flash memory for persistent storage. Access to flash memory is regulated by the Memory Protection Unit which is configured by BOLOS to prevent applications from tampering with parts of flash memory that they shouldn’t. However, applications are able to access the part of flash memory where their constant data and code is defined. This data includes code and const variables, but applications may also allocate extra space in NVRAM to be used at runtime for persistent storage. Types of Memory All global variables that are declared as const are stored in read-only flash memory, right next to code. All normal global variables that are declared as non-const are stored in RAM. However, thanks to the link script (script.ld) in the SDK, global variables that are declared as non-const and are given the prefix N_ are placed in a special write-permitted location of NVRAM. This data can be read in the same way that regular global variables are read. However, writing to NVRAM variables must be done using the nvm_write(...) function defined by the SDK, which performs a syscall. When loading the app, NVRAM variables are initialized with data specified in the app’s hex file (this is usually just zero bytes). Warning Initializers of global non-`const` variables (including NVRAM variables) are ignored. As such, this data must be initialized by application code. Flash Memory Endurance The flash memory for the ST31G480, which is the Secure Element used in the Ledger Blue, is rated for 500 000 erase / write cycles. This should be more than enough to last the expected lifetime of the device, but only if applications use it properly. Applications should avoid erasures as much as possible. Here are some techniques for avoiding wearing out the device’s flash memory. Firstly, if you intend to be changing data in flash memory many times while an application is running, consider caching the data in RAM and then flushing to flash memory when the application has finished its operation. This of course has the downside of possible data loss if the user powers off the device (perhaps by unplugging it, in the case of the Nano S) before the data has been written to persistent storage. Secondly, developers should be aware that flash memory pages are aligned to 64-byte boundaries. The rating of 500 000 erase / write cycles mentioned earlier means that each page in flash memory is expected to survive 500 000 erasures. As such, one can develop an application that writes to as few pages as possible. For example, if you intend to store 32 bytes of data in flash memory, write amplification can be avoided by making sure that 32 bytes of data is contained entirely within a single page (and modified using only a single call to nvm_write(...)). If the data crossed a 64-byte page boundary, then writing to it once may require two pages to be erased instead of just one. In the future, Ledger will provide various persistent storage utilities within BOLOS and the SDKs to simplify the process of using flash memory efficiently. PIC and Model Implications PIC stands for Position-Independent Code. The BOLOS toolchain produces PIC to allow for the code Link address to be different from the code Execution address. For example, the main function is linked in the generated application at address 0xC0D00000. However, the slot used when loaded into the Secure Element could be 0x10E40400. Therefore, if the code makes a reference to 0xC0D00000, even with an offset, it would be denied access as the application is locked by the Memory Protection Unit (not to mention, this is not the correct address of the main function at runtime). The PIC assembly generator makes sure every dereference is relative to the Program Counter, and never to an arbitrary address resolved during the link stage. This behavior is supported by clang versions 4.0.0 and later. Traditionally, PIC code implies the BSS segment (RAM variables) is at a constant offset of the code. For example, if code is at 0xC0D00000, then global vars may be at 0xC2D00000, so if loaded at 0x10E00000 then global vars would be at 0x12E00000. However, BOLOS uses a fixed address for global vars. The global variables start address and length are defined in the link script. Only the code is meant to be placed at different addresses (in flash memory, rather than RAM). The model we chose has limitations, which are related to the way const data and code is referenced in other const data. Here is a simple example: const char array1[] = {1, 2, 3, 4}; const char array2[] = {1, 2, 3, 4}; const char *array_2d[] = {array1, array2}; void main() { int sum, i, j; sum = 0; for (i = 0; i &lt; 2; i++) { for (j = 0; j &lt; 4; j++) { sum += array_2d[i][j]; // Segmentation Fault! } } } In the example above, when dereferencing array_2d, the compiler uses a link-time address (in the 0xC0D00000 space, following the previous examples). This is not where the program is loaded in memory at runtime. Therefore, when the dereference is executed, it causes a segmentation fault that effectively stalls the SE. Luckily, the solution is pretty simple, thanks to a small piece of assembly provided with the SDKs which is invoked with the PIC(...) macro. PIC(...) uses the current load address to adjust the link-time address in order to acquire the correct runtime address of const data and code. The above examples can be corrected by modifying the line where array_2d is dereferenced to do the following: sum += ((const char*) PIC(array_2d[i]))[j]; The same mechanism must be applied when storing function pointers in const data. The PIC call cast is just different. Additionally, if a non-link-time address is passed to PIC(...), then it will be preserved. This is possible due to the wisely chosen link-time address which is beyond both real RAM and loadable addresses. For example, PIC(...) is used during a call to io_seproxyhal_display_default(...), all display elements can hold a reference to a string to be displayed with the element, and the string could be in RAM or code, and therefore PIC(...) is applied to acquire the correct runtime address of the string, even if it’s in RAM." />
+<meta property="og:description" content="Sections in this article Introduction Types of Memory Flash Memory Endurance PIC and Model Implications Introduction BOLOS applications have access to two different types of memory in the Secure Element: a small amount of RAM for the call stack and certain global variables, and a considerably larger amount of flash memory for persistent storage. Access to flash memory is regulated by the Memory Protection Unit which is configured by BOLOS to prevent applications from tampering with parts of flash memory that they shouldn’t. However, applications are able to access the part of flash memory where their constant data and code is defined. This data includes code and const variables, but applications may also allocate extra space in NVRAM to be used at runtime for persistent storage. Types of Memory All global variables that are declared as const are stored in read-only flash memory, right next to code. All normal global variables that are declared as non-const are stored in RAM. However, thanks to the link script (script.ld) in the SDK, global variables that are declared as non-const and are given the prefix N_ are placed in a special write-permitted location of NVRAM. This data can be read in the same way that regular global variables are read. However, writing to NVRAM variables must be done using the nvm_write(...) function defined by the SDK, which performs a syscall. When loading the app, NVRAM variables are initialized with data specified in the app’s hex file (this is usually just zero bytes). Warning Initializers of global non-`const` variables (including NVRAM variables) are ignored. As such, this data must be initialized by application code. Flash Memory Endurance The flash memory for the ST31G480, which is the Secure Element used in the Ledger Blue, is rated for 500 000 erase / write cycles. This should be more than enough to last the expected lifetime of the device, but only if applications use it properly. Applications should avoid erasures as much as possible. Here are some techniques for avoiding wearing out the device’s flash memory. Firstly, if you intend to be changing data in flash memory many times while an application is running, consider caching the data in RAM and then flushing to flash memory when the application has finished its operation. This of course has the downside of possible data loss if the user powers off the device (perhaps by unplugging it, in the case of the Nano S) before the data has been written to persistent storage. Secondly, developers should be aware that flash memory pages are aligned to 64-byte boundaries. The rating of 500 000 erase / write cycles mentioned earlier means that each page in flash memory is expected to survive 500 000 erasures. As such, one can develop an application that writes to as few pages as possible. For example, if you intend to store 32 bytes of data in flash memory, write amplification can be avoided by making sure that 32 bytes of data is contained entirely within a single page (and modified using only a single call to nvm_write(...)). If the data crossed a 64-byte page boundary, then writing to it once may require two pages to be erased instead of just one. In the future, Ledger will provide various persistent storage utilities within BOLOS and the SDKs to simplify the process of using flash memory efficiently. PIC and Model Implications PIC stands for Position-Independent Code. The BOLOS toolchain produces PIC to allow for the code Link address to be different from the code Execution address. For example, the main function is linked in the generated application at address 0xC0D00000. However, the slot used when loaded into the Secure Element could be 0x10E40400. Therefore, if the code makes a reference to 0xC0D00000, even with an offset, it would be denied access as the application is locked by the Memory Protection Unit (not to mention, this is not the correct address of the main function at runtime). The PIC assembly generator makes sure every dereference is relative to the Program Counter, and never to an arbitrary address resolved during the link stage. This behavior is supported by clang versions 4.0.0 and later. Traditionally, PIC code implies the BSS segment (RAM variables) is at a constant offset of the code. For example, if code is at 0xC0D00000, then global vars may be at 0xC2D00000, so if loaded at 0x10E00000 then global vars would be at 0x12E00000. However, BOLOS uses a fixed address for global vars. The global variables start address and length are defined in the link script. Only the code is meant to be placed at different addresses (in flash memory, rather than RAM). The model we chose has limitations, which are related to the way const data and code is referenced in other const data. Here is a simple example: const char array1[] = {1, 2, 3, 4}; const char array2[] = {1, 2, 3, 4}; const char *array_2d[] = {array1, array2}; void main() { int sum, i, j; sum = 0; for (i = 0; i &lt; 2; i++) { for (j = 0; j &lt; 4; j++) { sum += array_2d[i][j]; // Segmentation Fault! } } } In the example above, when dereferencing array_2d, the compiler uses a link-time address (in the 0xC0D00000 space, following the previous examples). This is not where the program is loaded in memory at runtime. Therefore, when the dereference is executed, it causes a segmentation fault that effectively stalls the SE. Luckily, the solution is pretty simple, thanks to a small piece of assembly provided with the SDKs which is invoked with the PIC(...) macro. PIC(...) uses the current load address to adjust the link-time address in order to acquire the correct runtime address of const data and code. The above examples can be corrected by modifying the line where array_2d is dereferenced to do the following: sum += ((const char*) PIC(array_2d[i]))[j]; The same mechanism must be applied when storing function pointers in const data. The PIC call cast is just different. Additionally, if a non-link-time address is passed to PIC(...), then it will be preserved. This is possible due to the wisely chosen link-time address which is beyond both real RAM and loadable addresses. For example, PIC(...) is used during a call to io_seproxyhal_display_default(...), all display elements can hold a reference to a string to be displayed with the element, and the string could be in RAM or code, and therefore PIC(...) is applied to acquire the correct runtime address of the string, even if it’s in RAM." />
+<link rel="canonical" href="http://localhost:4000/docs/NA/u_memory/" />
+<meta property="og:url" content="http://localhost:4000/docs/NA/u_memory/" />
+<meta property="og:site_name" content="Ledger Developer pages" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-04-22T15:38:24+02:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Persistent Storage and PIC" />
+<script type="application/ld+json">
+{"datePublished":"2021-04-22T15:38:24+02:00","description":"Sections in this article Introduction Types of Memory Flash Memory Endurance PIC and Model Implications Introduction BOLOS applications have access to two different types of memory in the Secure Element: a small amount of RAM for the call stack and certain global variables, and a considerably larger amount of flash memory for persistent storage. Access to flash memory is regulated by the Memory Protection Unit which is configured by BOLOS to prevent applications from tampering with parts of flash memory that they shouldn’t. However, applications are able to access the part of flash memory where their constant data and code is defined. This data includes code and const variables, but applications may also allocate extra space in NVRAM to be used at runtime for persistent storage. Types of Memory All global variables that are declared as const are stored in read-only flash memory, right next to code. All normal global variables that are declared as non-const are stored in RAM. However, thanks to the link script (script.ld) in the SDK, global variables that are declared as non-const and are given the prefix N_ are placed in a special write-permitted location of NVRAM. This data can be read in the same way that regular global variables are read. However, writing to NVRAM variables must be done using the nvm_write(...) function defined by the SDK, which performs a syscall. When loading the app, NVRAM variables are initialized with data specified in the app’s hex file (this is usually just zero bytes). Warning Initializers of global non-`const` variables (including NVRAM variables) are ignored. As such, this data must be initialized by application code. Flash Memory Endurance The flash memory for the ST31G480, which is the Secure Element used in the Ledger Blue, is rated for 500 000 erase / write cycles. This should be more than enough to last the expected lifetime of the device, but only if applications use it properly. Applications should avoid erasures as much as possible. Here are some techniques for avoiding wearing out the device’s flash memory. Firstly, if you intend to be changing data in flash memory many times while an application is running, consider caching the data in RAM and then flushing to flash memory when the application has finished its operation. This of course has the downside of possible data loss if the user powers off the device (perhaps by unplugging it, in the case of the Nano S) before the data has been written to persistent storage. Secondly, developers should be aware that flash memory pages are aligned to 64-byte boundaries. The rating of 500 000 erase / write cycles mentioned earlier means that each page in flash memory is expected to survive 500 000 erasures. As such, one can develop an application that writes to as few pages as possible. For example, if you intend to store 32 bytes of data in flash memory, write amplification can be avoided by making sure that 32 bytes of data is contained entirely within a single page (and modified using only a single call to nvm_write(...)). If the data crossed a 64-byte page boundary, then writing to it once may require two pages to be erased instead of just one. In the future, Ledger will provide various persistent storage utilities within BOLOS and the SDKs to simplify the process of using flash memory efficiently. PIC and Model Implications PIC stands for Position-Independent Code. The BOLOS toolchain produces PIC to allow for the code Link address to be different from the code Execution address. For example, the main function is linked in the generated application at address 0xC0D00000. However, the slot used when loaded into the Secure Element could be 0x10E40400. Therefore, if the code makes a reference to 0xC0D00000, even with an offset, it would be denied access as the application is locked by the Memory Protection Unit (not to mention, this is not the correct address of the main function at runtime). The PIC assembly generator makes sure every dereference is relative to the Program Counter, and never to an arbitrary address resolved during the link stage. This behavior is supported by clang versions 4.0.0 and later. Traditionally, PIC code implies the BSS segment (RAM variables) is at a constant offset of the code. For example, if code is at 0xC0D00000, then global vars may be at 0xC2D00000, so if loaded at 0x10E00000 then global vars would be at 0x12E00000. However, BOLOS uses a fixed address for global vars. The global variables start address and length are defined in the link script. Only the code is meant to be placed at different addresses (in flash memory, rather than RAM). The model we chose has limitations, which are related to the way const data and code is referenced in other const data. Here is a simple example: const char array1[] = {1, 2, 3, 4}; const char array2[] = {1, 2, 3, 4}; const char *array_2d[] = {array1, array2}; void main() { int sum, i, j; sum = 0; for (i = 0; i &lt; 2; i++) { for (j = 0; j &lt; 4; j++) { sum += array_2d[i][j]; // Segmentation Fault! } } } In the example above, when dereferencing array_2d, the compiler uses a link-time address (in the 0xC0D00000 space, following the previous examples). This is not where the program is loaded in memory at runtime. Therefore, when the dereference is executed, it causes a segmentation fault that effectively stalls the SE. Luckily, the solution is pretty simple, thanks to a small piece of assembly provided with the SDKs which is invoked with the PIC(...) macro. PIC(...) uses the current load address to adjust the link-time address in order to acquire the correct runtime address of const data and code. The above examples can be corrected by modifying the line where array_2d is dereferenced to do the following: sum += ((const char*) PIC(array_2d[i]))[j]; The same mechanism must be applied when storing function pointers in const data. The PIC call cast is just different. Additionally, if a non-link-time address is passed to PIC(...), then it will be preserved. This is possible due to the wisely chosen link-time address which is beyond both real RAM and loadable addresses. For example, PIC(...) is used during a call to io_seproxyhal_display_default(...), all display elements can hold a reference to a string to be displayed with the element, and the string could be in RAM or code, and therefore PIC(...) is applied to acquire the correct runtime address of the string, even if it’s in RAM.","dateModified":"2021-04-22T15:38:24+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/docs/NA/u_memory/"},"url":"http://localhost:4000/docs/NA/u_memory/","author":{"@type":"Person","name":"pscott"},"@type":"BlogPosting","headline":"Persistent Storage and PIC","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+  <meta property="og:image" content="http://localhost:4000/uploads/"/>
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="shortcut icon" type="image/png" href="/uploads/favicon.png" >
+  <link rel="alternate" type="application/rss+xml" title="Ledger Developer pages" href="/feed.xml">
+  <script src="/assets/js/main.js"></script>
+  
+    <script>
+function searchResults(form) {
+
+    var currentItem = null;
+    var search = document.getElementById(form);
+    var results = document.getElementById(form + "-results");
+    var toggle = document.getElementById(form + "-toggle");
+
+    function removeActive() {
+        for (i = 0; i < results.children.length; i++) {
+            results.children[i].classList.remove("uk-background-muted");
+        }
+    }
+
+    // Detect all clicks on the document
+    document.addEventListener("click", function(event) {
+
+        var isClickSearch = false;
+        var isClickResults = false;
+        var isClickSearchToggle = false;
+
+        if (search !== null) {
+            isClickSearch = search.contains(event.target);
+        }
+
+        if (results !== null) {
+            isClickResults = results.contains(event.target);
+        }
+
+        if (toggle !== null) {
+            isClickSearchToggle = toggle.contains(event.target);
+        }
+
+        if (isClickSearch || isClickSearchToggle) {
+            results.style.display = "block";
+        }        
+
+        if (!isClickResults && !isClickSearch && !isClickSearchToggle) {
+            results.style.display = "none";
+        }        
+        
+    });    
+
+    results.addEventListener("mouseover", function(event) {
+
+        removeActive();
+        event.target.parentElement.classList.add("uk-background-muted");
+        currentItem = null;
+
+    });
+
+    results.addEventListener("mouseout", function(event) {
+        event.target.parentElement.classList.remove("uk-background-muted");
+    });
+
+
+    search.addEventListener("keyup", function(event) {
+
+        var resultItems = results.children;
+        var resultCount = results.children.length;
+                                
+        if (event.keyCode === 40) {
+
+            if (currentItem < (resultCount - 1)) {
+                if (currentItem === null) {
+                    currentItem = 0;
+                } else {
+                    removeActive();
+                    currentItem++;
+                }
+                removeActive();
+                resultItems[currentItem].classList.add("uk-background-muted");
+            }
+            
+        } else if (event.keyCode === 38) {
+
+            if (currentItem > 0) {
+                if (currentItem === null) {
+                    currentItem = 0;
+                } else {
+                    removeActive();
+                    currentItem--;
+                }
+                removeActive();
+                resultItems[currentItem].classList.add("uk-background-muted");
+            }
+
+        } else if (event.keyCode === 13) {
+
+            resultItems[currentItem].children[0].click();
+
+        }
+
+    });
+
+}
+</script>
+  
+  
+  
+<script src="http://127.0.0.1:35729/livereload.js"></script></head>
+
+    <body>
+
+    
+        <div data-uk-sticky="animation: uk-animation-slide-top; sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; cls-inactive: uk-navbar-transparent; top: 200">
+    <nav class="uk-navbar-container">
+        <div class="uk-container">
+            <div data-uk-navbar>
+                <div class="uk-navbar-left">
+                    <a class="uk-navbar-item uk-logo uk-visible@m" href="/">Ledger Developer pages</a>
+                    
+                        <a class="uk-navbar-toggle uk-hidden@m" href="#offcanvas-docs" data-uk-toggle><span data-uk-navbar-toggle-icon></span> <span class="uk-margin-small-left">Docs</span></a>
+                    
+
+                    <ul class="uk-navbar-nav uk-visible@m">
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Creating content</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Tools & Frameworks</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Release notes</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Tutorials</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="#">_Old</a>
+                                        
+                                            <div class="uk-navbar-dropdown">
+                                                <ul class="uk-nav uk-navbar-dropdown-nav">
+                                                    
+                                                    
+                                                        
+                                                        
+                                                        <li><a href="/docs/TMPL/installation/">Template docs</a></li>
+                                                    
+                                                    
+                                                    
+                                                        
+                                                        
+                                                        <li><a href="/blog/">Blog</a></li>
+                                                    
+                                                    
+                                                    
+                                                        <li class="uk-nav-header">Changelogs</li>
+                                                    
+                                                    
+                                                </ul>
+                                            </div>
+                                        
+                                        </li>
+                                                                                                        
+                                
+                            
+                        
+                    </ul>
+                </div>
+                <div class="uk-navbar-center uk-hidden@m">
+                    <a class="uk-navbar-item uk-logo" href="/">Ledger Developer pages</a>
+                </div>
+                <div class="uk-navbar-right">
+                    
+                        
+                            <div>
+                                <a id="search-navbar-toggle" class="uk-navbar-toggle" uk-search-icon href="#"></a>
+                                <div class="uk-drop uk-background-default uk-border-rounded" uk-drop="mode: click; pos: left-center; offset: 0">
+                                    <form class="uk-search uk-search-navbar uk-width-1-1" onsubmit="return false;">
+                                        <input id="search-navbar" class="uk-search-input" type="search" placeholder="Search for answers" autofocus autocomplete="off">
+                                    </form>
+                                    <ul id="search-navbar-results" class="uk-position-absolute uk-width-1-1 uk-list"></ul>
+                                </div>
+                            </div>
+                            <script>
+                            SimpleJekyllSearch({
+                                searchInput: document.getElementById('search-navbar'),
+                                resultsContainer: document.getElementById('search-navbar-results'),
+                                noResultsText: '<li class="no-results">No results found</li>',
+                                searchResultTemplate: '<li><a href="{url}">{title}</a></li>',
+                                json: "/search.json"
+                            });
+                            searchResults("search-navbar");
+                            </script>
+                        
+                    
+
+                    <ul class="uk-navbar-nav uk-visible@m">
+                        
+                    </ul>
+
+                    
+                        <a class="uk-navbar-toggle uk-hidden@m" href="#offcanvas" data-uk-toggle><span data-uk-navbar-toggle-icon></span> <span class="uk-margin-small-left">Menu</span></a>
+                    
+
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
+    
+
+    <div class="uk-section">
+    <div class="uk-container">
+        <div class="uk-grid-large" data-uk-grid>
+
+            <div class="sidebar-fixed-width uk-visible@m">
+                <div class="sidebar-docs uk-position-fixed uk-margin-top">
+                    
+                    <h5>Background Information</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/bg_introduction/">Introduction</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/bg_personal_security_devices/">Personal Security Devices</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/bg_master_seed/">The Master Seed</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/bg_hd_keys/">HD Key Generation</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/bg_hd_use_cases/">Applications for HD Trees</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/bg_application_isolation/">Application Isolation</a></li>
+                    
+                    </ul>
+                    
+                    <h5>BOLOS Platform</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/b_introduction/">Introduction</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/b_overview/">Overview</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/b_features/">BOLOS Features</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/b_hardware_architecture/">Hardware Architecture</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/b_application_environment/">Application Environment</a></li>
+                    
+                    </ul>
+                    
+                    <h5>Userspace Development</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_introduction/">Introduction</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_setup/">Setting it up</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_writing_apps/">Writing Apps</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_display_management/">Display Management</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_advanced_display_management/">Advanced display management</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_low_level_display_management/">Low-level display management</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_syscalls/">Interaction Between BOLOS and Apps</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_application_structure/">Application Structure and I/O</a></li>
+                    
+                      
+                      
+                      <li class="uk-active"><a href="/docs/NA/u_memory/">Persistent Storage and PIC</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_alignment/">Memory alignment</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_troubleshooting/">Common Pitfalls and Troubleshooting</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_debugging/">Application Debug</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_speculos/">Emulating devices with Speculos</a></li>
+                    
+                    </ul>
+                    
+                    <h5>Additional Resources</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/a_publishing_an_app/">Publishing an Application</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/a_external_docs/">External Documentation</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/a_security_guidelines/">Developing Secure Ledger Apps</a></li>
+                    
+                    </ul>
+                    
+                </div>
+            </div>
+
+            <div class="uk-width-1-1 uk-width-expand@m">
+
+                <article class="uk-article">
+
+                    <h1 class="uk-article-title">Persistent Storage and PIC</h1>
+
+                    <p class="uk-text-lead uk-text-muted">Not for goldfish</p>
+
+                    <div class="uk-article-meta uk-margin-top uk-margin-medium-bottom uk-flex uk-flex-middle">
+                        
+
+
+  
+  <img class="uk-border-circle avatar" src="http://localhost:4000/uploads/avatar-pscott.jpg" alt="pscott">
+
+
+<div>
+  
+    Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">pscott</span></span><br>
+  
+  <time datetime="" itemprop="datePublished">
+    
+    
+  </time>
+</div>
+                    </div>
+
+                    <div class="article-content link-primary">
+                        <h4 class="no_toc" id="sections-in-this-article">Sections in this article</h4>
+<ul id="markdown-toc">
+  <li><a href="#introduction" id="markdown-toc-introduction">Introduction</a>    <ul>
+      <li><a href="#types-of-memory" id="markdown-toc-types-of-memory">Types of Memory</a></li>
+      <li><a href="#flash-memory-endurance" id="markdown-toc-flash-memory-endurance">Flash Memory Endurance</a></li>
+      <li><a href="#pic-and-model-implications" id="markdown-toc-pic-and-model-implications">PIC and Model Implications</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>BOLOS applications have access to two different types of memory in the
+Secure Element: a small amount of RAM for the call stack and certain
+global variables, and a considerably larger amount of flash memory for
+persistent storage. Access to flash memory is regulated by the Memory
+Protection Unit which is configured by BOLOS to prevent applications
+from tampering with parts of flash memory that they shouldn’t. However,
+applications are able to access the part of flash memory where their
+constant data and code is defined. This data includes code and <code class="language-plaintext highlighter-rouge">const</code>
+variables, but applications may also allocate extra space in NVRAM to be
+used at runtime for persistent storage.</p>
+
+<h3 id="types-of-memory">Types of Memory</h3>
+
+<p>All global variables that are declared as <code class="language-plaintext highlighter-rouge">const</code> are stored in
+read-only flash memory, right next to code. All normal global variables
+that are declared as non-<code class="language-plaintext highlighter-rouge">const</code> are stored in RAM. However, thanks to
+the link script (<code class="language-plaintext highlighter-rouge">script.ld</code>) in the SDK, global variables that are
+declared as non-<code class="language-plaintext highlighter-rouge">const</code> and are given the prefix <code class="language-plaintext highlighter-rouge">N_</code> are placed in a
+special write-permitted location of NVRAM. This data can be read in the
+same way that regular global variables are read. However, writing to
+NVRAM variables must be done using the <code class="language-plaintext highlighter-rouge">nvm_write(...)</code> function defined
+by the SDK, which performs a syscall. When loading the app, NVRAM
+variables are initialized with data specified in the app’s hex file
+(this is usually just zero bytes).</p>
+
+<div class="warning">
+
+<div class="title">
+
+Warning
+
+</div>
+
+Initializers of global non-`const` variables (including NVRAM variables)
+are ignored. As such, this data must be initialized by application code.
+
+</div>
+
+<h3 id="flash-memory-endurance">Flash Memory Endurance</h3>
+
+<p>The flash memory for the
+<a href="http://www.st.com/en/secure-mcus/st31g480.html">ST31G480</a>, which is the
+Secure Element used in the Ledger Blue, is rated for 500 000 erase /
+write cycles. This should be more than enough to last the expected
+lifetime of the device, but only if applications use it properly.
+Applications should avoid erasures as much as possible. Here are some
+techniques for avoiding wearing out the device’s flash memory.</p>
+
+<p>Firstly, if you intend to be changing data in flash memory many times
+while an application is running, consider caching the data in RAM and
+then flushing to flash memory when the application has finished its
+operation. This of course has the downside of possible data loss if the
+user powers off the device (perhaps by unplugging it, in the case of the
+Nano S) before the data has been written to persistent storage.
+Secondly, developers should be aware that flash memory pages are aligned
+to 64-byte boundaries. The rating of 500 000 erase / write cycles
+mentioned earlier means that each page in flash memory is expected to
+survive 500 000 erasures. As such, one can develop an application that
+writes to as few pages as possible. For example, if you intend to store
+32 bytes of data in flash memory, write amplification can be avoided by
+making sure that 32 bytes of data is contained entirely within a single
+page (and modified using only a single call to <code class="language-plaintext highlighter-rouge">nvm_write(...)</code>). If the
+data crossed a 64-byte page boundary, then writing to it once may
+require two pages to be erased instead of just one.</p>
+
+<p>In the future, Ledger will provide various persistent storage utilities
+within BOLOS and the SDKs to simplify the process of using flash memory
+efficiently.</p>
+
+<h3 id="pic-and-model-implications">PIC and Model Implications</h3>
+
+<p>PIC stands for Position-Independent Code. The BOLOS toolchain produces
+PIC to allow for the code <strong>Link address</strong> to be different from the code
+<strong>Execution address</strong>. For example, the <code class="language-plaintext highlighter-rouge">main</code> function is linked in the
+generated application at address <code class="language-plaintext highlighter-rouge">0xC0D00000</code>. However, the slot used
+when loaded into the Secure Element could be <code class="language-plaintext highlighter-rouge">0x10E40400</code>. Therefore, if
+the code makes a reference to <code class="language-plaintext highlighter-rouge">0xC0D00000</code>, even with an offset, it
+would be denied access as the application is locked by the Memory
+Protection Unit (not to mention, this is not the correct address of the
+<code class="language-plaintext highlighter-rouge">main</code> function at runtime).</p>
+
+<p>The PIC assembly generator makes sure every dereference is relative to
+the Program Counter, and never to an arbitrary address resolved during
+the link stage. This behavior is supported by clang versions 4.0.0 and
+later.</p>
+
+<p>Traditionally, PIC code implies the BSS segment (RAM variables) is at a
+constant offset of the code. For example, if code is at <code class="language-plaintext highlighter-rouge">0xC0D00000</code>,
+then global vars may be at <code class="language-plaintext highlighter-rouge">0xC2D00000</code>, so if loaded at <code class="language-plaintext highlighter-rouge">0x10E00000</code>
+then global vars would be at <code class="language-plaintext highlighter-rouge">0x12E00000</code>. However, BOLOS uses a fixed
+address for global vars. The global variables start address and length
+are defined in the link script. Only the code is meant to be placed at
+different addresses (in flash memory, rather than RAM).</p>
+
+<p>The model we chose has limitations, which are related to the way <code class="language-plaintext highlighter-rouge">const</code>
+data and code is referenced in other <code class="language-plaintext highlighter-rouge">const</code> data. Here is a simple
+example:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">const</span> <span class="kt">char</span> <span class="n">array1</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">};</span>
+<span class="k">const</span> <span class="kt">char</span> <span class="n">array2</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">};</span>
+<span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">array_2d</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="n">array1</span><span class="p">,</span> <span class="n">array2</span><span class="p">};</span>
+
+<span class="kt">void</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">sum</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">;</span>
+    <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">sum</span> <span class="o">+=</span> <span class="n">array_2d</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">];</span> <span class="c1">// Segmentation Fault!</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In the example above, when dereferencing <code class="language-plaintext highlighter-rouge">array_2d</code>, the compiler uses a
+link-time address (in the <code class="language-plaintext highlighter-rouge">0xC0D00000</code> space, following the previous
+examples). This is not where the program is loaded in memory at runtime.
+Therefore, when the dereference is executed, it causes a segmentation
+fault that effectively stalls the SE. Luckily, the solution is pretty
+simple, thanks to a small piece of assembly provided with the SDKs which
+is invoked with the <code class="language-plaintext highlighter-rouge">PIC(...)</code> macro. <code class="language-plaintext highlighter-rouge">PIC(...)</code> uses the current load
+address to adjust the link-time address in order to acquire the correct
+runtime address of <code class="language-plaintext highlighter-rouge">const</code> data and code. The above examples can be
+corrected by modifying the line where <code class="language-plaintext highlighter-rouge">array_2d</code> is dereferenced to do
+the following:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">sum</span> <span class="o">+=</span> <span class="p">((</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span><span class="p">)</span> <span class="n">PIC</span><span class="p">(</span><span class="n">array_2d</span><span class="p">[</span><span class="n">i</span><span class="p">]))[</span><span class="n">j</span><span class="p">];</span>
+</code></pre></div></div>
+
+<p>The same mechanism must be applied when storing function pointers in
+<code class="language-plaintext highlighter-rouge">const</code> data. The PIC call cast is just different. Additionally, if a
+non-link-time address is passed to <code class="language-plaintext highlighter-rouge">PIC(...)</code>, then it will be
+preserved. This is possible due to the wisely chosen link-time address
+which is beyond both real RAM and loadable addresses. For example,
+<code class="language-plaintext highlighter-rouge">PIC(...)</code> is used during a call to
+<code class="language-plaintext highlighter-rouge">io_seproxyhal_display_default(...)</code>, all display elements can hold a
+reference to a string to be displayed with the element, and the string
+could be in RAM or code, and therefore <code class="language-plaintext highlighter-rouge">PIC(...)</code> is applied to acquire
+the correct runtime address of the string, even if it’s in RAM.</p>
+
+
+                        
+                            <!-- FC
+                            <div class="share uk-text-center uk-margin-medium-top">
+    
+        <a class="uk-link-muted" href="https://twitter.com/intent/tweet?text=Persistent Storage and PIC&url=http://localhost:4000/docs/NA/u_memory/&via=&related=" rel="nofollow" target="_blank" title="Share on Twitter" onclick="window.open(this.href, 'twitter', 'width=550,height=235');return false;"><span data-uk-icon="icon: twitter; ratio: 1.2"></span></a>
+    
+    
+        <a class="uk-link-muted uk-margin-small-left" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2Fdocs%2FNA%2Fu_memory%2F" rel="nofollow" target="_blank" title="Share on Facebook" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;"><span data-uk-icon="icon: facebook; ratio: 1.2"></span></a>
+    
+</div>
+                            -->
+                        
+                    </div>
+
+                    
+
+                    <hr class="uk-margin-medium">
+
+                    
+
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+
+
+                    <div class="uk-margin-large-top">
+    <h3>Related Docs</h3>
+
+    
+    
+    
+
+    <ul class="uk-list link-secondary">
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+    </ul>
+</div>
+
+
+                    
+                </article>
+
+                <script>
+                    // Table of contents scroll to
+                    UIkit.scroll('#markdown-toc a', {
+                        duration: 400,
+                        offset: 120
+                    });
+                </script>
+
+            </div>
+
+    </div>
+</div>
+
+
+    <div id="offcanvas-docs" data-uk-offcanvas="overlay: true">
+    <div class="uk-offcanvas-bar">
+
+        <button class="uk-offcanvas-close" type="button" data-uk-close></button>
+
+        
+        <h5 class="uk-margin-top">Getting Started</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/installation/">Theme installation</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/setup/">Basic theme setup</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/navigation/">Navigation bar</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/footer/">Footer options</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/posts/">Creating your first post in Jekyll</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/docs/">Creating docs posts</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/comments/">Enabling comments (via Disqus)</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/analytics/">Google Analytics</a></li>
+        
+        </ul>
+        
+        <h5 class="uk-margin-top">Theme Features</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/hero/">Hero page header</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/boxes/">Category boxes section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/featured/">Fearured docs section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/videos/">Video lightbox boxes section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/faq/">Frequently asked questions section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/team/">Team members section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/cta/">Call to action section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/changelog/">Creating a changelog</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/contact/">Contact form (via FormSpree)</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/media/">Adding media to post and doc content</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/toc/">Adding table of contents to docs</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/alerts/">Adding alerts to content</a></li>
+        
+        </ul>
+        
+        <h5 class="uk-margin-top">Customization</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/translation/">Translation</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/customize/">Customization</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/development/">Development</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/sources/">Sources and credits</a></li>
+        
+        </ul>
+        
+        <h5 class="uk-margin-top">Help</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/support/">Contacting support</a></li>
+        
+        </ul>
+        
+
+    </div>
+</div>
+
+
+    <div id="offcanvas" data-uk-offcanvas="flip: true; overlay: true">
+    <div class="uk-offcanvas-bar">
+
+        <a class="uk-logo uk-margin-small-bottom" href="/">Ledger Developer pages</a>
+     
+        <button class="uk-offcanvas-close" type="button" data-uk-close></button>
+      
+        <ul class="uk-nav uk-nav-primary uk-margin-top">
+            
+                
+
+                
+
+                
+                    <li><a href="/" >Home</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><a href="/docs/TMPL/installation" >Docs</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><a href="/blog/" >Blog</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><a href="/changelog-timeline/" >Changelog</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><div class="uk-navbar-item"><a class="uk-button uk-button-success" href="/contact/" >Contact</a></div></li>
+                
+            
+        </ul>
+
+        <div class="uk-margin-top uk-text-center">
+            <div data-uk-grid class="uk-child-width-auto uk-grid-small uk-flex-center uk-grid">
+                
+<div class="uk-first-column">
+    <a href="https://twitter.com/" data-uk-icon="icon: twitter" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+<div>
+    <a href="https://www.facebook.com/" data-uk-icon="icon: facebook" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+<div>
+    <a href="https://www.instagram.com/" data-uk-icon="icon: instagram" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+<div>
+    <a href="https://vimeo.com/" data-uk-icon="icon: vimeo" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+    
+        <footer class="uk-section uk-text-center uk-text-muted">
+    <div class="uk-container uk-container-small">
+
+        <div>
+            <ul class="uk-subnav uk-flex-center">
+                
+                    
+                    
+                    
+                        <li><a href="/" >Home</a></li>
+                    
+                
+                    
+                    
+                    
+                        <li><a href="/blog/" >Blog</a></li>
+                    
+                
+                    
+                    
+                    
+                        <li><a href="/contact/" >Contact</a></li>
+                    
+                
+            </ul>
+        </div>
+        <div class="uk-margin-medium">
+            <div data-uk-grid class="uk-child-width-auto uk-grid-small uk-flex-center uk-grid">
+                
+                
+<div class="uk-first-column">
+    <a href="https://twitter.com/" data-uk-icon="icon: twitter" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+<div>
+    <a href="https://www.facebook.com/" data-uk-icon="icon: facebook" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+<div>
+    <a href="https://www.instagram.com/" data-uk-icon="icon: instagram" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+<div>
+    <a href="https://vimeo.com/" data-uk-icon="icon: vimeo" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+
+                
+            </div>
+        </div>
+        <div class="uk-margin-medium uk-text-small copyright link-secondary">Made by <a href="https://ledger.com/">Ledger</a> France</div>
+
+    </div>
+</footer>
+
+    
+
+    
+
+    
+
+    </body>
+
+</html>

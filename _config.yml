@@ -1,0 +1,203 @@
+# Welcome to Jekyll!
+#
+# This config file is meant for settings that affect your whole blog.
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
+
+# Site title and description
+title:              Ledger Developer pages
+description:        Integrating with Ledger Live
+lang:               en
+
+# Site subpath, e.g. /blog
+baseurl:            ""
+
+# Permalink URLs structure, for permalink style options see: https://jekyllrb.com/docs/permalinks/
+permalink:          /:title/
+
+# Site base hostname & protocol, e.g. http://example.com
+url:                ""
+
+# Site logo # e.g. logo.png, upload logo image file to /uploads/ folder
+logo:               
+
+navbar:
+    sticky:         true
+    search:         true
+  
+# Default author settings
+author:
+    name:           Francesco Cipollone
+    title:          Tech writer  
+    avatar:         avatar-francesco.png
+
+# Author settings, displayed on post and doc pages if front matter references author name e.g. author: peter
+authors:
+    fabrice:
+      name:         Fabrice Dautriat
+      title:        Product Coin Integration     
+      avatar:       avatar-fabrice.jpg
+    francesco:
+      name:         Francesco Cipollone
+      title:        Tech writer  
+      avatar:       avatar-francesco.png
+    guillaume:
+      name:         Guillaume Lethuillier
+      title:        QA Development Engineer    
+      avatar:       avatar-guillaume.jpg
+    hakim:
+      name:         Hakim Aammar
+      title:        Developer     
+      avatar:       avatar-hakim.jpg
+    henri:
+      name:         Henri Ly
+      title:        Developer     
+      avatar:       avatar-henri.jpg
+    remi_j:
+      name:         Remi Jarasson
+      title:        Developer     
+      avatar:       avatar-remi_j.jpg
+    gerry:
+      name:         Gerry Agbobada
+      title:        Developer     
+      avatar:       avatar-gerry.jpg
+    leo:
+      name:         Leo Lehmann
+      title:        Developer     
+      avatar:       avatar-leo.png
+    nafissa:
+      name:         Nafissa Ndiaye
+      title:        Nano App Product manager     
+      avatar:       avatar-nafissa.jpg
+    pierre:
+      name:         Pierre Pollastri
+      title:        Lead Engineer     
+      avatar:       avatar-pierre.jpg
+    remi_b:
+      name:         Remi Barjon
+      title:        Developer     
+      avatar:       avatar-remi_b.jpg
+    pscott:
+      name:         pscott
+      title:        Firmware Applications Engineer     
+      avatar:       avatar-pscott.jpg
+    Tamtamhero:
+      name:         Tamtamhero
+      title:        Firmware Developer     
+      avatar:       avatar-tamtamhero.jpg
+    niooss:
+      name:         niooss-ledger
+      title:        Developer     
+      avatar:       avatar-niooss.png
+    greenknot:
+      name:         greenknot
+      title:        Security     
+      avatar:       avatar-greenknot.png
+    john:
+      name:         John Brown
+      title:        Support     
+      avatar:       avatar-john.png
+    evan:
+      name:         Evan Wells
+      title:        Support    
+      avatar:       avatar-evan.png
+    sara:
+      name:         Sara Galen
+      title:        Lead Developer     
+      avatar:       avatar-sara.png
+    alex:
+      name:         Alex Koch
+      title:        Design Engineer     
+      avatar:       avatar-alex.png
+    daniel:
+      name:         Daniel Shultz
+      title:        Developer      
+      avatar:       avatar-daniel.png
+    tom:
+      name:         Tom Farrell
+      title:        Developer     
+      avatar:       avatar-tom.png
+
+# Social icons displayed in footer
+social:
+    email:
+    website:
+    facebook:       https://www.facebook.com/
+    flickr:
+    dribbble:
+    github:
+    googleplus:
+    instagram:      https://www.instagram.com/
+    linkedin:
+    pinterest:
+    twitter:        https://twitter.com/
+    vimeo:          https://vimeo.com/
+    youtube:
+
+# Share button
+share:
+    post:           true # Display share buttons on a post page
+    doc:            true # Display share buttons on a doc page
+    twitter:        username # Enable by adding Twitter handle 
+    facebook:       true # Enable by setting true (Facebook handle not required)
+
+# Default footer image settings
+footer:
+    copyright:      Made by <a href="https://ledger.com/">Ledger</a> France
+
+# Disqus comments shortname, requires Disqus account https://disqus.com/
+disqus:
+    shortname:      # 1234
+
+# Google analytics code, get your code here https://www.google.com/analytics/
+google_analytics:
+
+# Number of posts displayed on blog page
+paginate:           10
+
+# Blog path
+paginate_path:      "/blog/:num/"
+
+# Path to post content assets directory i.e post images, pdfs etc
+uploads:            /uploads/
+
+# Build settings
+markdown:           kramdown
+highlighter:        rouge
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-gist
+  - jekyll-avatar
+  - jekyll-toc
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+
+sass:
+  style:            compressed
+
+collections:
+  docs:
+    output:         true
+  faqs:
+    output:         false
+  changelogs:
+    output:         false
+
+# Defaults
+defaults:
+  # _posts
+  - scope:
+      path:         ""
+      type:         posts
+    values:
+      layout:       post
+  # _docs
+  - scope:
+      path:         ""
+      type:         docs
+    values:
+      layout:       doc

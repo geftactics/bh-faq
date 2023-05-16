@@ -1,0 +1,13 @@
+# Boxes include navigation
+
+- title: Speculos
+  desc: Complete guide to building your app running on Nano
+  icon: cog
+  doc: SP/i_build
+
+- title: Python Loader
+  desc: Lean about all the options, features and how to use them
+  icon: settings
+  doc: TMPL/hero
+
+

@@ -1,0 +1,39 @@
+- title: Background Information
+  docs:
+  - NA/bg_introduction
+  - NA/bg_personal_security_devices
+  - NA/bg_master_seed
+  - NA/bg_hd_keys
+  - NA/bg_hd_use_cases
+  - NA/bg_application_isolation
+
+- title: BOLOS Platform
+  docs:
+  - NA/b_introduction
+  - NA/b_overview
+  - NA/b_features
+  - NA/b_hardware_architecture
+  - NA/b_application_environment
+
+- title: Userspace Development
+  docs:
+  - NA/u_introduction
+  - NA/u_setup
+  - NA/u_writing_apps
+  - NA/u_display_management
+  - NA/u_advanced_display_management
+  - NA/u_low_level_display_management
+  - NA/u_syscalls
+  - NA/u_application_structure
+  - NA/u_memory
+  - NA/u_alignment
+  - NA/u_troubleshooting
+  - NA/u_debugging
+  - NA/u_speculos
+
+- title: Additional Resources
+  docs:
+  - NA/a_publishing_an_app
+  - NA/a_external_docs
+  - NA/a_security_guidelines
+  

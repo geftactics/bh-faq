@@ -1,0 +1,25 @@
+# Video include content
+
+- title: Welcome to Ledger Live
+  desc: Discover Ledger Live, the one stop for your crypto
+  url: https://www.youtube.com/watch?v=dHo8UVfsJ40
+
+- title: Speculos set up 
+  desc: Nano emulation installation and execution
+  url: https://youtu.be/ZF4W3xgOUhQ 
+
+- title: Test Env set up Ledger Live
+  desc: Discover Ledger Live, the one stop for your crypto
+  url: https://youtu.be/dHo8UVfsJ40 
+
+- title: Toolchain Focus
+  desc: Learn how to publish your first post in Jekyll
+  url: https://youtu.be/8F6xKar5cRM
+
+- title: Ledger Live Testing
+  desc: Overview of Ledger Live, the must have asset companion
+  url: https://youtu.be/VR4p7pkh2TY
+
+- title: iOS emulation for Ledger Live
+  desc: Learn how to publish your first post in Jekyll
+  url: https://youtu.be/dPrykMF8gQQ 

@@ -1,0 +1,2035 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Getting your Ledger Live running | Ledger Developer pages</title>
+<meta name="generator" content="Jekyll v3.9.1" />
+<meta property="og:title" content="Getting your Ledger Live running" />
+<meta name="author" content="Francesco Cipollone" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Sections in this article" />
+<meta property="og:description" content="Sections in this article" />
+<link rel="canonical" href="http://localhost:4000/docs/CI/51_live_on_desktop/" />
+<meta property="og:url" content="http://localhost:4000/docs/CI/51_live_on_desktop/" />
+<meta property="og:site_name" content="Ledger Developer pages" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-04-22T15:38:24+02:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Getting your Ledger Live running" />
+<script type="application/ld+json">
+{"datePublished":"2021-04-22T15:38:24+02:00","description":"Sections in this article","dateModified":"2021-04-22T15:38:24+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/docs/CI/51_live_on_desktop/"},"url":"http://localhost:4000/docs/CI/51_live_on_desktop/","author":{"@type":"Person","name":"Francesco Cipollone"},"@type":"BlogPosting","headline":"Getting your Ledger Live running","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+  <meta property="og:image" content="http://localhost:4000/uploads/"/>
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="shortcut icon" type="image/png" href="/uploads/favicon.png" >
+  <link rel="alternate" type="application/rss+xml" title="Ledger Developer pages" href="/feed.xml">
+  <script src="/assets/js/main.js"></script>
+  
+    <script>
+function searchResults(form) {
+
+    var currentItem = null;
+    var search = document.getElementById(form);
+    var results = document.getElementById(form + "-results");
+    var toggle = document.getElementById(form + "-toggle");
+
+    function removeActive() {
+        for (i = 0; i < results.children.length; i++) {
+            results.children[i].classList.remove("uk-background-muted");
+        }
+    }
+
+    // Detect all clicks on the document
+    document.addEventListener("click", function(event) {
+
+        var isClickSearch = false;
+        var isClickResults = false;
+        var isClickSearchToggle = false;
+
+        if (search !== null) {
+            isClickSearch = search.contains(event.target);
+        }
+
+        if (results !== null) {
+            isClickResults = results.contains(event.target);
+        }
+
+        if (toggle !== null) {
+            isClickSearchToggle = toggle.contains(event.target);
+        }
+
+        if (isClickSearch || isClickSearchToggle) {
+            results.style.display = "block";
+        }        
+
+        if (!isClickResults && !isClickSearch && !isClickSearchToggle) {
+            results.style.display = "none";
+        }        
+        
+    });    
+
+    results.addEventListener("mouseover", function(event) {
+
+        removeActive();
+        event.target.parentElement.classList.add("uk-background-muted");
+        currentItem = null;
+
+    });
+
+    results.addEventListener("mouseout", function(event) {
+        event.target.parentElement.classList.remove("uk-background-muted");
+    });
+
+
+    search.addEventListener("keyup", function(event) {
+
+        var resultItems = results.children;
+        var resultCount = results.children.length;
+                                
+        if (event.keyCode === 40) {
+
+            if (currentItem < (resultCount - 1)) {
+                if (currentItem === null) {
+                    currentItem = 0;
+                } else {
+                    removeActive();
+                    currentItem++;
+                }
+                removeActive();
+                resultItems[currentItem].classList.add("uk-background-muted");
+            }
+            
+        } else if (event.keyCode === 38) {
+
+            if (currentItem > 0) {
+                if (currentItem === null) {
+                    currentItem = 0;
+                } else {
+                    removeActive();
+                    currentItem--;
+                }
+                removeActive();
+                resultItems[currentItem].classList.add("uk-background-muted");
+            }
+
+        } else if (event.keyCode === 13) {
+
+            resultItems[currentItem].children[0].click();
+
+        }
+
+    });
+
+}
+</script>
+  
+  
+  
+<script src="http://127.0.0.1:35729/livereload.js"></script></head>
+
+    <body>
+
+    
+        <div data-uk-sticky="animation: uk-animation-slide-top; sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; cls-inactive: uk-navbar-transparent; top: 200">
+    <nav class="uk-navbar-container">
+        <div class="uk-container">
+            <div data-uk-navbar>
+                <div class="uk-navbar-left">
+                    <a class="uk-navbar-item uk-logo uk-visible@m" href="/">Ledger Developer pages</a>
+                    
+                        <a class="uk-navbar-toggle uk-hidden@m" href="#offcanvas-docs" data-uk-toggle><span data-uk-navbar-toggle-icon></span> <span class="uk-margin-small-left">Docs</span></a>
+                    
+
+                    <ul class="uk-navbar-nav uk-visible@m">
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Creating content</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Tools & Frameworks</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Release notes</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Tutorials</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="#">_Old</a>
+                                        
+                                            <div class="uk-navbar-dropdown">
+                                                <ul class="uk-nav uk-navbar-dropdown-nav">
+                                                    
+                                                    
+                                                        
+                                                        
+                                                        <li><a href="/docs/TMPL/installation/">Template docs</a></li>
+                                                    
+                                                    
+                                                    
+                                                        
+                                                        
+                                                        <li><a href="/blog/">Blog</a></li>
+                                                    
+                                                    
+                                                    
+                                                        <li class="uk-nav-header">Changelogs</li>
+                                                    
+                                                    
+                                                </ul>
+                                            </div>
+                                        
+                                        </li>
+                                                                                                        
+                                
+                            
+                        
+                    </ul>
+                </div>
+                <div class="uk-navbar-center uk-hidden@m">
+                    <a class="uk-navbar-item uk-logo" href="/">Ledger Developer pages</a>
+                </div>
+                <div class="uk-navbar-right">
+                    
+                        
+                            <div>
+                                <a id="search-navbar-toggle" class="uk-navbar-toggle" uk-search-icon href="#"></a>
+                                <div class="uk-drop uk-background-default uk-border-rounded" uk-drop="mode: click; pos: left-center; offset: 0">
+                                    <form class="uk-search uk-search-navbar uk-width-1-1" onsubmit="return false;">
+                                        <input id="search-navbar" class="uk-search-input" type="search" placeholder="Search for answers" autofocus autocomplete="off">
+                                    </form>
+                                    <ul id="search-navbar-results" class="uk-position-absolute uk-width-1-1 uk-list"></ul>
+                                </div>
+                            </div>
+                            <script>
+                            SimpleJekyllSearch({
+                                searchInput: document.getElementById('search-navbar'),
+                                resultsContainer: document.getElementById('search-navbar-results'),
+                                noResultsText: '<li class="no-results">No results found</li>',
+                                searchResultTemplate: '<li><a href="{url}">{title}</a></li>',
+                                json: "/search.json"
+                            });
+                            searchResults("search-navbar");
+                            </script>
+                        
+                    
+
+                    <ul class="uk-navbar-nav uk-visible@m">
+                        
+                    </ul>
+
+                    
+                        <a class="uk-navbar-toggle uk-hidden@m" href="#offcanvas" data-uk-toggle><span data-uk-navbar-toggle-icon></span> <span class="uk-margin-small-left">Menu</span></a>
+                    
+
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
+    
+
+    <div class="uk-section">
+    <div class="uk-container">
+        <div class="uk-grid-large" data-uk-grid>
+
+            <div class="sidebar-fixed-width uk-visible@m">
+                <div class="sidebar-docs uk-position-fixed uk-margin-top">
+                    
+                    <h5>Getting Started</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/10_general_process/">General Process</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/20_modules/">Modules – General Architecture</a></li>
+                    
+                    </ul>
+                    
+                    <h5>Prerequisites</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/30_live_prerequisites/">Prerequisites</a></li>
+                    
+                    </ul>
+                    
+                    <h5>Coding</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/40_live_coin_integration/">Adding *MyCoin* to Ledger Live</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/41_live_cryptoassets/">Adding *MyCoin* to CryptoAssets library</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/42_live_app_bindings/">Adding *MyCoin* Nano App JS Bindings</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/43_live_common/">Adding *MyCoin* to Live-Common</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/44_live_frontend/">Adding *MyCoin* to Ledger Live Desktop and Mobile</a></li>
+                    
+                    </ul>
+                    
+                    <h5>Testing</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/50_live_tests/">Testing</a></li>
+                    
+                      
+                      
+                      <li class="uk-active"><a href="/docs/CI/51_live_on_desktop/">Getting your Ledger Live running</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/52_live_install_ios/">Building iOS Dev App</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/53_live_install_android/">Building Android Dev App</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/54_live_run_on_ios_android/">Running iOS and Android Dev Apps</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/55_live_gen_cli/">General CLI Checklist - User tests</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/56_live_spe_cli/">Specific CLI Checklist - User tests</a></li>
+                    
+                    </ul>
+                    
+                    <h5>Guidelines</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/60_live_guidelines/">JavaScript Coding Guidelines</a></li>
+                    
+                    </ul>
+                    
+                </div>
+            </div>
+
+            <div class="uk-width-1-1 uk-width-expand@m">
+
+                <article class="uk-article">
+
+                    <h1 class="uk-article-title">Getting your Ledger Live running</h1>
+
+                    
+
+                    <div class="uk-article-meta uk-margin-top uk-margin-medium-bottom uk-flex uk-flex-middle">
+                        
+
+
+  
+  <img class="uk-border-circle avatar" src="http://localhost:4000/uploads/avatar-francesco.png" alt="Francesco Cipollone">
+
+
+<div>
+  
+    Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Francesco Cipollone</span></span><br>
+  
+  <time datetime="" itemprop="datePublished">
+    
+    
+  </time>
+</div>
+                    </div>
+
+                    <div class="article-content link-primary">
+                        <h4 class="no_toc" id="sections-in-this-article">Sections in this article</h4>
+<ul id="markdown-toc">
+  <li><a href="#getting-your-ledger-live-running" id="markdown-toc-getting-your-ledger-live-running">Getting your Ledger Live running</a>    <ul>
+      <li><a href="#test-dataset" id="markdown-toc-test-dataset">test-dataset</a></li>
+      <li><a href="#how-does-a-test-work-" id="markdown-toc-how-does-a-test-work-">How does a test work ?</a></li>
+      <li><a href="#what-are-the-focus-when-testing-" id="markdown-toc-what-are-the-focus-when-testing-">What are the focus when testing ?</a></li>
+      <li><a href="#what-is-this-testing-" id="markdown-toc-what-is-this-testing-">What is this testing ?</a></li>
+      <li><a href="#how-does-it-work-" id="markdown-toc-how-does-it-work-">How does it work ?</a></li>
+      <li><a href="#how-to-define-a-test-" id="markdown-toc-how-to-define-a-test-">How to define a test ?</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="getting-your-ledger-live-running">Getting your Ledger Live running</h1>
+
+<!--
+No toc originally here
+-->
+
+<!--
+
+- [Getting your Ledger Live running](#getting-your-ledger-live-running)
+  - [test-dataset](#test-dataset)
+  - [How does a test work ?](#how-does-a-test-work-)
+  - [What are the focus when testing ?](#what-are-the-focus-when-testing-)
+  - [What is this testing ?](#what-is-this-testing-)
+  - [How does it work ?](#how-does-it-work-)
+  - [How to define a test ?](#how-to-define-a-test-)
+
+-->
+
+<hr />
+
+<ol>
+  <li>fork + clone git@github.com:LedgerHQ/ledger-live-common.git</li>
+  <li>cd ledger-live-common</li>
+  <li>yarn install</li>
+  <li>yalc publish</li>
+  <li>cd cli</li>
+  <li>yalc add @ledgerhq/live-common</li>
+  <li>yarn install</li>
+</ol>
+
+<blockquote>
+  <p>CLI ready to be used based on local live-common</p>
+</blockquote>
+
+<hr />
+
+<h2 id="test-dataset">test-dataset</h2>
+
+<p>this file allow us to simulate some transactions of our implementation.</p>
+
+<p>You will first need to set up the file <code class="language-plaintext highlighter-rouge">test-dataset.js</code></p>
+
+<ol>
+  <li>Create a <code class="language-plaintext highlighter-rouge">test-dataset.js</code> file</li>
+</ol>
+
+<p>then fill it with this empty template :</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import type { DatasetTest } from "../../types";
+import type { Transaction } from "./types";
+
+export default dataset: DatasetTest&lt;Transaction&gt; = {
+  implementations: ["js"],
+  currencies: {
+    mycoin: {
+    }
+  }
+}
+</code></pre></div></div>
+
+<p>then you will need to connect your nano with a seed that you want to freeze (that means you don’t want to do anymore transaction with that seed, or you will need to regenerate the snapshot everytime)</p>
+
+<p>and execute in the CLI the command :
+<code class="language-plaintext highlighter-rouge">ledger-live generateTestScanAccounts -c mycoin</code></p>
+
+<p>the output should be like this :</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// @flow</span>
+
+<span class="k">import</span> <span class="nx">type</span> <span class="p">{</span> <span class="nx">CurrenciesData</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">../../../types</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">type</span> <span class="p">{</span> <span class="nx">Transaction</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">../types</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">dataset</span><span class="p">:</span> <span class="nx">CurrenciesData</span><span class="o">&lt;</span><span class="nx">Transaction</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">scanAccounts</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">mycoin seed 1</span><span class="dl">"</span><span class="p">,</span>
+      <span class="na">apdus</span><span class="p">:</span> <span class="s2">`
+      =&gt; 100112344221c00002200000000000000000000000
+      &lt;= 213321ac21234122100000000000000000
+      =&gt; 100112344221c00002200000800000008000000080
+      &lt;= 213321ac21234122100000000000000000
+      =&gt; 100112344221c00002210000800000008000000080
+      &lt;= 213321ac21234122100000000000000000
+      =&gt; 100112344221c00002220000800000008000000080
+      &lt;= 213321ac21234122100000000000000000
+      =&gt; 100112344221c00002230000800000008000000080
+      `</span><span class="p">,</span>
+    <span class="p">},</span>
+  <span class="p">],</span>
+<span class="p">};</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">dataset</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>just keep the part with the scanAccounts and put it the <code class="language-plaintext highlighter-rouge">mycoin</code> part :</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// @flow</span>
+
+<span class="k">import</span> <span class="nx">type</span> <span class="p">{</span> <span class="nx">DatasetTest</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">../../types</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">type</span> <span class="p">{</span> <span class="nx">Transaction</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./types</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">dataset</span><span class="p">:</span> <span class="nx">DatasetTest</span><span class="o">&lt;</span><span class="nx">Transaction</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">implementations</span><span class="p">:</span> <span class="p">[</span><span class="dl">"</span><span class="s2">js</span><span class="dl">"</span><span class="p">],</span>
+  <span class="na">currencies</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">mycoin</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">scanAccounts</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">mycoin seed 1</span><span class="dl">"</span><span class="p">,</span>
+          <span class="na">apdus</span><span class="p">:</span> <span class="s2">`
+            =&gt; 100112344221c00002200000000000000000000000
+            &lt;= 213321ac21234122100000000000000000
+            =&gt; 100112344221c00002200000800000008000000080
+            &lt;= 213321ac21234122100000000000000000
+            =&gt; 100112344221c00002210000800000008000000080
+            &lt;= 213321ac21234122100000000000000000
+            =&gt; 100112344221c00002220000800000008000000080
+            &lt;= 213321ac21234122100000000000000000
+            =&gt; 100112344221c00002230000800000008000000080
+            `</span><span class="p">,</span>
+        <span class="p">},</span>
+      <span class="p">],</span>
+    <span class="p">},</span>
+  <span class="p">},</span>
+<span class="p">};</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">dataset</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>then get info on the accounts that you want to freeze, they will be used as references for our tests.
+It should look something like this :</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// @flow</span>
+
+<span class="k">import</span> <span class="nx">type</span> <span class="p">{</span> <span class="nx">DatasetTest</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">../../types</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">type</span> <span class="p">{</span> <span class="nx">Transaction</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./types</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">dataset</span><span class="p">:</span> <span class="nx">DatasetTest</span><span class="o">&lt;</span><span class="nx">Transaction</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">implementations</span><span class="p">:</span> <span class="p">[</span><span class="dl">"</span><span class="s2">js</span><span class="dl">"</span><span class="p">],</span>
+  <span class="na">currencies</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">mycoin</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">scanAccounts</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">mycoin seed 1</span><span class="dl">"</span><span class="p">,</span>
+          <span class="na">apdus</span><span class="p">:</span> <span class="s2">`
+            =&gt; 100112344221c00002200000000000000000000000
+            &lt;= 213321ac21234122100000000000000000
+            =&gt; 100112344221c00002200000800000008000000080
+            &lt;= 213321ac21234122100000000000000000
+            =&gt; 100112344221c00002210000800000008000000080
+            &lt;= 213321ac21234122100000000000000000
+            =&gt; 100112344221c00002220000800000008000000080
+            &lt;= 213321ac21234122100000000000000000
+            =&gt; 100112344221c00002230000800000008000000080
+            `</span><span class="p">,</span>
+        <span class="p">},</span>
+      <span class="p">],</span>
+      <span class="na">accounts</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="na">raw</span><span class="p">:</span> <span class="p">{</span>
+            <span class="na">id</span><span class="p">:</span> <span class="s2">`js:2:mycoin:ADDR:`</span><span class="p">,</span>
+            <span class="na">seedIdentifier</span><span class="p">:</span> <span class="nx">ADDR</span><span class="p">,</span>
+            <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">MyCoin 1</span><span class="dl">"</span><span class="p">,</span>
+            <span class="na">derivationMode</span><span class="p">:</span> <span class="dl">""</span><span class="p">,</span>
+            <span class="na">index</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="na">freshAddress</span><span class="p">:</span> <span class="nx">ADDR</span><span class="p">,</span>
+            <span class="na">freshAddressPath</span><span class="p">:</span> <span class="dl">"</span><span class="s2">44'/354'/0'/0/0'</span><span class="dl">"</span><span class="p">,</span>
+            <span class="na">freshAddresses</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="na">blockHeight</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="na">operations</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="na">pendingOperations</span><span class="p">:</span> <span class="p">[],</span>
+            <span class="na">currencyId</span><span class="p">:</span> <span class="dl">"</span><span class="s2">mycoin</span><span class="dl">"</span><span class="p">,</span>
+            <span class="na">unitMagnitude</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="na">lastSyncDate</span><span class="p">:</span> <span class="dl">""</span><span class="p">,</span>
+            <span class="na">balance</span><span class="p">:</span> <span class="dl">"</span><span class="s2">2111000</span><span class="dl">"</span><span class="p">,</span>
+          <span class="p">},</span>
+          <span class="na">transactions</span><span class="p">:</span> <span class="p">[</span>
+            <span class="c1">// HERE WE WILL INSERT OUR test</span>
+          <span class="p">],</span>
+        <span class="p">},</span>
+      <span class="p">],</span>
+    <span class="p">},</span>
+  <span class="p">},</span>
+<span class="p">};</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="nx">dataset</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="how-does-a-test-work-">How does a test work ?</h2>
+
+<p>The test-dataset will simulate an object <code class="language-plaintext highlighter-rouge">Transaction</code> that we have as input and as an output a <code class="language-plaintext highlighter-rouge">TransactionStatus</code> that we compare with an expected status.</p>
+
+<p>There’s some generic tests that are already made in <code class="language-plaintext highlighter-rouge">src/__tests__/test-helpers/bridge.js</code> that are mandatory to pass.</p>
+
+<p>so to implement our own test in <code class="language-plaintext highlighter-rouge">test-dataset.js</code> in the array of <code class="language-plaintext highlighter-rouge">transactions</code> you will add an Object typed like this:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// @flow</span>
+<span class="k">import</span> <span class="nx">Transaction</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./types.js</span><span class="dl">"</span>
+
+<span class="nx">type</span> <span class="nx">TestTransaction</span> <span class="o">=</span>
+    <span class="p">{</span>
+        <span class="na">name</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+        <span class="na">transaction</span><span class="p">:</span> <span class="nx">Transaction</span><span class="p">,</span>
+        <span class="na">expectedStatus</span><span class="p">:</span> <span class="p">{</span>
+            <span class="na">amount</span><span class="p">:</span> <span class="nx">BigNumber</span><span class="p">,</span>
+            <span class="na">errors</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="na">warnings</span><span class="p">:</span> <span class="p">{}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+</code></pre></div></div>
+
+<p>this <code class="language-plaintext highlighter-rouge">TestTransaction</code> will use as mainAccount the account that we have set before and then execute the command <code class="language-plaintext highlighter-rouge">getTransactionStatus</code> by using the <code class="language-plaintext highlighter-rouge">transaction</code> object as input.</p>
+
+<h2 id="what-are-the-focus-when-testing-">What are the focus when testing ?</h2>
+
+<p>Obviously we tried to cover as much as possible all the cases that are in <code class="language-plaintext highlighter-rouge">getTransactionStatus</code>.</p>
+
+<p>You can also check <code class="language-plaintext highlighter-rouge">test-specifics.js</code> if you want to mock some specific part that is not covered by transactionStatus.</p>
+
+<p>Transaction broadcast is an exception, it is tested differently, by a tool that we call “the bot”. See below.</p>
+
+<hr />
+
+<p>Requirement :</p>
+
+<ul>
+  <li>Docker</li>
+  <li>https://github.com/LedgerHQ/coin-apps or an elf of the nano app for LNS (create a empty folder with like : <code class="language-plaintext highlighter-rouge">&lt;device&gt;/&lt;firmware version&gt;/&lt;appName&gt;</code> example <code class="language-plaintext highlighter-rouge">nanos/1.6.1/mycoin</code>)</li>
+  <li>some currencies of the coin</li>
+</ul>
+
+<h2 id="what-is-this-testing-">What is this testing ?</h2>
+
+<p>We are testing the broadcast part and sync part.</p>
+
+<h2 id="how-does-it-work-">How does it work ?</h2>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ledger-live cleanSpeculos &amp;&amp; SEED="generate a seed for testing" COINAPPS="/path/to/coin/apps/folder" ledger-live bot -c mycoin
+</code></pre></div></div>
+
+<ul>
+  <li>
+    <p>you need to generate a SEED : https://iancoleman.io/bip39/
+use this seed for testing purpose only, then use the command before to have an adresse and send some currencies into it</p>
+  </li>
+  <li>
+    <p>the bot will execute each scenario if he met the requirement, then it will wait until the sync find the broadcasted transaction.</p>
+  </li>
+  <li>
+    <p>We also need to specify how the bot will react when he encounter certain screen, we will create <code class="language-plaintext highlighter-rouge">speculos-deviceActions.js</code></p>
+  </li>
+</ul>
+
+<h2 id="how-to-define-a-test-">How to define a test ?</h2>
+
+<p><code class="language-plaintext highlighter-rouge">speculos-deviceActions.js</code></p>
+
+<p>It is required to know every screen that your nano app contains, it will use the <code class="language-plaintext highlighter-rouge">title</code> of the screen then optionally check if the <code class="language-plaintext highlighter-rouge">expectedValue</code> of that screen is what we expect, then eventually execute the <code class="language-plaintext highlighter-rouge">button</code> action.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>title : name of the screen title
+button: "Rr" for the bot to push the Right button of the nano || "Ll" same for left || "LRlr" same but for both
+expectedValue: string of what we want to compare
+</code></pre></div></div>
+
+<p>You can use the following example to help you start to write how the bot will react :</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// @flow</span>
+
+<span class="k">import</span> <span class="nx">type</span> <span class="p">{</span> <span class="nx">DeviceAction</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">../../bot/types</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">type</span> <span class="p">{</span> <span class="nx">Transaction</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./types</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">formatCurrencyUnit</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">../../currencies</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">deviceActionFlow</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">../../bot/specs</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">expectedAmount</span> <span class="o">=</span> <span class="p">({</span> <span class="nx">account</span><span class="p">,</span> <span class="nx">status</span> <span class="p">})</span> <span class="o">=&gt;</span>
+  <span class="nx">formatCurrencyUnit</span><span class="p">(</span><span class="nx">account</span><span class="p">.</span><span class="nx">unit</span><span class="p">,</span> <span class="nx">status</span><span class="p">.</span><span class="nx">amount</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">disableRounding</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="p">})</span> <span class="o">+</span> <span class="dl">"</span><span class="s2"> MCN</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">acceptTransaction</span><span class="p">:</span> <span class="nx">DeviceAction</span><span class="o">&lt;</span><span class="nx">Transaction</span><span class="p">,</span> <span class="o">*&gt;</span> <span class="o">=</span> <span class="nx">deviceActionFlow</span><span class="p">({</span>
+  <span class="na">steps</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="na">title</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Starting Balance</span><span class="dl">"</span><span class="p">,</span>
+      <span class="na">button</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Rr</span><span class="dl">"</span><span class="p">,</span>
+      <span class="na">expectedValue</span><span class="p">:</span> <span class="nx">expectedAmount</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="na">title</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Send</span><span class="dl">"</span><span class="p">,</span>
+      <span class="na">button</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Rr</span><span class="dl">"</span><span class="p">,</span>
+      <span class="na">expectedValue</span><span class="p">:</span> <span class="nx">expectedAmount</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="na">title</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Fee</span><span class="dl">"</span><span class="p">,</span>
+      <span class="na">button</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Rr</span><span class="dl">"</span><span class="p">,</span>
+      <span class="na">expectedValue</span><span class="p">:</span> <span class="p">({</span> <span class="nx">account</span><span class="p">,</span> <span class="nx">status</span> <span class="p">})</span> <span class="o">=&gt;</span>
+        <span class="nx">formatCurrencyUnit</span><span class="p">(</span><span class="nx">account</span><span class="p">.</span><span class="nx">unit</span><span class="p">,</span> <span class="nx">status</span><span class="p">.</span><span class="nx">estimatedFees</span><span class="p">,</span> <span class="p">{</span>
+          <span class="na">disableRounding</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="p">})</span> <span class="o">+</span> <span class="dl">"</span><span class="s2"> XLM</span><span class="dl">"</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="na">title</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Destination</span><span class="dl">"</span><span class="p">,</span>
+      <span class="na">button</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Rr</span><span class="dl">"</span><span class="p">,</span>
+      <span class="na">expectedValue</span><span class="p">:</span> <span class="p">({</span> <span class="nx">transaction</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="nx">transaction</span><span class="p">.</span><span class="nx">recipient</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="na">title</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Accept</span><span class="dl">"</span><span class="p">,</span>
+      <span class="na">button</span><span class="p">:</span> <span class="dl">"</span><span class="s2">LRlr</span><span class="dl">"</span><span class="p">,</span>
+    <span class="p">},</span>
+  <span class="p">],</span>
+<span class="p">});</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="p">{</span> <span class="nx">acceptTransaction</span> <span class="p">};</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">specs.js</code></p>
+
+<p>You can check the following example to help you write your specs.</p>
+
+<p>The bot will execute all the <code class="language-plaintext highlighter-rouge">mutations</code> if it doesn’t encounter an invariant.</p>
+
+<p>then it will execute all the <code class="language-plaintext highlighter-rouge">updates</code> of the <code class="language-plaintext highlighter-rouge">Transaction</code> object.</p>
+
+<p>The bot will try to sign the transaction using instructions that you provided in <code class="language-plaintext highlighter-rouge">speculos-deviceActions.js</code></p>
+
+<p>Eventually it will broadcast the transaction in the blockchain and wait for the <code class="language-plaintext highlighter-rouge">sync</code> to find the operation and its optimisic version.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// @flow</span>
+<span class="k">import</span> <span class="nx">expect</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">expect</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">invariant</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">invariant</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">type</span> <span class="p">{</span> <span class="nx">AppSpec</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">../../bot/types</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">type</span> <span class="p">{</span> <span class="nx">Transaction</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./types</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">type</span> <span class="p">{</span> <span class="nx">Account</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">../../types</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">pickSiblings</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">../../bot/specs</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">isAccountEmpty</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">../../account</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="c1">// Ensure that, when the recipient corresponds to an empty account,</span>
+<span class="c1">// the amount to send is greater or equal to the required minimum</span>
+<span class="c1">// balance for such a recipient</span>
+<span class="kd">const</span> <span class="nx">checkSendableToEmptyAccount</span> <span class="o">=</span> <span class="p">(</span><span class="nx">amount</span><span class="p">,</span> <span class="nx">recipient</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">isAccountEmpty</span><span class="p">(</span><span class="nx">recipient</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">amount</span><span class="p">.</span><span class="nx">lte</span><span class="p">(</span><span class="nx">minBalanceNewAccount</span><span class="p">))</span> <span class="p">{</span>
+    <span class="nx">invariant</span><span class="p">(</span>
+      <span class="nx">amount</span><span class="p">.</span><span class="nx">gt</span><span class="p">(</span><span class="nx">minBalanceNewAccount</span><span class="p">),</span>
+      <span class="dl">"</span><span class="s2">not enough funds to send to new account</span><span class="dl">"</span>
+    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kd">const</span> <span class="nx">mycoin</span><span class="p">:</span> <span class="nx">AppSpec</span><span class="o">&lt;</span><span class="nx">Transaction</span><span class="o">&gt;</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">mycoin</span><span class="dl">"</span><span class="p">,</span>
+  <span class="nx">currency</span><span class="p">,</span>
+  <span class="na">appQuery</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">model</span><span class="p">:</span> <span class="dl">"</span><span class="s2">nanoS</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">appName</span><span class="p">:</span> <span class="dl">"</span><span class="s2">mycoin</span><span class="dl">"</span><span class="p">,</span>
+  <span class="p">},</span>
+  <span class="na">mutations</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="na">name</span><span class="p">:</span> <span class="dl">"</span><span class="s2">move ~50%</span><span class="dl">"</span><span class="p">,</span>
+      <span class="na">maxRun</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+      <span class="na">transaction</span><span class="p">:</span> <span class="p">({</span> <span class="nx">account</span><span class="p">,</span> <span class="nx">siblings</span><span class="p">,</span> <span class="nx">bridge</span><span class="p">,</span> <span class="nx">maxSpendable</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">sibling</span> <span class="o">=</span> <span class="nx">pickSiblings</span><span class="p">(</span><span class="nx">siblings</span><span class="p">,</span> <span class="mi">4</span><span class="p">);</span>
+        <span class="kd">const</span> <span class="nx">recipient</span> <span class="o">=</span> <span class="nx">sibling</span><span class="p">.</span><span class="nx">freshAddress</span><span class="p">;</span>
+
+        <span class="kd">let</span> <span class="nx">transaction</span> <span class="o">=</span> <span class="nx">bridge</span><span class="p">.</span><span class="nx">createTransaction</span><span class="p">(</span><span class="nx">account</span><span class="p">);</span>
+
+        <span class="kd">let</span> <span class="nx">amount</span> <span class="o">=</span> <span class="nx">spendableBalance</span>
+          <span class="p">.</span><span class="nx">div</span><span class="p">(</span><span class="mf">1.9</span> <span class="o">+</span> <span class="mf">0.2</span> <span class="o">*</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">())</span>
+          <span class="p">.</span><span class="nx">integerValue</span><span class="p">();</span>
+
+        <span class="nx">checkSendableToEmptyAccount</span><span class="p">(</span><span class="nx">amount</span><span class="p">,</span> <span class="nx">sibling</span><span class="p">);</span>
+
+        <span class="kd">const</span> <span class="nx">updates</span> <span class="o">=</span> <span class="p">[{</span> <span class="nx">amount</span> <span class="p">},</span> <span class="p">{</span> <span class="nx">recipient</span> <span class="p">}];</span>
+        <span class="k">return</span> <span class="p">{</span>
+          <span class="nx">transaction</span><span class="p">,</span>
+          <span class="nx">updates</span><span class="p">,</span>
+        <span class="p">};</span>
+      <span class="p">},</span>
+      <span class="na">test</span><span class="p">:</span> <span class="p">({</span> <span class="nx">account</span><span class="p">,</span> <span class="nx">accountBeforeTransaction</span><span class="p">,</span> <span class="nx">operation</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">rewards</span> <span class="o">=</span>
+          <span class="nx">accountBeforeTransaction</span><span class="p">.</span><span class="nx">algorandResources</span><span class="p">?.</span><span class="nx">rewards</span> <span class="o">||</span> <span class="mi">0</span><span class="p">;</span>
+
+        <span class="nx">expect</span><span class="p">(</span><span class="nx">account</span><span class="p">.</span><span class="nx">balance</span><span class="p">.</span><span class="nx">plus</span><span class="p">(</span><span class="nx">rewards</span><span class="p">).</span><span class="nx">toString</span><span class="p">()).</span><span class="nx">toBe</span><span class="p">(</span>
+          <span class="nx">accountBeforeTransaction</span><span class="p">.</span><span class="nx">balance</span><span class="p">.</span><span class="nx">minus</span><span class="p">(</span><span class="nx">operation</span><span class="p">.</span><span class="nx">value</span><span class="p">).</span><span class="nx">toString</span><span class="p">()</span>
+        <span class="p">);</span>
+      <span class="p">},</span>
+    <span class="p">},</span>
+  <span class="p">],</span>
+<span class="p">};</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="p">{</span> <span class="nx">mycoin</span> <span class="p">};</span>
+</code></pre></div></div>
+
+<hr />
+
+                        
+                            <!-- FC
+                            <div class="share uk-text-center uk-margin-medium-top">
+    
+        <a class="uk-link-muted" href="https://twitter.com/intent/tweet?text=Getting your Ledger Live running&url=http://localhost:4000/docs/CI/51_live_on_desktop/&via=&related=" rel="nofollow" target="_blank" title="Share on Twitter" onclick="window.open(this.href, 'twitter', 'width=550,height=235');return false;"><span data-uk-icon="icon: twitter; ratio: 1.2"></span></a>
+    
+    
+        <a class="uk-link-muted uk-margin-small-left" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2Fdocs%2FCI%2F51_live_on_desktop%2F" rel="nofollow" target="_blank" title="Share on Facebook" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;"><span data-uk-icon="icon: facebook; ratio: 1.2"></span></a>
+    
+</div>
+                            -->
+                        
+                    </div>
+
+                    
+
+                    <hr class="uk-margin-medium">
+
+                    
+
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+
+
+                    <div class="uk-margin-large-top">
+    <h3>Related Docs</h3>
+
+    
+    
+    
+
+    <ul class="uk-list link-secondary">
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+    </ul>
+</div>
+
+
+                    
+                </article>
+
+                <script>
+                    // Table of contents scroll to
+                    UIkit.scroll('#markdown-toc a', {
+                        duration: 400,
+                        offset: 120
+                    });
+                </script>
+
+            </div>
+
+    </div>
+</div>
+
+
+    <div id="offcanvas-docs" data-uk-offcanvas="overlay: true">
+    <div class="uk-offcanvas-bar">
+
+        <button class="uk-offcanvas-close" type="button" data-uk-close></button>
+
+        
+        <h5 class="uk-margin-top">Getting Started</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/installation/">Theme installation</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/setup/">Basic theme setup</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/navigation/">Navigation bar</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/footer/">Footer options</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/posts/">Creating your first post in Jekyll</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/docs/">Creating docs posts</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/comments/">Enabling comments (via Disqus)</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/analytics/">Google Analytics</a></li>
+        
+        </ul>
+        
+        <h5 class="uk-margin-top">Theme Features</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/hero/">Hero page header</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/boxes/">Category boxes section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/featured/">Fearured docs section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/videos/">Video lightbox boxes section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/faq/">Frequently asked questions section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/team/">Team members section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/cta/">Call to action section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/changelog/">Creating a changelog</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/contact/">Contact form (via FormSpree)</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/media/">Adding media to post and doc content</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/toc/">Adding table of contents to docs</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/alerts/">Adding alerts to content</a></li>
+        
+        </ul>
+        
+        <h5 class="uk-margin-top">Customization</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/translation/">Translation</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/customize/">Customization</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/development/">Development</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/sources/">Sources and credits</a></li>
+        
+        </ul>
+        
+        <h5 class="uk-margin-top">Help</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/support/">Contacting support</a></li>
+        
+        </ul>
+        
+
+    </div>
+</div>
+
+
+    <div id="offcanvas" data-uk-offcanvas="flip: true; overlay: true">
+    <div class="uk-offcanvas-bar">
+
+        <a class="uk-logo uk-margin-small-bottom" href="/">Ledger Developer pages</a>
+     
+        <button class="uk-offcanvas-close" type="button" data-uk-close></button>
+      
+        <ul class="uk-nav uk-nav-primary uk-margin-top">
+            
+                
+
+                
+
+                
+                    <li><a href="/" >Home</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><a href="/docs/TMPL/installation" >Docs</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><a href="/blog/" >Blog</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><a href="/changelog-timeline/" >Changelog</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><div class="uk-navbar-item"><a class="uk-button uk-button-success" href="/contact/" >Contact</a></div></li>
+                
+            
+        </ul>
+
+        <div class="uk-margin-top uk-text-center">
+            <div data-uk-grid class="uk-child-width-auto uk-grid-small uk-flex-center uk-grid">
+                
+<div class="uk-first-column">
+    <a href="https://twitter.com/" data-uk-icon="icon: twitter" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+<div>
+    <a href="https://www.facebook.com/" data-uk-icon="icon: facebook" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+<div>
+    <a href="https://www.instagram.com/" data-uk-icon="icon: instagram" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+<div>
+    <a href="https://vimeo.com/" data-uk-icon="icon: vimeo" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+    
+        <footer class="uk-section uk-text-center uk-text-muted">
+    <div class="uk-container uk-container-small">
+
+        <div>
+            <ul class="uk-subnav uk-flex-center">
+                
+                    
+                    
+                    
+                        <li><a href="/" >Home</a></li>
+                    
+                
+                    
+                    
+                    
+                        <li><a href="/blog/" >Blog</a></li>
+                    
+                
+                    
+                    
+                    
+                        <li><a href="/contact/" >Contact</a></li>
+                    
+                
+            </ul>
+        </div>
+        <div class="uk-margin-medium">
+            <div data-uk-grid class="uk-child-width-auto uk-grid-small uk-flex-center uk-grid">
+                
+                
+<div class="uk-first-column">
+    <a href="https://twitter.com/" data-uk-icon="icon: twitter" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+<div>
+    <a href="https://www.facebook.com/" data-uk-icon="icon: facebook" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+<div>
+    <a href="https://www.instagram.com/" data-uk-icon="icon: instagram" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+<div>
+    <a href="https://vimeo.com/" data-uk-icon="icon: vimeo" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+
+                
+            </div>
+        </div>
+        <div class="uk-margin-medium uk-text-small copyright link-secondary">Made by <a href="https://ledger.com/">Ledger</a> France</div>
+
+    </div>
+</footer>
+
+    
+
+    
+
+    
+
+    </body>
+
+</html>

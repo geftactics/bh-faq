@@ -1,0 +1,1835 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Common Pitfalls and Troubleshooting | Ledger Developer pages</title>
+<meta name="generator" content="Jekyll v3.9.1" />
+<meta property="og:title" content="Common Pitfalls and Troubleshooting" />
+<meta name="author" content="pscott" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Sections in this article Introduction Not Enough RAM Stack Overflows Error Handling Application Stalled Unaligned RAM access Introduction In this section, we’ll walk you through a lot of concepts that are hard to grasp when developing on the BOLOS platform, and we’ll provide some analysis of common failure scenarios that you might experience while developing applications. Not Enough RAM At the time of this writing, the default link script provided by the SDK for the Ledger Nano S allocates 4 KiB of RAM for applications to use. This 4 KiB has to be enough to store all global non-const and non-NVRAM &lt;memory&gt; variables as well as the call stack (which is currently set to 768 bytes by default, also defined in the link script). This is the linker error you will experience if you declare too many global non-const and non-NVRAM variables to fit in RAM: bin/app.elf section `.bss&#39; will not fit in region `SRAM&#39; The only solution to this problem is, of course, using less RAM. You can accomplish this by making your application’s memory layout more efficient. Alternatively, if you’re feeling adventurous, you can attempt to modify the link script (script.ld in the SDKs) to optimize the space allocated for the call stack. If you choose to pursue the latter option, we recommend you read the next section as well. Stack Overflows Determining the exact amount of the call stack used by your application can be difficult to do without simply running your application. The technique we recommend for avoiding stack overflows is using a stack canary. Creating a stack canary involves setting a magic value at the start of the stack area (the stack grows towards lower addresses, so a canary at the start of this region will be located at the top of the stack), and then the canary is checked regularly. If the canary was modified, then this means there was a stack overflow. In a future version of the BOLOS SDKs, this feature will be implemented automatically. Until then, this is the recommended way to implement a stack canary: // This symbol is defined by the link script to be at the start of the stack // area. extern unsigned long _stack; #define STACK_CANARY (*((volatile uint32_t*) &amp;_stack)) void init_canary() { STACK_CANARY = 0xDEADBEEF; } void check_canary() { if (STACK_CANARY != 0xDEADBEEF) THROW(EXCEPTION_OVERFLOW); } The canary should be checked regularly. For example, you could run the check every time io_event(...) is called. Error Handling Error handling in C can sometimes be a bit counter-intuitive. With our error model, there are two common failure scenarios. Firstly, you must take care to always close a try context when jumping out of it. For example, in the block of code below, the CLOSE_TRY macro must be used to close the try context before returning from the function in the case that i &gt; 0. However, in the CATCH clause, the try has already been closed automatically so CLOSE_TRY is not necessary. bool is_positive(int8_t i) { BEGIN_TRY { TRY { if (i == 0) THROW(EXCEPTION); if (i &gt; 0) { CLOSE_TRY; return true; } } CATCH_OTHER(e) { return false; } FINALLY {} } END_TRY; return false; } Another common failure scenario is caused by the compiler making invalid assumptions when optimizing your code because it doesn’t understand how our exception model works. To avoid this problem, when modifying variables within a try / catch / finally context, always declare those variables volatile. uint16_t multiply(uint8_t a, uint8_t b) { volatile uint16_t product = 0; volatile uint8_t multiplier = b; while (true) { BEGIN_TRY { TRY { if (multiplier == 0) THROW(1); multiplier--; product += a; THROW(2); } CATCH_OTHER(e) { if (e == 1) return product; } FINALLY {} } END_TRY; } // Suppress compiler warning return 0; } In the above example, a does not need to be declared volatile because it is never modified. On another note, you should use the error codes defined in the SDKs wherever possible (see EXCEPTION, INVALID_PARAMETER, etc. in os.h). If you decide to use custom error codes, never use an error code of 0. Application Stalled An application stalling when run on the device (the device’s screen freezes and stops responding to APDU) could be caused by a number of issues from the SE being isolated due to invalid handling of SEPROXYHAL packets, to a core fault on the device (perhaps due to a misaligned memory access or an attempt to access restricted memory). If this occurs, it is best to attempt to simplify the app and strip away as much code as possible until the problem can be isolated. Unaligned RAM access uint16_t *ptr16 = &amp;tmp_ctx.signing_context.buffer[processed]; PRINTF(&quot;uint16_t: %d&quot;, ptr16[0]); ptr16[0] access can be stalling the app, even though tmp_ctx.signing_context.buffer[processed] (unsigned char*) can be accessed alright. This happens when pointer isn’t word-aligned, but word is access in RAM. Workaround is copying buffer into another location which is properly aligned (e.g. using os_memmove). Please refer to the alignment &lt;alignment&gt; page for further information." />
+<meta property="og:description" content="Sections in this article Introduction Not Enough RAM Stack Overflows Error Handling Application Stalled Unaligned RAM access Introduction In this section, we’ll walk you through a lot of concepts that are hard to grasp when developing on the BOLOS platform, and we’ll provide some analysis of common failure scenarios that you might experience while developing applications. Not Enough RAM At the time of this writing, the default link script provided by the SDK for the Ledger Nano S allocates 4 KiB of RAM for applications to use. This 4 KiB has to be enough to store all global non-const and non-NVRAM &lt;memory&gt; variables as well as the call stack (which is currently set to 768 bytes by default, also defined in the link script). This is the linker error you will experience if you declare too many global non-const and non-NVRAM variables to fit in RAM: bin/app.elf section `.bss&#39; will not fit in region `SRAM&#39; The only solution to this problem is, of course, using less RAM. You can accomplish this by making your application’s memory layout more efficient. Alternatively, if you’re feeling adventurous, you can attempt to modify the link script (script.ld in the SDKs) to optimize the space allocated for the call stack. If you choose to pursue the latter option, we recommend you read the next section as well. Stack Overflows Determining the exact amount of the call stack used by your application can be difficult to do without simply running your application. The technique we recommend for avoiding stack overflows is using a stack canary. Creating a stack canary involves setting a magic value at the start of the stack area (the stack grows towards lower addresses, so a canary at the start of this region will be located at the top of the stack), and then the canary is checked regularly. If the canary was modified, then this means there was a stack overflow. In a future version of the BOLOS SDKs, this feature will be implemented automatically. Until then, this is the recommended way to implement a stack canary: // This symbol is defined by the link script to be at the start of the stack // area. extern unsigned long _stack; #define STACK_CANARY (*((volatile uint32_t*) &amp;_stack)) void init_canary() { STACK_CANARY = 0xDEADBEEF; } void check_canary() { if (STACK_CANARY != 0xDEADBEEF) THROW(EXCEPTION_OVERFLOW); } The canary should be checked regularly. For example, you could run the check every time io_event(...) is called. Error Handling Error handling in C can sometimes be a bit counter-intuitive. With our error model, there are two common failure scenarios. Firstly, you must take care to always close a try context when jumping out of it. For example, in the block of code below, the CLOSE_TRY macro must be used to close the try context before returning from the function in the case that i &gt; 0. However, in the CATCH clause, the try has already been closed automatically so CLOSE_TRY is not necessary. bool is_positive(int8_t i) { BEGIN_TRY { TRY { if (i == 0) THROW(EXCEPTION); if (i &gt; 0) { CLOSE_TRY; return true; } } CATCH_OTHER(e) { return false; } FINALLY {} } END_TRY; return false; } Another common failure scenario is caused by the compiler making invalid assumptions when optimizing your code because it doesn’t understand how our exception model works. To avoid this problem, when modifying variables within a try / catch / finally context, always declare those variables volatile. uint16_t multiply(uint8_t a, uint8_t b) { volatile uint16_t product = 0; volatile uint8_t multiplier = b; while (true) { BEGIN_TRY { TRY { if (multiplier == 0) THROW(1); multiplier--; product += a; THROW(2); } CATCH_OTHER(e) { if (e == 1) return product; } FINALLY {} } END_TRY; } // Suppress compiler warning return 0; } In the above example, a does not need to be declared volatile because it is never modified. On another note, you should use the error codes defined in the SDKs wherever possible (see EXCEPTION, INVALID_PARAMETER, etc. in os.h). If you decide to use custom error codes, never use an error code of 0. Application Stalled An application stalling when run on the device (the device’s screen freezes and stops responding to APDU) could be caused by a number of issues from the SE being isolated due to invalid handling of SEPROXYHAL packets, to a core fault on the device (perhaps due to a misaligned memory access or an attempt to access restricted memory). If this occurs, it is best to attempt to simplify the app and strip away as much code as possible until the problem can be isolated. Unaligned RAM access uint16_t *ptr16 = &amp;tmp_ctx.signing_context.buffer[processed]; PRINTF(&quot;uint16_t: %d&quot;, ptr16[0]); ptr16[0] access can be stalling the app, even though tmp_ctx.signing_context.buffer[processed] (unsigned char*) can be accessed alright. This happens when pointer isn’t word-aligned, but word is access in RAM. Workaround is copying buffer into another location which is properly aligned (e.g. using os_memmove). Please refer to the alignment &lt;alignment&gt; page for further information." />
+<link rel="canonical" href="http://localhost:4000/docs/NA/u_troubleshooting/" />
+<meta property="og:url" content="http://localhost:4000/docs/NA/u_troubleshooting/" />
+<meta property="og:site_name" content="Ledger Developer pages" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-04-22T15:38:24+02:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Common Pitfalls and Troubleshooting" />
+<script type="application/ld+json">
+{"datePublished":"2021-04-22T15:38:24+02:00","description":"Sections in this article Introduction Not Enough RAM Stack Overflows Error Handling Application Stalled Unaligned RAM access Introduction In this section, we’ll walk you through a lot of concepts that are hard to grasp when developing on the BOLOS platform, and we’ll provide some analysis of common failure scenarios that you might experience while developing applications. Not Enough RAM At the time of this writing, the default link script provided by the SDK for the Ledger Nano S allocates 4 KiB of RAM for applications to use. This 4 KiB has to be enough to store all global non-const and non-NVRAM &lt;memory&gt; variables as well as the call stack (which is currently set to 768 bytes by default, also defined in the link script). This is the linker error you will experience if you declare too many global non-const and non-NVRAM variables to fit in RAM: bin/app.elf section `.bss&#39; will not fit in region `SRAM&#39; The only solution to this problem is, of course, using less RAM. You can accomplish this by making your application’s memory layout more efficient. Alternatively, if you’re feeling adventurous, you can attempt to modify the link script (script.ld in the SDKs) to optimize the space allocated for the call stack. If you choose to pursue the latter option, we recommend you read the next section as well. Stack Overflows Determining the exact amount of the call stack used by your application can be difficult to do without simply running your application. The technique we recommend for avoiding stack overflows is using a stack canary. Creating a stack canary involves setting a magic value at the start of the stack area (the stack grows towards lower addresses, so a canary at the start of this region will be located at the top of the stack), and then the canary is checked regularly. If the canary was modified, then this means there was a stack overflow. In a future version of the BOLOS SDKs, this feature will be implemented automatically. Until then, this is the recommended way to implement a stack canary: // This symbol is defined by the link script to be at the start of the stack // area. extern unsigned long _stack; #define STACK_CANARY (*((volatile uint32_t*) &amp;_stack)) void init_canary() { STACK_CANARY = 0xDEADBEEF; } void check_canary() { if (STACK_CANARY != 0xDEADBEEF) THROW(EXCEPTION_OVERFLOW); } The canary should be checked regularly. For example, you could run the check every time io_event(...) is called. Error Handling Error handling in C can sometimes be a bit counter-intuitive. With our error model, there are two common failure scenarios. Firstly, you must take care to always close a try context when jumping out of it. For example, in the block of code below, the CLOSE_TRY macro must be used to close the try context before returning from the function in the case that i &gt; 0. However, in the CATCH clause, the try has already been closed automatically so CLOSE_TRY is not necessary. bool is_positive(int8_t i) { BEGIN_TRY { TRY { if (i == 0) THROW(EXCEPTION); if (i &gt; 0) { CLOSE_TRY; return true; } } CATCH_OTHER(e) { return false; } FINALLY {} } END_TRY; return false; } Another common failure scenario is caused by the compiler making invalid assumptions when optimizing your code because it doesn’t understand how our exception model works. To avoid this problem, when modifying variables within a try / catch / finally context, always declare those variables volatile. uint16_t multiply(uint8_t a, uint8_t b) { volatile uint16_t product = 0; volatile uint8_t multiplier = b; while (true) { BEGIN_TRY { TRY { if (multiplier == 0) THROW(1); multiplier--; product += a; THROW(2); } CATCH_OTHER(e) { if (e == 1) return product; } FINALLY {} } END_TRY; } // Suppress compiler warning return 0; } In the above example, a does not need to be declared volatile because it is never modified. On another note, you should use the error codes defined in the SDKs wherever possible (see EXCEPTION, INVALID_PARAMETER, etc. in os.h). If you decide to use custom error codes, never use an error code of 0. Application Stalled An application stalling when run on the device (the device’s screen freezes and stops responding to APDU) could be caused by a number of issues from the SE being isolated due to invalid handling of SEPROXYHAL packets, to a core fault on the device (perhaps due to a misaligned memory access or an attempt to access restricted memory). If this occurs, it is best to attempt to simplify the app and strip away as much code as possible until the problem can be isolated. Unaligned RAM access uint16_t *ptr16 = &amp;tmp_ctx.signing_context.buffer[processed]; PRINTF(&quot;uint16_t: %d&quot;, ptr16[0]); ptr16[0] access can be stalling the app, even though tmp_ctx.signing_context.buffer[processed] (unsigned char*) can be accessed alright. This happens when pointer isn’t word-aligned, but word is access in RAM. Workaround is copying buffer into another location which is properly aligned (e.g. using os_memmove). Please refer to the alignment &lt;alignment&gt; page for further information.","dateModified":"2021-04-22T15:38:24+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/docs/NA/u_troubleshooting/"},"url":"http://localhost:4000/docs/NA/u_troubleshooting/","author":{"@type":"Person","name":"pscott"},"@type":"BlogPosting","headline":"Common Pitfalls and Troubleshooting","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+  <meta property="og:image" content="http://localhost:4000/uploads/"/>
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="shortcut icon" type="image/png" href="/uploads/favicon.png" >
+  <link rel="alternate" type="application/rss+xml" title="Ledger Developer pages" href="/feed.xml">
+  <script src="/assets/js/main.js"></script>
+  
+    <script>
+function searchResults(form) {
+
+    var currentItem = null;
+    var search = document.getElementById(form);
+    var results = document.getElementById(form + "-results");
+    var toggle = document.getElementById(form + "-toggle");
+
+    function removeActive() {
+        for (i = 0; i < results.children.length; i++) {
+            results.children[i].classList.remove("uk-background-muted");
+        }
+    }
+
+    // Detect all clicks on the document
+    document.addEventListener("click", function(event) {
+
+        var isClickSearch = false;
+        var isClickResults = false;
+        var isClickSearchToggle = false;
+
+        if (search !== null) {
+            isClickSearch = search.contains(event.target);
+        }
+
+        if (results !== null) {
+            isClickResults = results.contains(event.target);
+        }
+
+        if (toggle !== null) {
+            isClickSearchToggle = toggle.contains(event.target);
+        }
+
+        if (isClickSearch || isClickSearchToggle) {
+            results.style.display = "block";
+        }        
+
+        if (!isClickResults && !isClickSearch && !isClickSearchToggle) {
+            results.style.display = "none";
+        }        
+        
+    });    
+
+    results.addEventListener("mouseover", function(event) {
+
+        removeActive();
+        event.target.parentElement.classList.add("uk-background-muted");
+        currentItem = null;
+
+    });
+
+    results.addEventListener("mouseout", function(event) {
+        event.target.parentElement.classList.remove("uk-background-muted");
+    });
+
+
+    search.addEventListener("keyup", function(event) {
+
+        var resultItems = results.children;
+        var resultCount = results.children.length;
+                                
+        if (event.keyCode === 40) {
+
+            if (currentItem < (resultCount - 1)) {
+                if (currentItem === null) {
+                    currentItem = 0;
+                } else {
+                    removeActive();
+                    currentItem++;
+                }
+                removeActive();
+                resultItems[currentItem].classList.add("uk-background-muted");
+            }
+            
+        } else if (event.keyCode === 38) {
+
+            if (currentItem > 0) {
+                if (currentItem === null) {
+                    currentItem = 0;
+                } else {
+                    removeActive();
+                    currentItem--;
+                }
+                removeActive();
+                resultItems[currentItem].classList.add("uk-background-muted");
+            }
+
+        } else if (event.keyCode === 13) {
+
+            resultItems[currentItem].children[0].click();
+
+        }
+
+    });
+
+}
+</script>
+  
+  
+  
+<script src="http://127.0.0.1:35729/livereload.js"></script></head>
+
+    <body>
+
+    
+        <div data-uk-sticky="animation: uk-animation-slide-top; sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; cls-inactive: uk-navbar-transparent; top: 200">
+    <nav class="uk-navbar-container">
+        <div class="uk-container">
+            <div data-uk-navbar>
+                <div class="uk-navbar-left">
+                    <a class="uk-navbar-item uk-logo uk-visible@m" href="/">Ledger Developer pages</a>
+                    
+                        <a class="uk-navbar-toggle uk-hidden@m" href="#offcanvas-docs" data-uk-toggle><span data-uk-navbar-toggle-icon></span> <span class="uk-margin-small-left">Docs</span></a>
+                    
+
+                    <ul class="uk-navbar-nav uk-visible@m">
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Creating content</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Tools & Frameworks</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Release notes</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Tutorials</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="#">_Old</a>
+                                        
+                                            <div class="uk-navbar-dropdown">
+                                                <ul class="uk-nav uk-navbar-dropdown-nav">
+                                                    
+                                                    
+                                                        
+                                                        
+                                                        <li><a href="/docs/TMPL/installation/">Template docs</a></li>
+                                                    
+                                                    
+                                                    
+                                                        
+                                                        
+                                                        <li><a href="/blog/">Blog</a></li>
+                                                    
+                                                    
+                                                    
+                                                        <li class="uk-nav-header">Changelogs</li>
+                                                    
+                                                    
+                                                </ul>
+                                            </div>
+                                        
+                                        </li>
+                                                                                                        
+                                
+                            
+                        
+                    </ul>
+                </div>
+                <div class="uk-navbar-center uk-hidden@m">
+                    <a class="uk-navbar-item uk-logo" href="/">Ledger Developer pages</a>
+                </div>
+                <div class="uk-navbar-right">
+                    
+                        
+                            <div>
+                                <a id="search-navbar-toggle" class="uk-navbar-toggle" uk-search-icon href="#"></a>
+                                <div class="uk-drop uk-background-default uk-border-rounded" uk-drop="mode: click; pos: left-center; offset: 0">
+                                    <form class="uk-search uk-search-navbar uk-width-1-1" onsubmit="return false;">
+                                        <input id="search-navbar" class="uk-search-input" type="search" placeholder="Search for answers" autofocus autocomplete="off">
+                                    </form>
+                                    <ul id="search-navbar-results" class="uk-position-absolute uk-width-1-1 uk-list"></ul>
+                                </div>
+                            </div>
+                            <script>
+                            SimpleJekyllSearch({
+                                searchInput: document.getElementById('search-navbar'),
+                                resultsContainer: document.getElementById('search-navbar-results'),
+                                noResultsText: '<li class="no-results">No results found</li>',
+                                searchResultTemplate: '<li><a href="{url}">{title}</a></li>',
+                                json: "/search.json"
+                            });
+                            searchResults("search-navbar");
+                            </script>
+                        
+                    
+
+                    <ul class="uk-navbar-nav uk-visible@m">
+                        
+                    </ul>
+
+                    
+                        <a class="uk-navbar-toggle uk-hidden@m" href="#offcanvas" data-uk-toggle><span data-uk-navbar-toggle-icon></span> <span class="uk-margin-small-left">Menu</span></a>
+                    
+
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
+    
+
+    <div class="uk-section">
+    <div class="uk-container">
+        <div class="uk-grid-large" data-uk-grid>
+
+            <div class="sidebar-fixed-width uk-visible@m">
+                <div class="sidebar-docs uk-position-fixed uk-margin-top">
+                    
+                    <h5>Background Information</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/bg_introduction/">Introduction</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/bg_personal_security_devices/">Personal Security Devices</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/bg_master_seed/">The Master Seed</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/bg_hd_keys/">HD Key Generation</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/bg_hd_use_cases/">Applications for HD Trees</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/bg_application_isolation/">Application Isolation</a></li>
+                    
+                    </ul>
+                    
+                    <h5>BOLOS Platform</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/b_introduction/">Introduction</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/b_overview/">Overview</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/b_features/">BOLOS Features</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/b_hardware_architecture/">Hardware Architecture</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/b_application_environment/">Application Environment</a></li>
+                    
+                    </ul>
+                    
+                    <h5>Userspace Development</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_introduction/">Introduction</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_setup/">Setting it up</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_writing_apps/">Writing Apps</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_display_management/">Display Management</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_advanced_display_management/">Advanced display management</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_low_level_display_management/">Low-level display management</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_syscalls/">Interaction Between BOLOS and Apps</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_application_structure/">Application Structure and I/O</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_memory/">Persistent Storage and PIC</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_alignment/">Memory alignment</a></li>
+                    
+                      
+                      
+                      <li class="uk-active"><a href="/docs/NA/u_troubleshooting/">Common Pitfalls and Troubleshooting</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_debugging/">Application Debug</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/u_speculos/">Emulating devices with Speculos</a></li>
+                    
+                    </ul>
+                    
+                    <h5>Additional Resources</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/a_publishing_an_app/">Publishing an Application</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/a_external_docs/">External Documentation</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/NA/a_security_guidelines/">Developing Secure Ledger Apps</a></li>
+                    
+                    </ul>
+                    
+                </div>
+            </div>
+
+            <div class="uk-width-1-1 uk-width-expand@m">
+
+                <article class="uk-article">
+
+                    <h1 class="uk-article-title">Common Pitfalls and Troubleshooting</h1>
+
+                    <p class="uk-text-lead uk-text-muted">When it doesn't quite Work</p>
+
+                    <div class="uk-article-meta uk-margin-top uk-margin-medium-bottom uk-flex uk-flex-middle">
+                        
+
+
+  
+  <img class="uk-border-circle avatar" src="http://localhost:4000/uploads/avatar-pscott.jpg" alt="pscott">
+
+
+<div>
+  
+    Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">pscott</span></span><br>
+  
+  <time datetime="" itemprop="datePublished">
+    
+    
+  </time>
+</div>
+                    </div>
+
+                    <div class="article-content link-primary">
+                        <h4 class="no_toc" id="sections-in-this-article">Sections in this article</h4>
+<ul id="markdown-toc">
+  <li><a href="#introduction" id="markdown-toc-introduction">Introduction</a>    <ul>
+      <li><a href="#not-enough-ram" id="markdown-toc-not-enough-ram">Not Enough RAM</a></li>
+      <li><a href="#stack-overflows" id="markdown-toc-stack-overflows">Stack Overflows</a></li>
+      <li><a href="#error-handling" id="markdown-toc-error-handling">Error Handling</a></li>
+      <li><a href="#application-stalled" id="markdown-toc-application-stalled">Application Stalled</a></li>
+      <li><a href="#unaligned-ram-access" id="markdown-toc-unaligned-ram-access">Unaligned RAM access</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>In this section, we’ll walk you through a lot of concepts that are hard
+to grasp when developing on the BOLOS platform, and we’ll provide some
+analysis of common failure scenarios that you might experience while
+developing applications.</p>
+
+<h3 id="not-enough-ram">Not Enough RAM</h3>
+
+<p>At the time of this writing, the default link script provided by the SDK
+for the Ledger Nano S allocates 4 KiB of RAM for applications to use.
+This 4 KiB has to be enough to store all global non-const and
+<code class="language-plaintext highlighter-rouge">non-NVRAM &lt;memory&gt;</code> variables as well as the call stack (which is
+currently set to 768 bytes by default, also defined in the link script).</p>
+
+<p>This is the linker error you will experience if you declare too many
+global non-const and non-NVRAM variables to fit in RAM:</p>
+
+<pre><code class="language-none">bin/app.elf section `.bss' will not fit in region `SRAM'
+</code></pre>
+
+<p>The only solution to this problem is, of course, using less RAM. You can
+accomplish this by making your application’s memory layout more
+efficient. Alternatively, if you’re feeling adventurous, you can attempt
+to modify the link script (<code class="language-plaintext highlighter-rouge">script.ld</code> in the SDKs) to optimize the
+space allocated for the call stack. If you choose to pursue the latter
+option, we recommend you read the next section as well.</p>
+
+<h3 id="stack-overflows">Stack Overflows</h3>
+
+<p>Determining the exact amount of the call stack used by your application
+can be difficult to do without simply running your application. The
+technique we recommend for avoiding stack overflows is using a stack
+canary. Creating a stack canary involves setting a magic value at the
+start of the stack area (the stack grows towards lower addresses, so a
+canary at the start of this region will be located at the top of the
+stack), and then the canary is checked regularly. If the canary was
+modified, then this means there was a stack overflow.</p>
+
+<p>In a future version of the BOLOS SDKs, this feature will be implemented
+automatically. Until then, this is the recommended way to implement a
+stack canary:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// This symbol is defined by the link script to be at the start of the stack</span>
+<span class="c1">// area.</span>
+<span class="k">extern</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">_stack</span><span class="p">;</span>
+
+<span class="cp">#define STACK_CANARY (*((volatile uint32_t*) &amp;_stack))
+</span>
+<span class="kt">void</span> <span class="nf">init_canary</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">STACK_CANARY</span> <span class="o">=</span> <span class="mh">0xDEADBEEF</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">check_canary</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">STACK_CANARY</span> <span class="o">!=</span> <span class="mh">0xDEADBEEF</span><span class="p">)</span>
+        <span class="n">THROW</span><span class="p">(</span><span class="n">EXCEPTION_OVERFLOW</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The canary should be checked regularly. For example, you could run the
+check every time <code class="language-plaintext highlighter-rouge">io_event(...)</code> is called.</p>
+
+<h3 id="error-handling">Error Handling</h3>
+
+<p>Error handling in C can sometimes be a bit counter-intuitive. With our
+error model, there are two common failure scenarios.</p>
+
+<p>Firstly, you must take care to always close a try context when jumping
+out of it. For example, in the block of code below, the <code class="language-plaintext highlighter-rouge">CLOSE_TRY</code>
+macro must be used to close the try context before returning from the
+function in the case that <code class="language-plaintext highlighter-rouge">i &gt; 0</code>. However, in the <code class="language-plaintext highlighter-rouge">CATCH</code> clause, the
+try has already been closed automatically so <code class="language-plaintext highlighter-rouge">CLOSE_TRY</code> is not
+necessary.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">bool</span> <span class="nf">is_positive</span><span class="p">(</span><span class="kt">int8_t</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">BEGIN_TRY</span> <span class="p">{</span>
+        <span class="n">TRY</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="n">THROW</span><span class="p">(</span><span class="n">EXCEPTION</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">CLOSE_TRY</span><span class="p">;</span>
+                <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span> <span class="n">CATCH_OTHER</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+        <span class="p">}</span> <span class="n">FINALLY</span> <span class="p">{}</span>
+    <span class="p">}</span> <span class="n">END_TRY</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Another common failure scenario is caused by the compiler making invalid
+assumptions when optimizing your code because it doesn’t understand how
+our exception model works. To avoid this problem, when modifying
+variables within a try / catch / finally context, always declare those
+variables <code class="language-plaintext highlighter-rouge">volatile</code>.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">uint16_t</span> <span class="nf">multiply</span><span class="p">(</span><span class="kt">uint8_t</span> <span class="n">a</span><span class="p">,</span> <span class="kt">uint8_t</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">volatile</span> <span class="kt">uint16_t</span> <span class="n">product</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">volatile</span> <span class="kt">uint8_t</span> <span class="n">multiplier</span> <span class="o">=</span> <span class="n">b</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">(</span><span class="nb">true</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">BEGIN_TRY</span> <span class="p">{</span>
+            <span class="n">TRY</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">multiplier</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+                    <span class="n">THROW</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+                <span class="n">multiplier</span><span class="o">--</span><span class="p">;</span>
+                <span class="n">product</span> <span class="o">+=</span> <span class="n">a</span><span class="p">;</span>
+                <span class="n">THROW</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+            <span class="p">}</span> <span class="n">CATCH_OTHER</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">e</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">product</span><span class="p">;</span>
+            <span class="p">}</span> <span class="n">FINALLY</span> <span class="p">{}</span>
+        <span class="p">}</span> <span class="n">END_TRY</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="c1">// Suppress compiler warning</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In the above example, <code class="language-plaintext highlighter-rouge">a</code> does not need to be declared <code class="language-plaintext highlighter-rouge">volatile</code>
+because it is never modified.</p>
+
+<p>On another note, you should use the error codes defined in the SDKs
+wherever possible (see <code class="language-plaintext highlighter-rouge">EXCEPTION</code>, <code class="language-plaintext highlighter-rouge">INVALID_PARAMETER</code>, etc. in
+<code class="language-plaintext highlighter-rouge">os.h</code>). If you decide to use custom error codes, never use an error
+code of <code class="language-plaintext highlighter-rouge">0</code>.</p>
+
+<h3 id="application-stalled">Application Stalled</h3>
+
+<p>An application stalling when run on the device (the device’s screen
+freezes and stops responding to APDU) could be caused by a number of
+issues from the SE being isolated due to invalid handling of SEPROXYHAL
+packets, to a core fault on the device (perhaps due to a misaligned
+memory access or an attempt to access restricted memory). If this
+occurs, it is best to attempt to simplify the app and strip away as much
+code as possible until the problem can be isolated.</p>
+
+<h3 id="unaligned-ram-access">Unaligned RAM access</h3>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">uint16_t</span> <span class="o">*</span><span class="n">ptr16</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">tmp_ctx</span><span class="p">.</span><span class="n">signing_context</span><span class="p">.</span><span class="n">buffer</span><span class="p">[</span><span class="n">processed</span><span class="p">];</span> 
+<span class="n">PRINTF</span><span class="p">(</span><span class="s">"uint16_t: %d"</span><span class="p">,</span> <span class="n">ptr16</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">ptr16[0]</code> access can be stalling the app, even though
+<code class="language-plaintext highlighter-rouge">tmp_ctx.signing_context.buffer[processed]</code> (<code class="language-plaintext highlighter-rouge">unsigned char*</code>) can be
+accessed alright. This happens when pointer isn’t word-aligned, but word
+is access in RAM. Workaround is copying buffer into another location
+which is properly aligned (e.g. using <span class="title-ref">os_memmove</span>).</p>
+
+<p>Please refer to the <code class="language-plaintext highlighter-rouge">alignment &lt;alignment&gt;</code> page for further
+information.</p>
+
+
+                        
+                            <!-- FC
+                            <div class="share uk-text-center uk-margin-medium-top">
+    
+        <a class="uk-link-muted" href="https://twitter.com/intent/tweet?text=Common Pitfalls and Troubleshooting&url=http://localhost:4000/docs/NA/u_troubleshooting/&via=&related=" rel="nofollow" target="_blank" title="Share on Twitter" onclick="window.open(this.href, 'twitter', 'width=550,height=235');return false;"><span data-uk-icon="icon: twitter; ratio: 1.2"></span></a>
+    
+    
+        <a class="uk-link-muted uk-margin-small-left" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2Fdocs%2FNA%2Fu_troubleshooting%2F" rel="nofollow" target="_blank" title="Share on Facebook" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;"><span data-uk-icon="icon: facebook; ratio: 1.2"></span></a>
+    
+</div>
+                            -->
+                        
+                    </div>
+
+                    
+
+                    <hr class="uk-margin-medium">
+
+                    
+
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+
+
+                    <div class="uk-margin-large-top">
+    <h3>Related Docs</h3>
+
+    
+    
+    
+
+    <ul class="uk-list link-secondary">
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+    </ul>
+</div>
+
+
+                    
+                </article>
+
+                <script>
+                    // Table of contents scroll to
+                    UIkit.scroll('#markdown-toc a', {
+                        duration: 400,
+                        offset: 120
+                    });
+                </script>
+
+            </div>
+
+    </div>
+</div>
+
+
+    <div id="offcanvas-docs" data-uk-offcanvas="overlay: true">
+    <div class="uk-offcanvas-bar">
+
+        <button class="uk-offcanvas-close" type="button" data-uk-close></button>
+
+        
+        <h5 class="uk-margin-top">Getting Started</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/installation/">Theme installation</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/setup/">Basic theme setup</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/navigation/">Navigation bar</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/footer/">Footer options</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/posts/">Creating your first post in Jekyll</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/docs/">Creating docs posts</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/comments/">Enabling comments (via Disqus)</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/analytics/">Google Analytics</a></li>
+        
+        </ul>
+        
+        <h5 class="uk-margin-top">Theme Features</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/hero/">Hero page header</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/boxes/">Category boxes section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/featured/">Fearured docs section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/videos/">Video lightbox boxes section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/faq/">Frequently asked questions section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/team/">Team members section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/cta/">Call to action section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/changelog/">Creating a changelog</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/contact/">Contact form (via FormSpree)</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/media/">Adding media to post and doc content</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/toc/">Adding table of contents to docs</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/alerts/">Adding alerts to content</a></li>
+        
+        </ul>
+        
+        <h5 class="uk-margin-top">Customization</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/translation/">Translation</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/customize/">Customization</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/development/">Development</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/sources/">Sources and credits</a></li>
+        
+        </ul>
+        
+        <h5 class="uk-margin-top">Help</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/support/">Contacting support</a></li>
+        
+        </ul>
+        
+
+    </div>
+</div>
+
+
+    <div id="offcanvas" data-uk-offcanvas="flip: true; overlay: true">
+    <div class="uk-offcanvas-bar">
+
+        <a class="uk-logo uk-margin-small-bottom" href="/">Ledger Developer pages</a>
+     
+        <button class="uk-offcanvas-close" type="button" data-uk-close></button>
+      
+        <ul class="uk-nav uk-nav-primary uk-margin-top">
+            
+                
+
+                
+
+                
+                    <li><a href="/" >Home</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><a href="/docs/TMPL/installation" >Docs</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><a href="/blog/" >Blog</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><a href="/changelog-timeline/" >Changelog</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><div class="uk-navbar-item"><a class="uk-button uk-button-success" href="/contact/" >Contact</a></div></li>
+                
+            
+        </ul>
+
+        <div class="uk-margin-top uk-text-center">
+            <div data-uk-grid class="uk-child-width-auto uk-grid-small uk-flex-center uk-grid">
+                
+<div class="uk-first-column">
+    <a href="https://twitter.com/" data-uk-icon="icon: twitter" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+<div>
+    <a href="https://www.facebook.com/" data-uk-icon="icon: facebook" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+<div>
+    <a href="https://www.instagram.com/" data-uk-icon="icon: instagram" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+<div>
+    <a href="https://vimeo.com/" data-uk-icon="icon: vimeo" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+    
+        <footer class="uk-section uk-text-center uk-text-muted">
+    <div class="uk-container uk-container-small">
+
+        <div>
+            <ul class="uk-subnav uk-flex-center">
+                
+                    
+                    
+                    
+                        <li><a href="/" >Home</a></li>
+                    
+                
+                    
+                    
+                    
+                        <li><a href="/blog/" >Blog</a></li>
+                    
+                
+                    
+                    
+                    
+                        <li><a href="/contact/" >Contact</a></li>
+                    
+                
+            </ul>
+        </div>
+        <div class="uk-margin-medium">
+            <div data-uk-grid class="uk-child-width-auto uk-grid-small uk-flex-center uk-grid">
+                
+                
+<div class="uk-first-column">
+    <a href="https://twitter.com/" data-uk-icon="icon: twitter" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+<div>
+    <a href="https://www.facebook.com/" data-uk-icon="icon: facebook" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+<div>
+    <a href="https://www.instagram.com/" data-uk-icon="icon: instagram" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+<div>
+    <a href="https://vimeo.com/" data-uk-icon="icon: vimeo" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+
+                
+            </div>
+        </div>
+        <div class="uk-margin-medium uk-text-small copyright link-secondary">Made by <a href="https://ledger.com/">Ledger</a> France</div>
+
+    </div>
+</footer>
+
+    
+
+    
+
+    
+
+    </body>
+
+</html>

@@ -1,0 +1,1916 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Adding MyCoin Nano App JS Bindings | Ledger Developer pages</title>
+<meta name="generator" content="Jekyll v3.9.1" />
+<meta property="og:title" content="Adding MyCoin Nano App JS Bindings" />
+<meta name="author" content="remi_j" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Sections in this article" />
+<meta property="og:description" content="Sections in this article" />
+<link rel="canonical" href="http://localhost:4000/docs/CI/42_live_app_bindings/" />
+<meta property="og:url" content="http://localhost:4000/docs/CI/42_live_app_bindings/" />
+<meta property="og:site_name" content="Ledger Developer pages" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-04-22T15:38:24+02:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Adding MyCoin Nano App JS Bindings" />
+<script type="application/ld+json">
+{"datePublished":"2021-04-22T15:38:24+02:00","description":"Sections in this article","dateModified":"2021-04-22T15:38:24+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/docs/CI/42_live_app_bindings/"},"url":"http://localhost:4000/docs/CI/42_live_app_bindings/","author":{"@type":"Person","name":"remi_j"},"@type":"BlogPosting","headline":"Adding MyCoin Nano App JS Bindings","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+  <meta property="og:image" content="http://localhost:4000/uploads/"/>
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="shortcut icon" type="image/png" href="/uploads/favicon.png" >
+  <link rel="alternate" type="application/rss+xml" title="Ledger Developer pages" href="/feed.xml">
+  <script src="/assets/js/main.js"></script>
+  
+    <script>
+function searchResults(form) {
+
+    var currentItem = null;
+    var search = document.getElementById(form);
+    var results = document.getElementById(form + "-results");
+    var toggle = document.getElementById(form + "-toggle");
+
+    function removeActive() {
+        for (i = 0; i < results.children.length; i++) {
+            results.children[i].classList.remove("uk-background-muted");
+        }
+    }
+
+    // Detect all clicks on the document
+    document.addEventListener("click", function(event) {
+
+        var isClickSearch = false;
+        var isClickResults = false;
+        var isClickSearchToggle = false;
+
+        if (search !== null) {
+            isClickSearch = search.contains(event.target);
+        }
+
+        if (results !== null) {
+            isClickResults = results.contains(event.target);
+        }
+
+        if (toggle !== null) {
+            isClickSearchToggle = toggle.contains(event.target);
+        }
+
+        if (isClickSearch || isClickSearchToggle) {
+            results.style.display = "block";
+        }        
+
+        if (!isClickResults && !isClickSearch && !isClickSearchToggle) {
+            results.style.display = "none";
+        }        
+        
+    });    
+
+    results.addEventListener("mouseover", function(event) {
+
+        removeActive();
+        event.target.parentElement.classList.add("uk-background-muted");
+        currentItem = null;
+
+    });
+
+    results.addEventListener("mouseout", function(event) {
+        event.target.parentElement.classList.remove("uk-background-muted");
+    });
+
+
+    search.addEventListener("keyup", function(event) {
+
+        var resultItems = results.children;
+        var resultCount = results.children.length;
+                                
+        if (event.keyCode === 40) {
+
+            if (currentItem < (resultCount - 1)) {
+                if (currentItem === null) {
+                    currentItem = 0;
+                } else {
+                    removeActive();
+                    currentItem++;
+                }
+                removeActive();
+                resultItems[currentItem].classList.add("uk-background-muted");
+            }
+            
+        } else if (event.keyCode === 38) {
+
+            if (currentItem > 0) {
+                if (currentItem === null) {
+                    currentItem = 0;
+                } else {
+                    removeActive();
+                    currentItem--;
+                }
+                removeActive();
+                resultItems[currentItem].classList.add("uk-background-muted");
+            }
+
+        } else if (event.keyCode === 13) {
+
+            resultItems[currentItem].children[0].click();
+
+        }
+
+    });
+
+}
+</script>
+  
+  
+  
+<script src="http://127.0.0.1:35729/livereload.js"></script></head>
+
+    <body>
+
+    
+        <div data-uk-sticky="animation: uk-animation-slide-top; sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; cls-inactive: uk-navbar-transparent; top: 200">
+    <nav class="uk-navbar-container">
+        <div class="uk-container">
+            <div data-uk-navbar>
+                <div class="uk-navbar-left">
+                    <a class="uk-navbar-item uk-logo uk-visible@m" href="/">Ledger Developer pages</a>
+                    
+                        <a class="uk-navbar-toggle uk-hidden@m" href="#offcanvas-docs" data-uk-toggle><span data-uk-navbar-toggle-icon></span> <span class="uk-margin-small-left">Docs</span></a>
+                    
+
+                    <ul class="uk-navbar-nav uk-visible@m">
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Creating content</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Tools & Frameworks</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Release notes</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Tutorials</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="#">_Old</a>
+                                        
+                                            <div class="uk-navbar-dropdown">
+                                                <ul class="uk-nav uk-navbar-dropdown-nav">
+                                                    
+                                                    
+                                                        
+                                                        
+                                                        <li><a href="/docs/TMPL/installation/">Template docs</a></li>
+                                                    
+                                                    
+                                                    
+                                                        
+                                                        
+                                                        <li><a href="/blog/">Blog</a></li>
+                                                    
+                                                    
+                                                    
+                                                        <li class="uk-nav-header">Changelogs</li>
+                                                    
+                                                    
+                                                </ul>
+                                            </div>
+                                        
+                                        </li>
+                                                                                                        
+                                
+                            
+                        
+                    </ul>
+                </div>
+                <div class="uk-navbar-center uk-hidden@m">
+                    <a class="uk-navbar-item uk-logo" href="/">Ledger Developer pages</a>
+                </div>
+                <div class="uk-navbar-right">
+                    
+                        
+                            <div>
+                                <a id="search-navbar-toggle" class="uk-navbar-toggle" uk-search-icon href="#"></a>
+                                <div class="uk-drop uk-background-default uk-border-rounded" uk-drop="mode: click; pos: left-center; offset: 0">
+                                    <form class="uk-search uk-search-navbar uk-width-1-1" onsubmit="return false;">
+                                        <input id="search-navbar" class="uk-search-input" type="search" placeholder="Search for answers" autofocus autocomplete="off">
+                                    </form>
+                                    <ul id="search-navbar-results" class="uk-position-absolute uk-width-1-1 uk-list"></ul>
+                                </div>
+                            </div>
+                            <script>
+                            SimpleJekyllSearch({
+                                searchInput: document.getElementById('search-navbar'),
+                                resultsContainer: document.getElementById('search-navbar-results'),
+                                noResultsText: '<li class="no-results">No results found</li>',
+                                searchResultTemplate: '<li><a href="{url}">{title}</a></li>',
+                                json: "/search.json"
+                            });
+                            searchResults("search-navbar");
+                            </script>
+                        
+                    
+
+                    <ul class="uk-navbar-nav uk-visible@m">
+                        
+                    </ul>
+
+                    
+                        <a class="uk-navbar-toggle uk-hidden@m" href="#offcanvas" data-uk-toggle><span data-uk-navbar-toggle-icon></span> <span class="uk-margin-small-left">Menu</span></a>
+                    
+
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
+    
+
+    <div class="uk-section">
+    <div class="uk-container">
+        <div class="uk-grid-large" data-uk-grid>
+
+            <div class="sidebar-fixed-width uk-visible@m">
+                <div class="sidebar-docs uk-position-fixed uk-margin-top">
+                    
+                    <h5>Getting Started</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/10_general_process/">General Process</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/20_modules/">Modules – General Architecture</a></li>
+                    
+                    </ul>
+                    
+                    <h5>Prerequisites</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/30_live_prerequisites/">Prerequisites</a></li>
+                    
+                    </ul>
+                    
+                    <h5>Coding</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/40_live_coin_integration/">Adding *MyCoin* to Ledger Live</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/41_live_cryptoassets/">Adding *MyCoin* to CryptoAssets library</a></li>
+                    
+                      
+                      
+                      <li class="uk-active"><a href="/docs/CI/42_live_app_bindings/">Adding *MyCoin* Nano App JS Bindings</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/43_live_common/">Adding *MyCoin* to Live-Common</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/44_live_frontend/">Adding *MyCoin* to Ledger Live Desktop and Mobile</a></li>
+                    
+                    </ul>
+                    
+                    <h5>Testing</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/50_live_tests/">Testing</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/51_live_on_desktop/">Getting your Ledger Live running</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/52_live_install_ios/">Building iOS Dev App</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/53_live_install_android/">Building Android Dev App</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/54_live_run_on_ios_android/">Running iOS and Android Dev Apps</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/55_live_gen_cli/">General CLI Checklist - User tests</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/56_live_spe_cli/">Specific CLI Checklist - User tests</a></li>
+                    
+                    </ul>
+                    
+                    <h5>Guidelines</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/60_live_guidelines/">JavaScript Coding Guidelines</a></li>
+                    
+                    </ul>
+                    
+                </div>
+            </div>
+
+            <div class="uk-width-1-1 uk-width-expand@m">
+
+                <article class="uk-article">
+
+                    <h1 class="uk-article-title">Adding *MyCoin* Nano App JS Bindings</h1>
+
+                    
+
+                    <div class="uk-article-meta uk-margin-top uk-margin-medium-bottom uk-flex uk-flex-middle">
+                        
+
+
+  
+  <img class="uk-border-circle avatar" src="http://localhost:4000/uploads/avatar-remi_j.jpg" alt="Remi Jarasson">
+
+
+<div>
+  
+    Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Remi Jarasson</span></span><br>
+  
+  <time datetime="" itemprop="datePublished">
+    
+    
+  </time>
+</div>
+                    </div>
+
+                    <div class="article-content link-primary">
+                        <h4 class="no_toc" id="sections-in-this-article">Sections in this article</h4>
+<ul id="markdown-toc">
+  <li><a href="#ledger-live---nano-app-js-bindings" id="markdown-toc-ledger-live---nano-app-js-bindings">Ledger Live - Nano App JS Bindings</a>    <ul>
+      <li><a href="#minimal-implementationn" id="markdown-toc-minimal-implementationn">Minimal Implementationn</a></li>
+      <li><a href="#example" id="markdown-toc-example">Example</a>        <ul>
+          <li><a href="#usage-example" id="markdown-toc-usage-example">Usage Example</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="ledger-live---nano-app-js-bindings">Ledger Live - Nano App JS Bindings</h1>
+
+<p>You will need to provide a JS implementation to interact with your coin nano app on the Ledger Nano.
+These bindings can either be implemented directly into live-common (as a folder in your coin family folder), or published in <a href="https://github.com/LedgerHQ/ledgerjs">LedgerJS</a> as a package - i.e. <code class="language-plaintext highlighter-rouge">hw-app-mycoin</code>.</p>
+
+<!--
+- [Ledger Live - Nano App JS Bindings](#ledger-live---nano-app-js-bindings)
+  - [Minimal Implementationn](#minimal-implementationn)
+  - [Example](#example)
+    - [Usage Example](#usage-example)
+-->
+
+<h2 id="minimal-implementationn">Minimal Implementationn</h2>
+
+<p>The app implementation should provide at least 2 methods:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">getAddress(path: string, display?: bool)</code>: derive an address providing the BIP32 path</li>
+  <li><code class="language-plaintext highlighter-rouge">signTransaction(path: string, message)</code>: sign a raw message for provided BIP32 path</li>
+</ul>
+
+<p><em>Note: arguments are provided as example, but try to follow as much as possible other implementations for easy integration.</em></p>
+
+<p>Any features provided by the Nano App should be provided through these JS bindings, such as <code class="language-plaintext highlighter-rouge">getAppConfiguration</code> or any blockchain-specific capabilities.</p>
+
+<h2 id="example">Example</h2>
+
+<p>You can find many implementations (<code class="language-plaintext highlighter-rouge">hw-app-*</code>) in <a href="https://github.com/LedgerHQ/ledgerjs/blob/master/packages/">LedgerJS</a></p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">//@flow</span>
+
+<span class="k">import</span> <span class="nx">type</span> <span class="nx">Transport</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">@ledgerhq/hw-transport</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="nx">BIPPath</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">bip32-path</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">UserRefusedOnDevice</span><span class="p">,</span> <span class="nx">UserRefusedAddress</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">@ledgerhq/errors</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">CHUNK_SIZE</span> <span class="o">=</span> <span class="mi">250</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">CLA</span> <span class="o">=</span> <span class="mh">0xe0</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">INS</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">GET_VERSION</span><span class="p">:</span> <span class="mh">0x00</span><span class="p">,</span>
+  <span class="na">GET_ADDR</span><span class="p">:</span> <span class="mh">0x01</span><span class="p">,</span>
+  <span class="na">SIGN</span><span class="p">:</span> <span class="mh">0x02</span><span class="p">,</span>
+<span class="p">};</span>
+<span class="kd">const</span> <span class="nx">PAYLOAD_TYPE_INIT</span> <span class="o">=</span> <span class="mh">0x00</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">PAYLOAD_TYPE_ADD</span> <span class="o">=</span> <span class="mh">0x01</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">PAYLOAD_TYPE_LAST</span> <span class="o">=</span> <span class="mh">0x02</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">SW_OK</span> <span class="o">=</span> <span class="mh">0x9000</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">SW_CANCEL</span> <span class="o">=</span> <span class="mh">0x6986</span><span class="p">;</span>
+
+<span class="cm">/**
+ * MyCoin App API
+ */</span>
+<span class="k">export</span> <span class="k">default</span> <span class="kd">class</span> <span class="nx">MyCoin</span> <span class="p">{</span>
+  <span class="nl">transport</span><span class="p">:</span> <span class="nx">Transport</span><span class="o">&lt;*&gt;</span><span class="p">;</span>
+
+  <span class="kd">constructor</span><span class="p">(</span><span class="nx">transport</span><span class="p">:</span> <span class="nx">Transport</span><span class="o">&lt;*&gt;</span><span class="p">,</span> <span class="nx">scrambleKey</span><span class="p">:</span> <span class="nx">string</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">MYC</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">transport</span> <span class="o">=</span> <span class="nx">transport</span><span class="p">;</span>
+    <span class="nx">transport</span><span class="p">.</span><span class="nx">decorateAppAPIMethods</span><span class="p">(</span>
+      <span class="k">this</span><span class="p">,</span>
+      <span class="p">[</span><span class="dl">"</span><span class="s2">getAddress</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">signTransaction</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">getAppConfiguration</span><span class="dl">"</span><span class="p">],</span>
+      <span class="nx">scrambleKey</span>
+    <span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="cm">/**
+   * Serialize a bip path to data buffer
+   */</span>
+  <span class="nx">serializePath</span><span class="p">(</span><span class="nx">path</span><span class="p">:</span> <span class="nb">Array</span><span class="o">&lt;</span><span class="nx">number</span><span class="o">&gt;</span><span class="p">):</span> <span class="nx">Buffer</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">Buffer</span><span class="p">.</span><span class="nx">alloc</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="nx">path</span><span class="p">.</span><span class="nx">length</span> <span class="o">*</span> <span class="mi">4</span><span class="p">);</span>
+
+    <span class="nx">data</span><span class="p">.</span><span class="nx">writeInt8</span><span class="p">(</span><span class="nx">path</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="nx">path</span><span class="p">.</span><span class="nx">forEach</span><span class="p">((</span><span class="nx">segment</span><span class="p">,</span> <span class="nx">index</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">data</span><span class="p">.</span><span class="nx">writeUInt32BE</span><span class="p">(</span><span class="nx">segment</span><span class="p">,</span> <span class="mi">1</span> <span class="o">+</span> <span class="nx">index</span> <span class="o">*</span> <span class="mi">4</span><span class="p">);</span>
+    <span class="p">});</span>
+
+    <span class="k">return</span> <span class="nx">data</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="cm">/**
+   * Iterates callback over chunks and return a single Promise
+   */</span>
+  <span class="nx">foreach</span><span class="o">&lt;</span><span class="nx">T</span><span class="p">,</span> <span class="nx">A</span><span class="o">&gt;</span><span class="p">(</span><span class="nx">arr</span><span class="p">:</span> <span class="nx">T</span><span class="p">[],</span> <span class="nx">callback</span><span class="p">:</span> <span class="p">(</span><span class="nx">T</span><span class="p">,</span> <span class="nx">number</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">A</span><span class="o">&gt;</span><span class="p">):</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">A</span><span class="p">[]</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="kd">function</span> <span class="nx">iterate</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="nx">array</span><span class="p">,</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">index</span> <span class="o">&gt;=</span> <span class="nx">array</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+      <span class="p">}</span> <span class="k">else</span>
+        <span class="k">return</span> <span class="nx">callback</span><span class="p">(</span><span class="nx">array</span><span class="p">[</span><span class="nx">index</span><span class="p">],</span> <span class="nx">index</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">result</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">res</span><span class="p">);</span>
+          <span class="k">return</span> <span class="nx">iterate</span><span class="p">(</span><span class="nx">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">array</span><span class="p">,</span> <span class="nx">result</span><span class="p">);</span>
+        <span class="p">});</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">().</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">iterate</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">arr</span><span class="p">,</span> <span class="p">[]));</span>
+  <span class="p">}</span>
+
+  <span class="cm">/**
+   * Get MyCoin address for a given BIP 32 path.
+   *
+   * @param path a path in BIP 32 format
+   * @param display optionally enable or not the display
+   * @return an object with a publicKey, address
+   * @example
+   * const result = await myCoin.getAddress("44'/8008'/0'/0/0");
+   * const { publicKey, address, returnCode } = result;
+   */</span>
+  <span class="k">async</span> <span class="nx">getAddress</span><span class="p">(</span>
+    <span class="nx">path</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+    <span class="nx">display</span><span class="p">?:</span> <span class="nx">boolean</span>
+  <span class="p">):</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="p">{</span>
+    <span class="na">publicKey</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+    <span class="na">address</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+    <span class="na">returnCode</span><span class="p">:</span> <span class="nx">number</span><span class="p">,</span>
+  <span class="p">}</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">bipPath</span> <span class="o">=</span> <span class="nx">BIPPath</span><span class="p">.</span><span class="nx">fromString</span><span class="p">(</span><span class="nx">path</span><span class="p">).</span><span class="nx">toPathArray</span><span class="p">();</span>
+    <span class="kd">const</span> <span class="nx">serializedPath</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">serializePath</span><span class="p">(</span><span class="nx">bipPath</span><span class="p">);</span>
+
+    <span class="kd">const</span> <span class="nx">p1</span> <span class="o">=</span> <span class="nx">display</span> <span class="p">?</span> <span class="mh">0x01</span> <span class="p">:</span> <span class="mh">0x00</span><span class="p">;</span>
+    <span class="kd">const</span> <span class="nx">p2</span> <span class="o">=</span> <span class="mh">0x00</span><span class="p">;</span>
+    <span class="kd">const</span> <span class="nx">statusList</span> <span class="o">=</span> <span class="p">[</span><span class="nx">SW_OK</span><span class="p">,</span> <span class="nx">SW_CANCEL</span><span class="p">];</span>
+
+    <span class="kd">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="k">this</span><span class="p">.</span><span class="nx">transport</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span>
+      <span class="nx">CLA</span><span class="p">,</span>
+      <span class="nx">INS</span><span class="p">.</span><span class="nx">GET_ADDR</span><span class="p">,</span>
+      <span class="nx">p1</span><span class="p">,</span>
+      <span class="nx">p2</span><span class="p">,</span>
+      <span class="nx">serializedPath</span><span class="p">,</span>
+      <span class="nx">statusList</span>
+    <span class="p">);</span>
+
+    <span class="kd">const</span> <span class="nx">errorCodeData</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">returnCode</span> <span class="o">=</span> <span class="nx">errorCodeData</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mh">0x100</span> <span class="o">+</span> <span class="nx">errorCodeData</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">returnCode</span> <span class="o">===</span> <span class="nx">SW_CANCEL</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">throw</span> <span class="k">new</span> <span class="nx">UserRefusedAddress</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+      <span class="na">publicKey</span><span class="p">:</span> <span class="nx">response</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">32</span><span class="p">).</span><span class="nx">toString</span><span class="p">(</span><span class="dl">"</span><span class="s2">hex</span><span class="dl">"</span><span class="p">),</span>
+      <span class="na">address</span><span class="p">:</span> <span class="nx">response</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">2</span><span class="p">).</span><span class="nx">toString</span><span class="p">(</span><span class="dl">"</span><span class="s2">ascii</span><span class="dl">"</span><span class="p">),</span>
+      <span class="nx">returnCode</span><span class="p">,</span>
+    <span class="p">};</span>
+  <span class="p">}</span>
+
+  <span class="cm">/**
+   * Sign a MyCoin transaction with a given BIP 32 path
+   *
+   * @param path a path in BIP 32 format
+   * @param message a raw hex string representing a serialized transaction.
+   * @return an object with signature and returnCode
+   */</span>
+  <span class="k">async</span> <span class="nx">signTransaction</span><span class="p">(</span>
+    <span class="nx">path</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+    <span class="nx">message</span><span class="p">:</span> <span class="nx">string</span>
+  <span class="p">):</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="p">{</span> <span class="na">signature</span><span class="p">:</span> <span class="kc">null</span> <span class="o">|</span> <span class="nx">Buffer</span><span class="p">,</span> <span class="na">returnCode</span><span class="p">:</span> <span class="nx">number</span> <span class="p">}</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">bipPath</span> <span class="o">=</span> <span class="nx">BIPPath</span><span class="p">.</span><span class="nx">fromString</span><span class="p">(</span><span class="nx">path</span><span class="p">).</span><span class="nx">toPathArray</span><span class="p">();</span>
+    <span class="kd">const</span> <span class="nx">serializedPath</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">serializePath</span><span class="p">(</span><span class="nx">bipPath</span><span class="p">);</span>
+
+    <span class="kd">const</span> <span class="nx">chunks</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="nx">chunks</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">serializedPath</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">buffer</span> <span class="o">=</span> <span class="nx">Buffer</span><span class="p">.</span><span class="k">from</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">buffer</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">+=</span> <span class="nx">CHUNK_SIZE</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">let</span> <span class="nx">end</span> <span class="o">=</span> <span class="nx">i</span> <span class="o">+</span> <span class="nx">CHUNK_SIZE</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">i</span> <span class="o">&gt;</span> <span class="nx">buffer</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">end</span> <span class="o">=</span> <span class="nx">buffer</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="nx">chunks</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">buffer</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="nx">end</span><span class="p">));</span>
+    <span class="p">}</span>
+
+    <span class="kd">let</span> <span class="nx">response</span> <span class="o">=</span> <span class="p">{};</span>
+
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">foreach</span><span class="p">(</span><span class="nx">chunks</span><span class="p">,</span> <span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">j</span><span class="p">)</span> <span class="o">=&gt;</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">transport</span>
+        <span class="p">.</span><span class="nx">send</span><span class="p">(</span>
+          <span class="nx">CLA</span><span class="p">,</span>
+          <span class="nx">INS</span><span class="p">.</span><span class="nx">SIGN</span><span class="p">,</span>
+          <span class="nx">j</span> <span class="o">===</span> <span class="mi">0</span>
+            <span class="p">?</span> <span class="nx">PAYLOAD_TYPE_INIT</span>
+            <span class="p">:</span> <span class="nx">j</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">===</span> <span class="nx">chunks</span><span class="p">.</span><span class="nx">length</span>
+            <span class="p">?</span> <span class="nx">PAYLOAD_TYPE_LAST</span>
+            <span class="p">:</span> <span class="nx">PAYLOAD_TYPE_ADD</span><span class="p">,</span>
+          <span class="mi">0</span><span class="p">,</span>
+          <span class="nx">data</span><span class="p">,</span>
+          <span class="p">[</span><span class="nx">SW_OK</span><span class="p">,</span> <span class="nx">SW_CANCEL</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="p">.</span><span class="nx">then</span><span class="p">((</span><span class="nx">apduResponse</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="nx">response</span> <span class="o">=</span> <span class="nx">apduResponse</span><span class="p">))</span>
+    <span class="p">).</span><span class="nx">then</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="nx">errorCodeData</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">);</span>
+      <span class="kd">const</span> <span class="nx">returnCode</span> <span class="o">=</span> <span class="nx">errorCodeData</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mh">0x100</span> <span class="o">+</span> <span class="nx">errorCodeData</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+
+      <span class="kd">let</span> <span class="nx">signature</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">signature</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">2</span><span class="p">);</span>
+      <span class="p">}</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">returnCode</span> <span class="o">===</span> <span class="nx">SW_CANCEL</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nx">UserRefusedOnDevice</span><span class="p">();</span>
+      <span class="p">}</span>
+
+      <span class="k">return</span> <span class="p">{</span>
+        <span class="nx">signature</span><span class="p">,</span>
+        <span class="nx">returnCode</span><span class="p">,</span>
+      <span class="p">};</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+
+  <span class="cm">/**
+   * get the version of the MyCoin app installed on the hardware device
+   *
+   * @return an object with a version
+   * @example
+   * const result = await myCoin.getAppConfiguration();
+   *
+   * {
+   *   "version": "1.0.0"
+   * }
+   */</span>
+  <span class="k">async</span> <span class="nx">getAppConfiguration</span><span class="p">():</span> <span class="nb">Promise</span><span class="o">&lt;</span><span class="p">{</span>
+    <span class="na">version</span><span class="p">:</span> <span class="nx">string</span><span class="p">,</span>
+  <span class="p">}</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="k">this</span><span class="p">.</span><span class="nx">transport</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span>
+      <span class="nx">CLA</span><span class="p">,</span>
+      <span class="nx">INS</span><span class="p">.</span><span class="nx">GET_VERSION</span><span class="p">,</span>
+      <span class="mh">0x00</span><span class="p">,</span>
+      <span class="mh">0x00</span>
+    <span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">{};</span>
+    <span class="nx">result</span><span class="p">.</span><span class="nx">version</span> <span class="o">=</span> <span class="dl">""</span> <span class="o">+</span> <span class="nx">response</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="dl">"</span><span class="s2">.</span><span class="dl">"</span> <span class="o">+</span> <span class="nx">response</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="dl">"</span><span class="s2">.</span><span class="dl">"</span> <span class="o">+</span> <span class="nx">response</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
+    <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="usage-example">Usage Example</h3>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">import</span> <span class="nx">MyCoinSdk</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">my-coin-sdk</span><span class="dl">"</span><span class="p">;</span> <span class="c1">// Your coin js sdk</span>
+ <span class="k">import</span> <span class="nx">Transport</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">@ledgerhq/hw-transport-node-hid</span><span class="dl">"</span><span class="p">;</span>
+ <span class="c1">// import Transport from "@ledgerhq/hw-transport-u2f"; // for browser</span>
+ <span class="k">import</span> <span class="nx">MyCoin</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">@ledgerhq/hw-app-mycoin</span><span class="dl">"</span><span class="p">;</span> <span class="c1">// App JS Bindings</span>
+
+ <span class="kd">function</span> <span class="nx">establishConnection</span><span class="p">()</span> <span class="p">{</span>
+     <span class="k">return</span> <span class="nx">Transport</span><span class="p">.</span><span class="nx">create</span><span class="p">()</span>
+         <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">transport</span> <span class="o">=&gt;</span> <span class="k">new</span> <span class="nx">MyCoin</span><span class="p">(</span><span class="nx">transport</span><span class="p">));</span>
+ <span class="p">}</span>
+
+ <span class="kd">function</span> <span class="nx">fetchAddress</span><span class="p">(</span><span class="nx">myCoin</span><span class="p">)</span> <span class="p">{</span>
+     <span class="k">return</span> <span class="nx">myCoin</span><span class="p">.</span><span class="nx">getAddress</span><span class="p">(</span><span class="dl">"</span><span class="s2">44'/8008'/0'/0/0</span><span class="dl">"</span><span class="p">);</span>
+ <span class="p">}</span>
+
+ <span class="kd">function</span> <span class="nx">signTransaction</span><span class="p">(</span><span class="nx">myCoin</span><span class="p">,</span> <span class="nx">deviceData</span><span class="p">,</span> <span class="nx">nonce</span><span class="p">)</span> <span class="p">{</span>
+     <span class="kd">let</span> <span class="nx">tx</span> <span class="o">=</span> <span class="p">{</span>
+         <span class="na">type</span><span class="p">:</span> <span class="dl">"</span><span class="s2">send</span><span class="dl">"</span><span class="p">,</span>
+         <span class="na">from</span><span class="p">:</span> <span class="nx">deviceData</span><span class="p">.</span><span class="nx">address</span><span class="p">,</span>
+         <span class="na">to</span><span class="p">:</span> <span class="dl">"</span><span class="s2">destination-address</span><span class="dl">"</span><span class="p">,</span>
+         <span class="na">amount</span><span class="p">:</span> <span class="dl">"</span><span class="s2">1000000</span><span class="dl">"</span><span class="p">,</span>
+         <span class="nx">nonce</span><span class="p">,</span>
+     <span class="p">};</span>
+     <span class="kd">const</span> <span class="nx">serialized</span> <span class="o">=</span> <span class="nx">MyCoinSdk</span><span class="p">.</span><span class="nx">encode</span><span class="p">(</span><span class="nx">tx</span><span class="p">);</span>
+
+     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Sending transaction to device for approval...</span><span class="dl">'</span><span class="p">);</span>
+     <span class="k">return</span> <span class="nx">myCoin</span><span class="p">.</span><span class="nx">signTransaction</span><span class="p">(</span><span class="dl">"</span><span class="s2">44'/8008'/0'/0/0</span><span class="dl">"</span><span class="p">,</span> <span class="nx">serialized</span><span class="p">);</span>
+ <span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">prepareAndSign</span><span class="p">(</span><span class="nx">myCoin</span><span class="p">,</span> <span class="nx">nonce</span><span class="p">)</span> <span class="p">{</span>
+     <span class="k">return</span> <span class="nx">fetchAddress</span><span class="p">(</span><span class="nx">myCoin</span><span class="p">)</span>
+         <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">deviceData</span> <span class="o">=&gt;</span> <span class="nx">signTransaction</span><span class="p">(</span><span class="nx">myCoin</span><span class="p">,</span> <span class="nx">deviceData</span><span class="p">,</span> <span class="nx">nonce</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="nx">establishConnection</span><span class="p">()</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">myCoin</span> <span class="o">=&gt;</span> <span class="nx">prepareAndSign</span><span class="p">(</span><span class="nx">myCoin</span><span class="p">,</span> <span class="mi">123</span><span class="p">))</span>
+  <span class="p">.</span><span class="nx">then</span><span class="p">(({</span> <span class="nx">signature</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`Signature: </span><span class="p">${</span><span class="nx">signature</span><span class="p">}</span><span class="s2">`</span><span class="p">))</span>
+  <span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">e</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`An error occurred (</span><span class="p">${</span><span class="nx">e</span><span class="p">.</span><span class="nx">message</span><span class="p">}</span><span class="s2">)`</span><span class="p">));</span>
+</code></pre></div></div>
+
+                        
+                            <!-- FC
+                            <div class="share uk-text-center uk-margin-medium-top">
+    
+        <a class="uk-link-muted" href="https://twitter.com/intent/tweet?text=Adding *MyCoin* Nano App JS Bindings&url=http://localhost:4000/docs/CI/42_live_app_bindings/&via=&related=" rel="nofollow" target="_blank" title="Share on Twitter" onclick="window.open(this.href, 'twitter', 'width=550,height=235');return false;"><span data-uk-icon="icon: twitter; ratio: 1.2"></span></a>
+    
+    
+        <a class="uk-link-muted uk-margin-small-left" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2Fdocs%2FCI%2F42_live_app_bindings%2F" rel="nofollow" target="_blank" title="Share on Facebook" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;"><span data-uk-icon="icon: facebook; ratio: 1.2"></span></a>
+    
+</div>
+                            -->
+                        
+                    </div>
+
+                    
+
+                    <hr class="uk-margin-medium">
+
+                    
+
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+
+
+                    <div class="uk-margin-large-top">
+    <h3>Related Docs</h3>
+
+    
+    
+    
+
+    <ul class="uk-list link-secondary">
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+    </ul>
+</div>
+
+
+                    
+                </article>
+
+                <script>
+                    // Table of contents scroll to
+                    UIkit.scroll('#markdown-toc a', {
+                        duration: 400,
+                        offset: 120
+                    });
+                </script>
+
+            </div>
+
+    </div>
+</div>
+
+
+    <div id="offcanvas-docs" data-uk-offcanvas="overlay: true">
+    <div class="uk-offcanvas-bar">
+
+        <button class="uk-offcanvas-close" type="button" data-uk-close></button>
+
+        
+        <h5 class="uk-margin-top">Getting Started</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/installation/">Theme installation</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/setup/">Basic theme setup</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/navigation/">Navigation bar</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/footer/">Footer options</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/posts/">Creating your first post in Jekyll</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/docs/">Creating docs posts</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/comments/">Enabling comments (via Disqus)</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/analytics/">Google Analytics</a></li>
+        
+        </ul>
+        
+        <h5 class="uk-margin-top">Theme Features</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/hero/">Hero page header</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/boxes/">Category boxes section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/featured/">Fearured docs section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/videos/">Video lightbox boxes section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/faq/">Frequently asked questions section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/team/">Team members section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/cta/">Call to action section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/changelog/">Creating a changelog</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/contact/">Contact form (via FormSpree)</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/media/">Adding media to post and doc content</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/toc/">Adding table of contents to docs</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/alerts/">Adding alerts to content</a></li>
+        
+        </ul>
+        
+        <h5 class="uk-margin-top">Customization</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/translation/">Translation</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/customize/">Customization</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/development/">Development</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/sources/">Sources and credits</a></li>
+        
+        </ul>
+        
+        <h5 class="uk-margin-top">Help</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/support/">Contacting support</a></li>
+        
+        </ul>
+        
+
+    </div>
+</div>
+
+
+    <div id="offcanvas" data-uk-offcanvas="flip: true; overlay: true">
+    <div class="uk-offcanvas-bar">
+
+        <a class="uk-logo uk-margin-small-bottom" href="/">Ledger Developer pages</a>
+     
+        <button class="uk-offcanvas-close" type="button" data-uk-close></button>
+      
+        <ul class="uk-nav uk-nav-primary uk-margin-top">
+            
+                
+
+                
+
+                
+                    <li><a href="/" >Home</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><a href="/docs/TMPL/installation" >Docs</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><a href="/blog/" >Blog</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><a href="/changelog-timeline/" >Changelog</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><div class="uk-navbar-item"><a class="uk-button uk-button-success" href="/contact/" >Contact</a></div></li>
+                
+            
+        </ul>
+
+        <div class="uk-margin-top uk-text-center">
+            <div data-uk-grid class="uk-child-width-auto uk-grid-small uk-flex-center uk-grid">
+                
+<div class="uk-first-column">
+    <a href="https://twitter.com/" data-uk-icon="icon: twitter" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+<div>
+    <a href="https://www.facebook.com/" data-uk-icon="icon: facebook" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+<div>
+    <a href="https://www.instagram.com/" data-uk-icon="icon: instagram" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+<div>
+    <a href="https://vimeo.com/" data-uk-icon="icon: vimeo" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+    
+        <footer class="uk-section uk-text-center uk-text-muted">
+    <div class="uk-container uk-container-small">
+
+        <div>
+            <ul class="uk-subnav uk-flex-center">
+                
+                    
+                    
+                    
+                        <li><a href="/" >Home</a></li>
+                    
+                
+                    
+                    
+                    
+                        <li><a href="/blog/" >Blog</a></li>
+                    
+                
+                    
+                    
+                    
+                        <li><a href="/contact/" >Contact</a></li>
+                    
+                
+            </ul>
+        </div>
+        <div class="uk-margin-medium">
+            <div data-uk-grid class="uk-child-width-auto uk-grid-small uk-flex-center uk-grid">
+                
+                
+<div class="uk-first-column">
+    <a href="https://twitter.com/" data-uk-icon="icon: twitter" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+<div>
+    <a href="https://www.facebook.com/" data-uk-icon="icon: facebook" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+<div>
+    <a href="https://www.instagram.com/" data-uk-icon="icon: instagram" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+<div>
+    <a href="https://vimeo.com/" data-uk-icon="icon: vimeo" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+
+                
+            </div>
+        </div>
+        <div class="uk-margin-medium uk-text-small copyright link-secondary">Made by <a href="https://ledger.com/">Ledger</a> France</div>
+
+    </div>
+</footer>
+
+    
+
+    
+
+    
+
+    </body>
+
+</html>

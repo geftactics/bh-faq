@@ -1,0 +1,36 @@
+- title: Getting Started
+  docs:
+  - TMPL/installation
+  - TMPL/setup
+  - TMPL/navigation
+  - TMPL/footer
+  - TMPL/posts
+  - TMPL/docs
+  - TMPL/comments
+  - TMPL/analytics
+
+- title: Theme Features
+  docs:
+  - TMPL/hero
+  - TMPL/boxes
+  - TMPL/featured
+  - TMPL/videos
+  - TMPL/faq
+  - TMPL/team
+  - TMPL/cta
+  - TMPL/changelog
+  - TMPL/contact
+  - TMPL/media
+  - TMPL/toc
+  - TMPL/alerts
+
+- title: Customization
+  docs:
+  - TMPL/translation
+  - TMPL/customize
+  - TMPL/development
+  - TMPL/sources
+
+- title: Help
+  docs:
+  - TMPL/support

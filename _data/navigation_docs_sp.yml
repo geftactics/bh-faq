@@ -1,0 +1,21 @@
+- title: Installation
+  docs:
+  - SP/i_build
+  - SP/i_wsl
+
+- title: User
+  docs:
+  - SP/u_usage
+  - SP/u_docker
+  - SP/u_clients
+  - SP/u_debug
+  - SP/u_automation
+  - SP/u_semihosting
+
+- title: Developer Documentation
+  docs:
+  - SP/d_getting_started
+  - SP/d_tests
+  - SP/d_ci
+  - SP/d_internals
+

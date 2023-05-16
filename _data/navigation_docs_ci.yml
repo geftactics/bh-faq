@@ -1,0 +1,30 @@
+- title: Getting Started
+  docs:
+  - CI/10_general_process
+  - CI/20_modules
+
+- title: Prerequisites
+  docs:
+  - CI/30_live_prerequisites
+
+- title: Coding
+  docs:
+  - CI/40_live_coin_integration
+  - CI/41_live_cryptoassets
+  - CI/42_live_app_bindings
+  - CI/43_live_common
+  - CI/44_live_frontend
+
+- title: Testing
+  docs:
+  - CI/50_live_tests
+  - CI/51_live_on_desktop
+  - CI/52_live_install_ios
+  - CI/53_live_install_android
+  - CI/54_live_run_on_ios_android
+  - CI/55_live_gen_cli
+  - CI/56_live_spe_cli
+
+- title: Guidelines
+  docs:
+  - CI/60_live_guidelines

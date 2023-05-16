@@ -1,0 +1,1930 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>General Process | Ledger Developer pages</title>
+<meta name="generator" content="Jekyll v3.9.1" />
+<meta property="og:title" content="General Process" />
+<meta name="author" content="fabrice" />
+<meta property="og:locale" content="en" />
+<meta name="description" content="Sections in this article" />
+<meta property="og:description" content="Sections in this article" />
+<link rel="canonical" href="http://localhost:4000/docs/CI/10_general_process/" />
+<meta property="og:url" content="http://localhost:4000/docs/CI/10_general_process/" />
+<meta property="og:site_name" content="Ledger Developer pages" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-04-22T15:38:24+02:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="General Process" />
+<script type="application/ld+json">
+{"datePublished":"2021-04-22T15:38:24+02:00","description":"Sections in this article","dateModified":"2021-04-22T15:38:24+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/docs/CI/10_general_process/"},"url":"http://localhost:4000/docs/CI/10_general_process/","author":{"@type":"Person","name":"fabrice"},"@type":"BlogPosting","headline":"General Process","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+  <meta property="og:image" content="http://localhost:4000/uploads/"/>
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="shortcut icon" type="image/png" href="/uploads/favicon.png" >
+  <link rel="alternate" type="application/rss+xml" title="Ledger Developer pages" href="/feed.xml">
+  <script src="/assets/js/main.js"></script>
+  
+    <script>
+function searchResults(form) {
+
+    var currentItem = null;
+    var search = document.getElementById(form);
+    var results = document.getElementById(form + "-results");
+    var toggle = document.getElementById(form + "-toggle");
+
+    function removeActive() {
+        for (i = 0; i < results.children.length; i++) {
+            results.children[i].classList.remove("uk-background-muted");
+        }
+    }
+
+    // Detect all clicks on the document
+    document.addEventListener("click", function(event) {
+
+        var isClickSearch = false;
+        var isClickResults = false;
+        var isClickSearchToggle = false;
+
+        if (search !== null) {
+            isClickSearch = search.contains(event.target);
+        }
+
+        if (results !== null) {
+            isClickResults = results.contains(event.target);
+        }
+
+        if (toggle !== null) {
+            isClickSearchToggle = toggle.contains(event.target);
+        }
+
+        if (isClickSearch || isClickSearchToggle) {
+            results.style.display = "block";
+        }        
+
+        if (!isClickResults && !isClickSearch && !isClickSearchToggle) {
+            results.style.display = "none";
+        }        
+        
+    });    
+
+    results.addEventListener("mouseover", function(event) {
+
+        removeActive();
+        event.target.parentElement.classList.add("uk-background-muted");
+        currentItem = null;
+
+    });
+
+    results.addEventListener("mouseout", function(event) {
+        event.target.parentElement.classList.remove("uk-background-muted");
+    });
+
+
+    search.addEventListener("keyup", function(event) {
+
+        var resultItems = results.children;
+        var resultCount = results.children.length;
+                                
+        if (event.keyCode === 40) {
+
+            if (currentItem < (resultCount - 1)) {
+                if (currentItem === null) {
+                    currentItem = 0;
+                } else {
+                    removeActive();
+                    currentItem++;
+                }
+                removeActive();
+                resultItems[currentItem].classList.add("uk-background-muted");
+            }
+            
+        } else if (event.keyCode === 38) {
+
+            if (currentItem > 0) {
+                if (currentItem === null) {
+                    currentItem = 0;
+                } else {
+                    removeActive();
+                    currentItem--;
+                }
+                removeActive();
+                resultItems[currentItem].classList.add("uk-background-muted");
+            }
+
+        } else if (event.keyCode === 13) {
+
+            resultItems[currentItem].children[0].click();
+
+        }
+
+    });
+
+}
+</script>
+  
+  
+  
+<script src="http://127.0.0.1:35729/livereload.js"></script></head>
+
+    <body>
+
+    
+        <div data-uk-sticky="animation: uk-animation-slide-top; sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; cls-inactive: uk-navbar-transparent; top: 200">
+    <nav class="uk-navbar-container">
+        <div class="uk-container">
+            <div data-uk-navbar>
+                <div class="uk-navbar-left">
+                    <a class="uk-navbar-item uk-logo uk-visible@m" href="/">Ledger Developer pages</a>
+                    
+                        <a class="uk-navbar-toggle uk-hidden@m" href="#offcanvas-docs" data-uk-toggle><span data-uk-navbar-toggle-icon></span> <span class="uk-margin-small-left">Docs</span></a>
+                    
+
+                    <ul class="uk-navbar-nav uk-visible@m">
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Creating content</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Tools & Frameworks</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Release notes</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="/docs/00_header/" >Tutorials</a></li>
+                                                                                                        
+                                
+                            
+                        
+                            
+                            
+                            
+                                
+                                    
+                                        <li><a href="#">_Old</a>
+                                        
+                                            <div class="uk-navbar-dropdown">
+                                                <ul class="uk-nav uk-navbar-dropdown-nav">
+                                                    
+                                                    
+                                                        
+                                                        
+                                                        <li><a href="/docs/TMPL/installation/">Template docs</a></li>
+                                                    
+                                                    
+                                                    
+                                                        
+                                                        
+                                                        <li><a href="/blog/">Blog</a></li>
+                                                    
+                                                    
+                                                    
+                                                        <li class="uk-nav-header">Changelogs</li>
+                                                    
+                                                    
+                                                </ul>
+                                            </div>
+                                        
+                                        </li>
+                                                                                                        
+                                
+                            
+                        
+                    </ul>
+                </div>
+                <div class="uk-navbar-center uk-hidden@m">
+                    <a class="uk-navbar-item uk-logo" href="/">Ledger Developer pages</a>
+                </div>
+                <div class="uk-navbar-right">
+                    
+                        
+                            <div>
+                                <a id="search-navbar-toggle" class="uk-navbar-toggle" uk-search-icon href="#"></a>
+                                <div class="uk-drop uk-background-default uk-border-rounded" uk-drop="mode: click; pos: left-center; offset: 0">
+                                    <form class="uk-search uk-search-navbar uk-width-1-1" onsubmit="return false;">
+                                        <input id="search-navbar" class="uk-search-input" type="search" placeholder="Search for answers" autofocus autocomplete="off">
+                                    </form>
+                                    <ul id="search-navbar-results" class="uk-position-absolute uk-width-1-1 uk-list"></ul>
+                                </div>
+                            </div>
+                            <script>
+                            SimpleJekyllSearch({
+                                searchInput: document.getElementById('search-navbar'),
+                                resultsContainer: document.getElementById('search-navbar-results'),
+                                noResultsText: '<li class="no-results">No results found</li>',
+                                searchResultTemplate: '<li><a href="{url}">{title}</a></li>',
+                                json: "/search.json"
+                            });
+                            searchResults("search-navbar");
+                            </script>
+                        
+                    
+
+                    <ul class="uk-navbar-nav uk-visible@m">
+                        
+                    </ul>
+
+                    
+                        <a class="uk-navbar-toggle uk-hidden@m" href="#offcanvas" data-uk-toggle><span data-uk-navbar-toggle-icon></span> <span class="uk-margin-small-left">Menu</span></a>
+                    
+
+                </div>
+            </div>
+        </div>
+    </nav>
+</div>
+    
+
+    <div class="uk-section">
+    <div class="uk-container">
+        <div class="uk-grid-large" data-uk-grid>
+
+            <div class="sidebar-fixed-width uk-visible@m">
+                <div class="sidebar-docs uk-position-fixed uk-margin-top">
+                    
+                    <h5>Getting Started</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class="uk-active"><a href="/docs/CI/10_general_process/">General Process</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/20_modules/">Modules – General Architecture</a></li>
+                    
+                    </ul>
+                    
+                    <h5>Prerequisites</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/30_live_prerequisites/">Prerequisites</a></li>
+                    
+                    </ul>
+                    
+                    <h5>Coding</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/40_live_coin_integration/">Adding *MyCoin* to Ledger Live</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/41_live_cryptoassets/">Adding *MyCoin* to CryptoAssets library</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/42_live_app_bindings/">Adding *MyCoin* Nano App JS Bindings</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/43_live_common/">Adding *MyCoin* to Live-Common</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/44_live_frontend/">Adding *MyCoin* to Ledger Live Desktop and Mobile</a></li>
+                    
+                    </ul>
+                    
+                    <h5>Testing</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/50_live_tests/">Testing</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/51_live_on_desktop/">Getting your Ledger Live running</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/52_live_install_ios/">Building iOS Dev App</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/53_live_install_android/">Building Android Dev App</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/54_live_run_on_ios_android/">Running iOS and Android Dev Apps</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/55_live_gen_cli/">General CLI Checklist - User tests</a></li>
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/56_live_spe_cli/">Specific CLI Checklist - User tests</a></li>
+                    
+                    </ul>
+                    
+                    <h5>Guidelines</h5>
+                    <ul class="uk-nav uk-nav-default doc-nav">
+                    
+                      
+                      
+                      <li class=""><a href="/docs/CI/60_live_guidelines/">JavaScript Coding Guidelines</a></li>
+                    
+                    </ul>
+                    
+                </div>
+            </div>
+
+            <div class="uk-width-1-1 uk-width-expand@m">
+
+                <article class="uk-article">
+
+                    <h1 class="uk-article-title">General Process</h1>
+
+                    <p class="uk-text-lead uk-text-muted">This section describes the general processes and way of working Ledger will follow while interacting with the teams wishing to add their currency on Ledger Live.</p>
+
+                    <div class="uk-article-meta uk-margin-top uk-margin-medium-bottom uk-flex uk-flex-middle">
+                        
+
+
+  
+  <img class="uk-border-circle avatar" src="http://localhost:4000/uploads/avatar-fabrice.jpg" alt="Fabrice Dautriat">
+
+
+<div>
+  
+    Written by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Fabrice Dautriat</span></span><br>
+  
+  <time datetime="" itemprop="datePublished">
+    
+    
+  </time>
+</div>
+                    </div>
+
+                    <div class="article-content link-primary">
+                        <h4 class="no_toc" id="sections-in-this-article">Sections in this article</h4>
+<ul id="markdown-toc">
+  <li><a href="#list-of-all-integrations-resources" id="markdown-toc-list-of-all-integrations-resources">List of all Integrations resources</a>    <ul>
+      <li><a href="#nano-applications" id="markdown-toc-nano-applications">Nano applications</a></li>
+      <li><a href="#tokens" id="markdown-toc-tokens">Tokens</a></li>
+      <li><a href="#ledger-live" id="markdown-toc-ledger-live">Ledger Live</a></li>
+    </ul>
+  </li>
+  <li><a href="#general-ledger-live-overview" id="markdown-toc-general-ledger-live-overview">General Ledger Live Overview</a></li>
+  <li><a href="#open-source-but-not-open-bar" id="markdown-toc-open-source-but-not-open-bar">Open source, but not Open bar</a></li>
+  <li><a href="#agreeing-on-a-framework" id="markdown-toc-agreeing-on-a-framework">Agreeing on a Framework</a></li>
+  <li><a href="#note-about-code-reviews" id="markdown-toc-note-about-code-reviews">Note about Code Reviews</a></li>
+  <li><a href="#ledger-live-development-phases" id="markdown-toc-ledger-live-development-phases">Ledger Live Development Phases</a>    <ul>
+      <li><a href="#a---technical-assessment" id="markdown-toc-a---technical-assessment">A - Technical Assessment</a></li>
+      <li><a href="#b---cli-and-gui-integration---general-gen-features" id="markdown-toc-b---cli-and-gui-integration---general-gen-features">B - CLI and GUI integration - General (GEN) features</a></li>
+      <li><a href="#c---cli-integration---specific-spe-features" id="markdown-toc-c---cli-integration---specific-spe-features">C - CLI integration - Specific (SPE) features</a></li>
+      <li><a href="#d---gui-integration---specific-spe-features" id="markdown-toc-d---gui-integration---specific-spe-features">D - GUI integration - Specific (SPE) features</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="list-of-all-integrations-resources">List of all Integrations resources</h1>
+
+<!--
+List of all Integrations
+    Nano applications
+    Tokens
+    Ledger Live
+General Ledger Live Overview
+Open source, but not Open bar
+Agreeing on a Framework
+Note about Code Reviews
+Ledger Live Development Phases
+    A - Technical Assessment
+    B - CLI and GUI integration - General (GEN) features
+    C - CLI integration - Specific (SPE) features
+    D - GUI integration - Specific (SPE) features
+-->
+
+<h2 id="nano-applications">Nano applications</h2>
+
+<p>Integrating your cryptocurrency on Ledger Live is a multi steps process.
+The first mandatory requirement is to have a Nano application already listed in the Ledger Live Manager section. If you don’t have one already, please make sure to read this <a href="https://ledger.readthedocs.io/en/latest/additional/publishing_an_app.html">documentation</a> first.</p>
+
+<!--  -->
+<div class="uk-alert-primary" data-uk-alert="">
+    <p>The Integration of Nano applications is found this Developer Portal here $LINK.</p>
+</div>
+<!--  -->
+
+<h2 id="tokens">Tokens</h2>
+
+<p>Adding tokens (ERC20, TRC10/20, or ASAs) is not considered a new cryptocurrency addition as it doesn’t involve dealing with a new protocol per se.
+If you simply want to get your ERC20 token supported, please note that Ledger is already adding new ERC20 on a monthly basis.</p>
+
+<!-- -->
+<div class="uk-alert-danger" data-uk-alert="">
+    <p>The Integration of Tokens is <b>not</b> addressed in this Developer Portal.</p>
+</div>
+<!-- -->
+
+<h2 id="ledger-live">Ledger Live</h2>
+
+<p>To confirm if your Nano application is already supported, please check if your currency is visible on <a href="https://www.ledger.com/supported-crypto-assets/">this page</a>.
+If you already have a public Nano application and are looking for a way to get your blockchain supported on Ledger Live, then congratulations, you are in the right place.</p>
+
+<!-- -->
+<div class="uk-alert-primary" data-uk-alert="">
+    <p>The Integration of Coins in Ledger Live (Desktop &amp; Mobile) is addressed in the Developer Portal.</p>
+</div>
+<!-- -->
+
+<h1 id="general-ledger-live-overview">General Ledger Live Overview</h1>
+
+<p>The Ledger Live application acts as a user-friendly platform for managing the digital assets as well as the application installed on the Ledger device.</p>
+
+<p>Having your blockchain supported on Ledger Live will allow the community of users to easily interact with your protocol.</p>
+
+<p>Ledger Live offers a standardized UI combined with a high quality of service. It also offers several features that are not available through other wallets.</p>
+
+<p>These features include:</p>
+
+<ul>
+  <li>Sending &amp; receiving cryptocurrency</li>
+  <li>Displaying account balances and a complete list of operations</li>
+  <li>Installing and managing applications on your Ledger device</li>
+  <li>Staking cryptocurrency (where applicable) to earn rewards</li>
+  <li>Buying and swapping cryptocurrency (when applicable)</li>
+</ul>
+
+<p>The Ledger Live application is available for Windows, Mac and Linux in its desktop version and on Android &amp; iOS for mobile.</p>
+
+<p>To be officially released by Ledger, your protocol must be included on all five platforms Ledger Live.</p>
+
+<h1 id="open-source-but-not-open-bar">Open source, but not Open bar</h1>
+
+<!-- ------------- Image ------------- -->
+<p><img align="left" width="132" src="../../../uploads/images/open_bar.png" />
+<!-- --------------------------------- --></p>
+
+<p>The Ledger Live code is Open source under MIT license. As such, you are free to copy/fork and modify it at will.</p>
+
+<p>In some rare cases, you may want to <i>go it alone</i>, and do your own <strong>Solo Integration</strong>, where there is virtually no interaction with Ledger, nor code review, nor supported communication by Ledger to your blockchain community. You are free to use this documentation in that way.</p>
+
+<p>In most cases however, you will want to have your blockchain officially supported in Ledger Live for your community, with an updated release of Ledger Live Desktop and Mobile. In this case it is a <strong>Participant Integration</strong>, because this involves various Ledger teams: Security, Product, Engineering and QA,  we will have discussions with you to enter into an Agreement Framework in order to clarify the roles and responsibilities between us.</p>
+
+<h1 id="agreeing-on-a-framework">Agreeing on a Framework</h1>
+<!-- ------------- Image ------------- -->
+<p><img align="right" width="156" src="../../../uploads/images/agreement.png" /><br />
+<!-- --------------------------------- -->
+Assuming you are on course for a <strong>Participant Integration</strong>, here is how we suggest working together.</p>
+
+<p>To set up a Launch meeting please make a request to Fabrice Dautriat (@Fabrice-ledger), on the <a href="https://join.slack.com/t/ledger-dev/shared_invite/zt-iskfi3kl-CXw9Uz2dOOYSLKe_e4tcmw">Ledger Slack Dev</a>.</p>
+
+<p>The aim of the Launch meeting is to present and discuss together:</p>
+
+<p>-  your project objective, and<br />
+-  a high-level roadmap</p>
+
+<p>After the Launch meeting we will assess the feasibility and the maturity of your coin integration project, and we will suggest an Agreement Framework, i.e. loose terms under which we agree to work. This also includes:</p>
+
+<p>- Resources<br />
+- Support and communication channels<br />
+- Contact points for Technical and Documentation issues</p>
+
+<p>Note: Roadmaps and terms can be changed by any party along the way, of course, so long as these changes are talked about and agreed together.</p>
+
+<h1 id="note-about-code-reviews">Note about Code Reviews</h1>
+
+<p>For <strong>Solo Integrations</strong></p>
+
+<p>Ledger will still review pull requests, but on a best effort basis only. Please understand we can’t allocate resources to carry out reviews which we were not informed of previously.</p>
+
+<p>For <strong>Participant Integrations</strong></p>
+
+<p>Ledger will review PR according to the agreed roadmap as closely as possible.</p>
+
+<hr />
+<h1 id="ledger-live-development-phases">Ledger Live Development Phases</h1>
+
+<p>We have identified several phases, each giving rise to a deliverable.</p>
+
+<p>The features supported by a blockchain protocol can be split between Generic and Specific ones.</p>
+
+<p>Blockchain protocols mainly offer at least, Receive/Synchronise/Send functions. (Synchronising is the ability to return the balance of an account, including, but not necessarily with the list of operations). That is why these generic <strong>(GEN)</strong> fetures are a considered as one of the phases.</p>
+
+<p>Many Blockchain protocols also offer staking functions. And these do not have the same mechanism from one protocol to another. That is why they are specific <strong>(SPE)</strong> features.</p>
+
+<p><strong><em>Please note that to be supported on Ledger Live, you must at least offer generic features.</em></strong></p>
+
+<p>In both cases, background work, or preliminary <strong>Technical Assessment</strong> must be done. It ensures the blockchain knowledge has been acquired and agreed on, since we at Ledger will also have done this prior background work to validate the quality of your work when you will eventually submit it for review and release into our products.</p>
+
+<p>When adding your blockchain support on Ledger Live, you can consider a CLI (command line interface) integration only, or a full CLI + GUI (graphical user interface) integration.</p>
+
+<p>In any case, the CLI integration phase is mandatory and will allow you to verify the main features are properly working before having to wonder about actual user interfaces.</p>
+
+<p>The <strong>D</strong> Phase (Specific GUI) relies on User flow diagrams, which must have been submitted at the end of the Technical Assessment phase.</p>
+
+<p>This table shows which GEN/SPE components are involved is which phase.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Phase</th>
+      <th><center>General (GEN)</center></th>
+      <th><center>Specific (SPE)</center></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>A - Technical Assessment</td>
+      <td><center><span class="uk-margin-small-right" uk-icon="check"></span></center></td>
+      <td><center><span class="uk-margin-small-right" uk-icon="check"></span></center></td>
+    </tr>
+    <tr>
+      <td>B - General <strong>CLI</strong> &amp; <strong>GUI</strong></td>
+      <td><center><span class="uk-margin-small-right" uk-icon="check"></span></center></td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>C - Specific <strong>CLI</strong></td>
+      <td> </td>
+      <td><center><span class="uk-margin-small-right" uk-icon="check"></span></center></td>
+    </tr>
+    <tr>
+      <td>D - Specific <strong>GUI</strong></td>
+      <td> </td>
+      <td><center><span class="uk-margin-small-right" uk-icon="check"></span></center></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>The table below shows what the inputs and outputs are for each phase, the work involved, as well as the main parts of this documentation are involved.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Delivery<br />Phase</th>
+      <th>Input<br />of the Phase</th>
+      <th>Work Package</th>
+      <th>Output<br />of the Phase</th>
+      <th>Main Chapters<br />involved</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><center>A</center></td>
+      <td><center>n/a</center></td>
+      <td>Technical assessment</td>
+      <td><strong>Acceptance Plan</strong>:<br />Indexer Solution<br />SPE Choices<br />SPE Use-Case Tests</td>
+      <td><center>3 Prerequisites</center></td>
+    </tr>
+    <tr>
+      <td><center>B</center></td>
+      <td><strong>Acceptance Plan</strong>:<br />Technical assessment</td>
+      <td>GEN Features</td>
+      <td>PR CLI &amp; GUI</td>
+      <td><center>4 &amp; 5<br />Coding &amp; Testing</center></td>
+    </tr>
+    <tr>
+      <td><center>C</center></td>
+      <td><strong>Acceptance Plan</strong>:<br />SPE Choices</td>
+      <td>SPE Features</td>
+      <td>PR CLI</td>
+      <td><center>4 &amp; 5<br />Coding &amp; Testing</center></td>
+    </tr>
+    <tr>
+      <td><center>D</center></td>
+      <td><strong>Acceptance Plan</strong>:<br />SPE Choices<br />SPE Use-Case Tests</td>
+      <td>User journey (UI)</td>
+      <td>PR  GUI</td>
+      <td><center>4 &amp; 5<br />Coding &amp; Testing</center></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Note PR: Pull request</p>
+
+<hr />
+
+<h2 id="a---technical-assessment">A - Technical Assessment</h2>
+
+<p>The prerequisites phase contains all the prior analysis of the blockchain and the choices to be made.</p>
+
+<p>Importantly, it also contains research and choices concerning the Indexer/Explorer</p>
+
+<p>The <strong>output of this phase</strong> is a presentation to Ledger of those technical choices</p>
+
+<hr />
+<h2 id="b---cli-and-gui-integration---general-gen-features">B - CLI and GUI integration - General (GEN) features</h2>
+
+<p><strong>General features are Receive, Synch, Send</strong></p>
+
+<p>1 - <strong>Analysis</strong><br />
+- Getting the JS app and the Nano App work together (APDU)<br />
+- Recovering the Receive address<br />
+- Piecing together a basic Synch  (see indexer)</p>
+
+<p>2 - <strong>Implementation</strong><br />
+- Get a list of nominal errors returned: OK / No funds / etc<br />
+- Work in the Families Folder in  Live Common.<br />
+- Getting Receive, Synch, Send to work.<br />
+- Verification of LLD and LLM UI flows</p>
+
+<p>3 - <strong>Code Review and functional test</strong><br />
+- Code Delivery for Review by Ledger</p>
+
+<hr />
+<h2 id="c---cli-integration---specific-spe-features">C - CLI integration - Specific (SPE) features</h2>
+
+<p><strong>Staking operations, Reward related actions</strong></p>
+
+<p>1 - <strong>Analysis</strong><br />
+- Understanding staking operations is a basic first step<br />
+- interpreting them. Considering the appropriate choices <br />
+- Detailing the User Flows defined at Technical Assessment</p>
+
+<p>2 - <strong>Implementation</strong><br />
+- Work on Specific Coin Folder in Live Common<br />
+- Get Specific functions to work</p>
+
+<p>3 - <strong>Code Review</strong><br />
+- Code Delivery for Review by Ledger</p>
+
+<hr />
+<h2 id="d---gui-integration---specific-spe-features">D - GUI integration - Specific (SPE) features</h2>
+
+<p>1 - <strong>Analysis</strong><br />
+- Detailing the diagrams of User Flows defined at Technical Assessment</p>
+
+<p>2 - <strong>Implementation</strong><br />
+- Work on Graphics designs and modal flows<br />
+- Get Specific flows to work</p>
+
+<p>3 - <strong>Code Review</strong><br />
+- Code Delivery for Review by Ledger</p>
+
+<hr />
+
+                        
+                            <!-- FC
+                            <div class="share uk-text-center uk-margin-medium-top">
+    
+        <a class="uk-link-muted" href="https://twitter.com/intent/tweet?text=General Process&url=http://localhost:4000/docs/CI/10_general_process/&via=&related=" rel="nofollow" target="_blank" title="Share on Twitter" onclick="window.open(this.href, 'twitter', 'width=550,height=235');return false;"><span data-uk-icon="icon: twitter; ratio: 1.2"></span></a>
+    
+    
+        <a class="uk-link-muted uk-margin-small-left" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2Fdocs%2FCI%2F10_general_process%2F" rel="nofollow" target="_blank" title="Share on Facebook" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;"><span data-uk-icon="icon: facebook; ratio: 1.2"></span></a>
+    
+</div>
+                            -->
+                        
+                    </div>
+
+                    
+
+                    <hr class="uk-margin-medium">
+
+                    
+
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+
+
+                    <div class="uk-margin-large-top">
+    <h3>Related Docs</h3>
+
+    
+    
+    
+
+    <ul class="uk-list link-secondary">
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+    
+    
+
+    
+
+    
+
+    
+    </ul>
+</div>
+
+
+                    
+                </article>
+
+                <script>
+                    // Table of contents scroll to
+                    UIkit.scroll('#markdown-toc a', {
+                        duration: 400,
+                        offset: 120
+                    });
+                </script>
+
+            </div>
+
+    </div>
+</div>
+
+
+    <div id="offcanvas-docs" data-uk-offcanvas="overlay: true">
+    <div class="uk-offcanvas-bar">
+
+        <button class="uk-offcanvas-close" type="button" data-uk-close></button>
+
+        
+        <h5 class="uk-margin-top">Getting Started</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/installation/">Theme installation</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/setup/">Basic theme setup</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/navigation/">Navigation bar</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/footer/">Footer options</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/posts/">Creating your first post in Jekyll</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/docs/">Creating docs posts</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/comments/">Enabling comments (via Disqus)</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/analytics/">Google Analytics</a></li>
+        
+        </ul>
+        
+        <h5 class="uk-margin-top">Theme Features</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/hero/">Hero page header</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/boxes/">Category boxes section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/featured/">Fearured docs section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/videos/">Video lightbox boxes section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/faq/">Frequently asked questions section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/team/">Team members section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/cta/">Call to action section</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/changelog/">Creating a changelog</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/contact/">Contact form (via FormSpree)</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/media/">Adding media to post and doc content</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/toc/">Adding table of contents to docs</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/alerts/">Adding alerts to content</a></li>
+        
+        </ul>
+        
+        <h5 class="uk-margin-top">Customization</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/translation/">Translation</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/customize/">Customization</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/development/">Development</a></li>
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/sources/">Sources and credits</a></li>
+        
+        </ul>
+        
+        <h5 class="uk-margin-top">Help</h5>
+        <ul class="uk-nav uk-nav-default doc-nav">
+        
+          
+          
+          <li class=""><a href="/docs/TMPL/support/">Contacting support</a></li>
+        
+        </ul>
+        
+
+    </div>
+</div>
+
+
+    <div id="offcanvas" data-uk-offcanvas="flip: true; overlay: true">
+    <div class="uk-offcanvas-bar">
+
+        <a class="uk-logo uk-margin-small-bottom" href="/">Ledger Developer pages</a>
+     
+        <button class="uk-offcanvas-close" type="button" data-uk-close></button>
+      
+        <ul class="uk-nav uk-nav-primary uk-margin-top">
+            
+                
+
+                
+
+                
+                    <li><a href="/" >Home</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><a href="/docs/TMPL/installation" >Docs</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><a href="/blog/" >Blog</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><a href="/changelog-timeline/" >Changelog</a></li>
+                
+            
+                
+
+                
+
+                
+                    <li><div class="uk-navbar-item"><a class="uk-button uk-button-success" href="/contact/" >Contact</a></div></li>
+                
+            
+        </ul>
+
+        <div class="uk-margin-top uk-text-center">
+            <div data-uk-grid class="uk-child-width-auto uk-grid-small uk-flex-center uk-grid">
+                
+<div class="uk-first-column">
+    <a href="https://twitter.com/" data-uk-icon="icon: twitter" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+<div>
+    <a href="https://www.facebook.com/" data-uk-icon="icon: facebook" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+<div>
+    <a href="https://www.instagram.com/" data-uk-icon="icon: instagram" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+<div>
+    <a href="https://vimeo.com/" data-uk-icon="icon: vimeo" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+    
+        <footer class="uk-section uk-text-center uk-text-muted">
+    <div class="uk-container uk-container-small">
+
+        <div>
+            <ul class="uk-subnav uk-flex-center">
+                
+                    
+                    
+                    
+                        <li><a href="/" >Home</a></li>
+                    
+                
+                    
+                    
+                    
+                        <li><a href="/blog/" >Blog</a></li>
+                    
+                
+                    
+                    
+                    
+                        <li><a href="/contact/" >Contact</a></li>
+                    
+                
+            </ul>
+        </div>
+        <div class="uk-margin-medium">
+            <div data-uk-grid class="uk-child-width-auto uk-grid-small uk-flex-center uk-grid">
+                
+                
+<div class="uk-first-column">
+    <a href="https://twitter.com/" data-uk-icon="icon: twitter" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+<div>
+    <a href="https://www.facebook.com/" data-uk-icon="icon: facebook" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+<div>
+    <a href="https://www.instagram.com/" data-uk-icon="icon: instagram" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+<div>
+    <a href="https://vimeo.com/" data-uk-icon="icon: vimeo" class="uk-icon-link uk-icon" target="_blank"></a>
+</div>
+
+
+
+
+
+
+                
+            </div>
+        </div>
+        <div class="uk-margin-medium uk-text-small copyright link-secondary">Made by <a href="https://ledger.com/">Ledger</a> France</div>
+
+    </div>
+</footer>
+
+    
+
+    
+
+    
+
+    </body>
+
+</html>
