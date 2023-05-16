@@ -1,7 +1,7 @@
 ---
 layout: help
 title: Help and FAQ's
-subtitle: Answers to all of your questions!
+subtitle: Answers to all of your Beat Herding questions!
 hero:
     #background: "#0072ff"
     #image: big_image.jpg
