@@ -1,0 +1,204 @@
+.p-header {
+  background-color: #FFE200;
+  background-color: var(--color-secondary); }
+
+.header-stuck .p-header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 5; }
+
+.p-header__inner {
+  -webkit-box-align: center;
+          align-items: center;
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-pack: justify;
+          justify-content: space-between;
+  padding-bottom: 20px;
+  padding-top: 20px; }
+
+.p-header__logo {
+  width: 210px; }
+
+.p-header__nav {
+  position: relative; }
+
+.p-header__second-nav {
+  display: -webkit-box;
+  display: flex; }
+  @media screen and (min-width: 1300px) {
+    .p-header__second-nav {
+      bottom: -150px;
+      right: 0;
+      z-index: 1;
+      position: absolute; } }
+
+.p-header__second-nav .c-icons {
+  margin-right: 2rem; }
+
+.p-header__decorations {
+  position: relative; }
+
+@media screen and (min-width: 768px) {
+  .p-header__decorations:before,
+  .p-header__decorations:after {
+    background-repeat: no-repeat;
+    background-size: contain;
+    content: '';
+    display: block;
+    top: -100px;
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    z-index: -1; }
+  .p-header__decorations:before {
+    background-image: url("/public/img/decoration/top-left.svg");
+    left: -250px; }
+  .p-header__decorations:after {
+    background-image: url("/public/img/decoration/top-right.svg");
+    right: -250px; } }
+
+@media screen and (max-width: 1299px) {
+  .p-header__nav {
+    -webkit-box-align: center;
+            align-items: center;
+    background-color: rgba(17, 3, 38, 0.9);
+    display: -webkit-box;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+            flex-direction: column;
+    height: calc(100% - 115px);
+    -webkit-box-pack: center;
+            justify-content: center;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    padding: 50px 0;
+    position: fixed;
+    right: -100%;
+    text-align: center;
+    top: 115px;
+    -webkit-transition-duration: 0.1s;
+            transition-duration: 0.1s;
+    -webkit-transition-property: right;
+    transition-property: right;
+    -webkit-transition-timing-function: ease-in-out;
+            transition-timing-function: ease-in-out;
+    width: 100%;
+    z-index: 9; }
+    .p-header__nav .c-nav {
+      -webkit-box-orient: vertical;
+      -webkit-box-direction: normal;
+              flex-direction: column; } }
+
+@media screen and (max-width: 1299px) {
+  .p-header__nav .c-nav {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+            flex-direction: column;
+    margin-bottom: 50px; }
+  .p-header__nav .c-nav__item + .c-nav__item {
+    margin-left: 0;
+    margin-top: 20px; }
+  .p-header__nav .c-nav__link {
+    color: white;
+    font-size: 2.4rem; } }
+
+@media screen and (max-width: 1299px) {
+  .p-header__nav .p-header__second-nav {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+            flex-direction: column; }
+  .p-header__nav .c-icons {
+    --icon-box-height: 40px;
+    --icon-box-width: 40px;
+    --icon-height: 24px;
+    margin-bottom: 50px;
+    margin-right: 0; }
+  .p-header__nav .bh-icon__buy-tickets__sheep {
+    fill: white; }
+  .p-header__nav .bh-icon__buy-tickets__text {
+    fill: white; }
+    .p-header__nav .bh-icon__buy-tickets__text path {
+      stroke: white; } }
+
+@media screen and (max-width: 1299px) {
+  body.nav-active .p-header__nav {
+    right: 0;
+    -webkit-transition-duration: 0.5s;
+    -webkit-transition-duration: var(--transition-duration);
+            transition-duration: 0.5s;
+            transition-duration: var(--transition-duration); } }
+
+.p-header__buy-tickets-mobile {
+  display: none;
+  font-size: 12px;
+  margin-left: auto;
+  margin-right: 20px; }
+  @media screen and (min-width: 480px) and (max-width: 1299px) {
+    .p-header__buy-tickets-mobile {
+      display: block; } }
+
+
+  .c-nav {
+    --nav-item-margin-between: 0;
+    --nav-link-color: var(--color-text);
+    --nav-link-font-size: 1.5rem;
+    --nav-link-font-weight: 700;
+    --nav-link-letter-spacing: 1px;
+    --nav-link-padding-bottom: 0;
+    --nav-link-padding-left: 10px;
+    --nav-link-padding-right: 10px;
+    --nav-link-padding-top: 0;
+    --nav-link-text-transform: uppercase;
+    --nav-link-transition-delay: 0;
+    --nav-link-transition-duration: var(--transition-duration--fast);
+    --nav-link-transition-property: all;
+    --nav-link-transition-timing-function: var(--transition-timing-function);
+    --nav-link-color--active: var(--color-primary);
+    --nav-link-color--hover: var(--color-primary); }
+  
+  .c-nav {
+    -webkit-box-align: center;
+            align-items: center;
+    display: -webkit-box;
+    display: flex;
+    line-height: 1; }
+  
+  .c-nav:not(.c-nav--stacked) .c-nav__item + .c-nav__item {
+    margin-left: var(--nav-item-margin-between); }
+  
+  .c-nav--stacked {
+    -webkit-box-align: start;
+            align-items: flex-start;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+            flex-direction: column; }
+    .c-nav--stacked .c-nav__item + .c-nav__item {
+      margin-top: var(--nav-item-margin-between); }
+  
+  .c-nav__link {
+    color: var(--nav-link-color);
+    font-size: var(--nav-link-font-size);
+    font-weight: var(--nav-link-font-weight);
+    letter-spacing: var(--nav-link-letter-spacing);
+    padding-bottom: var(--nav-link-padding-bottom);
+    padding-left: var(--nav-link-padding-left);
+    padding-right: var(--nav-link-padding-right);
+    padding-top: var(--nav-link-padding-top);
+    text-transform: var(--nav-link-text-transform);
+    -webkit-transition-delay: var(--nav-link-transition-delay);
+            transition-delay: var(--nav-link-transition-delay);
+    -webkit-transition-duration: var(--nav-link-transition-duration);
+            transition-duration: var(--nav-link-transition-duration);
+    -webkit-transition-property: var(--nav-link-transition-property);
+    transition-property: var(--nav-link-transition-property);
+    -webkit-transition-timing-function: var(--nav-link-transition-timing-function);
+            transition-timing-function: var(--nav-link-transition-timing-function); }
+    .c-nav__link:hover {
+      color: var(--nav-link-color--hover); }
+  
+  .c-nav__item.is-current .c-nav__link {
+    color: var(--nav-link-color--active); }
+  
