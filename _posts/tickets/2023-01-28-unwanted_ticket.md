@@ -2,7 +2,7 @@
 layout: post
 title: Can I give my unwanted ticket to my friend/sister/bruvva/goldfish?
 categories: [Tickets]
-tags: featured
+tags: 
 ---
 
 No.

@@ -2,7 +2,7 @@
 layout: post
 title: Why do I need to put names in when ordering my tickets?
 categories: [Tickets]
-tags: featured
+tags: 
 ---
 
 The full name of each ticket-holder is required when booking so that the wristband is linked directly to each individual, ensuring that if a wristband becomes lost, or broken during the event, getting a replacement is an easy process.
