@@ -10,7 +10,7 @@ hero:
     text: light
     search: true
 category:
-    columns: 3
+    columns: 2
 
 featured:
     title: Featured Articles
