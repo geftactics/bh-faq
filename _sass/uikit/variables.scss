@@ -255,7 +255,7 @@ $card-title-line-height: 1.4 !default;
 $card-badge-top: $global-gutter !default;
 $card-badge-right: $card-badge-top !default;
 $card-hover-background: $global-muted-background !default;
-$card-default-background: $global-muted-background !default;
+$card-default-background: #fff !default;
 $card-default-color: $global-color !default;
 $card-default-title-color: $global-emphasis-color !default;
 $card-default-hover-background: darken($card-default-background, 5%) !default;
