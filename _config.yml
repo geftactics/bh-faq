@@ -9,7 +9,7 @@ title:              BCIPY Documentation
 description:        BCIPY Articles and Documentation 
 
 # Site subpath, e.g. /blog
-baseurl:            "bh-faq/"
+baseurl:            "/bh-faq"
 
 # Permalink URLs structure, for permalink style options see: https://jekyllrb.com/docs/permalinks/
 permalink:          /:title/
