@@ -24,16 +24,11 @@ logo_image:
 
 # Author settings, displayed on about page
 author:
-    name:           CAMBI
-    website:  https://www.ohsu.edu/reknew/brain-computer-interface-systems
-    github:       https://github.com/CAMBI-tech/BciPy
-    twitter:    https://twitter.com/CAMBI_tech
-    youtube: https://www.youtube.com/channel/UCgqvLDAoA1FGFHCF2lC2z3A
+    name:           Beat-Herder
+    website:  https://www.beatherder.co.uk
 
 # Social share buttons
-twitter_username:   CAMBI_tech
-github_username:    CAMBI-tech
-youtube_username: https://www.youtube.com/channel/UCgqvLDAoA1FGFHCF2lC2z3A
+twitter_username:   beatherder
 
 # Default footer image settings
 footer:
