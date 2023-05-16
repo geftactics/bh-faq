@@ -1,16 +1,16 @@
 ---
 layout: help
-title: BciPy Documentation
-subtitle: Find the latest Articles and Documentation about BciPy
+title: Help and FAQ's
+subtitle: Answers to all of your questions!
 hero:
-    background: "#0072ff"
-    image: BrainComputerInterfaceSystems.jpg
+    #background: "#0072ff"
+    #image: BrainComputerInterfaceSystems.jpg
     overlay: "linear-gradient(90deg, rgba(2,0,36,0.5) 0%, rgba(0,114,255,0.5) 100%, rgba(0,212,255,0.5) 100%)"
     align: center
     text: light
     search: true
 category:
-    columns: 2
+    columns: 3
 
 featured:
     title: Featured Articles
