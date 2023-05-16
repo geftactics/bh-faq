@@ -6,7 +6,7 @@
 
             {% if site.logo_image.light or site.logo_image.dark %}
               {% if site.logo_image.light %}
-                <img class="uk-logo-inverse" src="{{ site.post_assets | absolute_url }}{{ site.logo_image.light }}" alt="{{ site.title }}">
+                <img style='max-width: 300%' class="uk-logo-inverse" src="{{ site.post_assets | absolute_url }}{{ site.logo_image.light }}" alt="{{ site.title }}">
               {% endif %}
               {% if site.logo_image.dark %}
                 <img style='max-width: 300%' src="{{ site.post_assets | absolute_url }}{{ site.logo_image.dark }}" alt="{{ site.title }}">
