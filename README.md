@@ -1,12 +1,8 @@
 
 
-## BCIPY and Clinical Documentation
+## Example FAQ site
 
-This website was created with the intention of hosting articles, documents, and research about BCI 
-
-### BCIPY Code Documentation
-
-If you are looking for CAMBI's BciPy code Official Github page, click <a href="https://github.com/CAMBI-tech/BciPy" target="_blank">here</a>.
+https://geftactics.github.io/bh-faq/
 
 ## Installation
 
